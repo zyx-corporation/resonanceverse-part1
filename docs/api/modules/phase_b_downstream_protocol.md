@@ -1,4 +1,4 @@
-# Phase B 下流タスク・評価プロトコル（固定化 v0.3）
+# Phase B 下流タスク・評価プロトコル（固定化 v0.4）
 
 ## 目的
 
@@ -12,10 +12,13 @@
 | `--task sst2` | **GLUE SST-2**（二値感情分類）— `datasets.load_dataset("glue", "sst2")` |
 | `--task boolq` | **GLUE BoolQ**（Yes/No 読解 QA）— `datasets.load_dataset("glue", "boolq")`。入力は `"{question} {passage}"` を単一シーケンスとしてトークナイズ（因果エンコーダ向け）。長文は `--max-seq-len` で切り詰め（推奨 256〜512）。 |
 | ベースライン | `transformers.AutoModel` の **last_hidden_state** をマスク平均プール → `Linear(H, 2)` |
-| Awai 経路 | 同一エンコーダ隠れ状態 → **`ResonantCore`** → マスク平均プール → **`Linear(6, 2)`** |
+| Awai 経路 | 同一エンコーダ隠れ状態 → **`ResonantCore`** → マスク平均プール → **読み出し**（下表） |
+| 読み出し `--awai-readout` | `narrow`: **`Linear(6, num_labels)`**（従来）。`projected`: **`Linear(6, H)`** → **`Linear(H, num_labels)`**。`dual`: **encoder プール `(H,)`** と **共鳴プール `(6,)`** を連結 → **`Linear(H+6, num_labels)`**。baseline では未使用。 |
 | オプション | `--integration awai-cultural` で `CulturalModulationAdapter` による共鳴特徴の調製 |
 
-JSON には **`task`**（例: `glue_sst2`, `glue_boolq`, `synthetic`）に加え、CLI の `--task` を **`glue_task`**（`sst2` / `boolq`）として記録する。
+品質 τ（検証 accuracy）の**事前登録**および **T3″**（同一学習条件での読み出し固定）は [Phase C 品質 τ 事前登録](phase_c_quality_tau_prereg.md) を参照。
+
+JSON には **`task`**（例: `glue_sst2`, `glue_boolq`, `synthetic`）に加え、CLI の `--task` を **`glue_task`**（`sst2` / `boolq`）として記録する。Awai 系では **`awai_readout`**（`narrow` / `projected` / `dual`）を記録する。
 
 ## 手順（固定）
 
@@ -49,7 +52,9 @@ JSON には **`task`**（例: `glue_sst2`, `glue_boolq`, `synthetic`）に加え
 ## 関連
 
 - [Phase B データ・評価プロトコル（LM）](phase_b_data_protocol.md)  
+- [Phase C 品質 τ 事前登録](phase_c_quality_tau_prereg.md)（T3′／T3″）  
 - [モジュール ↔ 実証スクリプト対応表](module_benchmark_map.md)
 
 ---
+*v0.4 — 2026-03-25（`--awai-readout`・読み出し三種・JSON `awai_readout`）*  
 *v0.3 — 2026-03-25（抽出型 QA: `squad_span.py`・`squad_span.v1`）*
