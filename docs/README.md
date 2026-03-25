@@ -4,6 +4,15 @@
 
 - **実装フェーズ・チェックリスト（和文）**: [ROADMAP_ja.md](../ROADMAP_ja.md)（ルート）
 
+## 実装・文書の現状（スナップショット）
+
+2026 年 3 月時点のリポジトリ状態の要約です。詳細は各リンク先の本文を正とする。
+
+- **Phase 3（主張・実測）**: [Phase3 実測と主張完成計画](planning/Phase3_実測と主張完成計画_ja.md)・[主張表（論文用）](planning/Resonanceverse_主張表_論文用_ja.md) を軸に、`experiments/phase3_claim_run.py` と `experiments/baselines/` のサマリ JSON でスナップショットを記録する運用。τ 事前登録・Awai 語彙ヘッド（H+6 連結）などは [API・モジュール索引](api/modules/README.md) 内の Phase C／Phase 3 関連文書を参照。
+- **`ResonantCore`**: 場更新のドリフトは `torch.Generator` で生成し、`field_drift_seed`（`configs` の `model.field_drift_seed` を `core.config_utils.resonant_core_kwargs` が任意で渡す）により同一条件で再現可能。`eval` モードでは場 `W` を更新しない。パディング位置は `attention_mask` で除外して平均相互作用を計算。
+- **共鳴コンポーネントの区別**: `ResonanceEngine`（学習可能な N×N×d 系）と `ResonantCore`（1×N×d バッファ・`AwaiIntegratedSLM` 経路）の役割は、[API・モジュール索引の「共鳴コンポーネントの対応」](api/modules/README.md) を実装上の正とする。
+- **品質ゲート**: `tests/` の `pytest` でリグレッション確認。分散同期スモークのテンソル経路は共有メモリ問題回避のため numpy ペイロードを用いる。
+
 ## ディレクトリ構成
 
 | ディレクトリ | 内容 |
