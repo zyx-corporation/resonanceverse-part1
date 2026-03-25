@@ -2,7 +2,7 @@
 Phase 2: 下流タスクの固定プロトコル（入口）。
 
 - `--task sst2`: GLUE SST-2（感情二値分類）
-- `--task boolq`: GLUE BoolQ（Yes/No 読解 QA を単一シーケンスに連結し二値分類）
+- `--task boolq`: BoolQ（`datasets` スタンドアロン `boolq`、Yes/No を単一シーケンスに連結して二値分類）
 - `--demo`: ミニスタブ（ネットワーク不要、`transformers` 不要）
 - 既定: HF エンコーダ + マスク平均プール + 線形ヘッド（baseline）または
   エンコーダ + ResonantCore + 線形ヘッド（awai）
