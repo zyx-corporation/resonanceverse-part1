@@ -1,0 +1,17 @@
+{
+  "mode": "hf",
+  "integration": "awai_resonance",
+  "data": "wikitext",
+  "model": "gpt2",
+  "max_steps": 200,
+  "freeze_base": false,
+  "cultural_modulation": false,
+  "final_loss": 7.869718074798584,
+  "loss_start": 16.79043197631836,
+  "device": "cpu",
+  "train_time_s": 59.03320262487978,
+  "steps_per_sec": 3.387923932754907,
+  "cuda_peak_memory_bytes": null,
+  "perplexity_train": 1829.157010920285,
+  "perplexity_eval": 3694.6590351127993
+}

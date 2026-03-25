@@ -92,14 +92,19 @@ class ResonantCore(nn.Module):
 
 
 class AwaiIntegratedSLM(nn.Module):
-    """Hugging Face 系 SLM の隠れ状態に ResonantCore を重ね、語彙ロジットを出す。"""
+    """Hugging Face 系 SLM の隠れ状態に ResonantCore を重ね、語彙ロジットを出す。
+
+    語彙ヘッドは **最終隠れ状態と共鳴特徴（6 次元）を連結**して写像する（下流 `slm_downstream` の
+    ``dual`` 読み出しと同型）。6 次元のみを ``Linear(6, V)`` に通す旧経路は情報が細りすぎ、
+    因果 LM 学習が成立しなかった。
+    """
 
     def __init__(self, base_slm_model, *, cultural_modulation: bool = False):
         super().__init__()
         self.base_model = base_slm_model
         h = int(base_slm_model.config.hidden_size)
         self.resonance_layer = ResonantCore(h)
-        self.out_head = nn.Linear(6, base_slm_model.config.vocab_size)
+        self.out_head = nn.Linear(h + 6, base_slm_model.config.vocab_size)
         self.cultural_adapter: CulturalModulationAdapter | None
         if cultural_modulation:
             self.cultural_adapter = CulturalModulationAdapter(h)
@@ -112,5 +117,6 @@ class AwaiIntegratedSLM(nn.Module):
         resonant_features = self.resonance_layer(last_hidden)
         if self.cultural_adapter is not None:
             resonant_features = resonant_features * self.cultural_adapter(last_hidden)
-        logits = self.out_head(resonant_features)
+        z = torch.cat([last_hidden, resonant_features], dim=-1)
+        logits = self.out_head(z)
         return logits

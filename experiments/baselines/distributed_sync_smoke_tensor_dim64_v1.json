@@ -2,10 +2,11 @@
   "schema_version": "distributed_sync_smoke.v1",
   "variant": "multiprocessing_pipe_tensor_pingpong",
   "tensor_dim": 64,
+  "payload": "numpy_ndarray_float64",
   "rounds": 120,
   "warmup": 20,
-  "latency_ms_p50": 0.17949985340237617,
-  "latency_ms_p95": 0.2590379910543561,
-  "latency_ms_mean": 0.19012634875252843,
-  "disclaimer": "単一マシン上の Pipe 往復（torch.Tensor pickle）。分散共鳴場の実レイテンシではない。"
+  "latency_ms_p50": 0.04056282341480255,
+  "latency_ms_p95": 0.08602901361882684,
+  "latency_ms_mean": 0.04867561704789599,
+  "disclaimer": "単一マシン上の Pipe 往復（numpy ベクトル pickle）。分散共鳴場の実レイテンシではない。"
 }

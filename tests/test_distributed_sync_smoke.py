@@ -50,3 +50,4 @@ def test_distributed_sync_smoke_tensor_runs() -> None:
     payload = json.loads(line.split(" ", 1)[1])
     assert payload.get("variant") == "multiprocessing_pipe_tensor_pingpong"
     assert payload.get("tensor_dim") == 8
+    assert payload.get("payload") == "numpy_ndarray_float64"

@@ -9,7 +9,7 @@ Phase 4 補助: 2 プロセス間の IPC 往復（擬似同期）の壁時計を
     python -m experiments.distributed_sync_smoke [--rounds 200] [--out path.json]
     python -m experiments.distributed_sync_smoke --variant tensor [--tensor-dim 64] [--out path.json]
 
-`--variant tensor` は **PyTorch テンソル**を Pipe で往復し、分散場の「最小統計量」同期のオーダー感を追加する。
+`--variant tensor` は **NumPy ベクトル**（実数場の最小統計量のスタブ）を Pipe で pickle 往復し、分散同期のオーダー感を追加する。
 """
 
 from __future__ import annotations
@@ -23,7 +23,6 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-import torch
 
 _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
@@ -39,12 +38,12 @@ def _echo_worker(conn: Any) -> None:
 
 
 def _tensor_echo_worker(conn: Any) -> None:
-    """子: 受け取ったテンソルに小さな変換を加えて返す（擬似場更新）。"""
+    """子: 受け取ったベクトル（numpy）に小さな変換を加えて返す（擬似場更新）。"""
     while True:
         msg = conn.recv()
         if msg is None:
             break
-        t = msg
+        t = np.asarray(msg, dtype=np.float64)
         conn.send(t * 0.5 + 0.01)
 
 
@@ -60,11 +59,11 @@ def _run_tensor_ping_pong(
     times_s: list[float] = []
     try:
         for _ in range(warmup):
-            x = torch.randn(1, tensor_dim)
+            x = np.random.randn(1, tensor_dim).astype(np.float64)
             parent_conn.send(x)
             parent_conn.recv()
         for _ in range(rounds):
-            x = torch.randn(1, tensor_dim)
+            x = np.random.randn(1, tensor_dim).astype(np.float64)
             t0 = time.perf_counter()
             parent_conn.send(x)
             parent_conn.recv()
@@ -80,13 +79,14 @@ def _run_tensor_ping_pong(
         "schema_version": "distributed_sync_smoke.v1",
         "variant": "multiprocessing_pipe_tensor_pingpong",
         "tensor_dim": tensor_dim,
+        "payload": "numpy_ndarray_float64",
         "rounds": rounds,
         "warmup": warmup,
         "latency_ms_p50": float(np.percentile(ms, 50)),
         "latency_ms_p95": float(np.percentile(ms, 95)),
         "latency_ms_mean": float(np.mean(ms)),
         "disclaimer": (
-            "単一マシン上の Pipe 往復（torch.Tensor pickle）。分散共鳴場の実レイテンシではない。"
+            "単一マシン上の Pipe 往復（numpy ベクトル pickle）。分散共鳴場の実レイテンシではない。"
         ),
     }
 

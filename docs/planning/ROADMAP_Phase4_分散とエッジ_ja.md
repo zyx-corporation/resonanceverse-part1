@@ -23,7 +23,7 @@ document_type: planning
 
 ## チェックリスト
 
-- [x] 単一マシン上の **IPC 往復スモーク**（`experiments/distributed_sync_smoke.py`、スキーマ `distributed_sync_smoke.v1`）— バイト往復に加え **`--variant tensor`**（`torch.Tensor` pickle 往復・次元既定 64）で場ベクトル級のオーダー感
+- [x] 単一マシン上の **IPC 往復スモーク**（`experiments/distributed_sync_smoke.py`、スキーマ `distributed_sync_smoke.v1`）— バイト往復に加え **`--variant tensor`**（**numpy** ベクトル pickle 往復・次元既定 64）で場ベクトル級のオーダー感
 - [ ] 分散ノード上の共鳴・同期・観測の固定プロトコル（本番トポロジ）
 - [ ] ハード選定・クラスタ構成（例: Jetson Orin）と本リポジトリ `core/` の接続方針
 
