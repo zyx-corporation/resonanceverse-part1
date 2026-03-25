@@ -33,6 +33,7 @@ class ResonantCore(nn.Module):
     - 場 W: (1, num_nodes, d) — register_buffer。更新は copy_ でインプレース
     - **学習モード時のみ**場を更新（``self.training``）。``eval()`` では ``W`` は不変。
     - ``attention_mask`` があればパディング位置を除いて場の平均相互作用を計算する。
+    - 場更新のドリフトは ``torch.Generator``（``field_drift_seed``、省略時は ``torch.initial_seed()`` 由来）で生成し、**同一初期化・同一入力列なら再現可能**。
     """
 
     def __init__(
@@ -46,6 +47,7 @@ class ResonantCore(nn.Module):
         stability_bound: float = 5.0,
         drift_scale: float = 0.01,
         initial_obscurity: float = 0.15,
+        field_drift_seed: int | None = None,
     ):
         super().__init__()
         self.hidden_size = hidden_size
@@ -58,6 +60,12 @@ class ResonantCore(nn.Module):
         self.tau = tau
         self.stability_bound = stability_bound
         self.drift_scale = drift_scale
+
+        self._field_rng = torch.Generator()
+        _ds = field_drift_seed
+        if _ds is None:
+            _ds = int(torch.initial_seed()) % (2**31 - 1)
+        self._field_rng.manual_seed(int(_ds))
 
         self.dimension_projector = nn.Linear(hidden_size, self.d)
         self.theta = nn.Parameter(torch.tensor(float(initial_obscurity)))
@@ -95,8 +103,14 @@ class ResonantCore(nn.Module):
                 ci = _masked_mean_over_batch_seq(resonance_weights, pad_mask)
                 current_interaction = ci.view(1, 1, self.d).expand(1, self.N, self.d).contiguous()
 
-                drift = torch.randn(1, self.N, self.d, device=x.device, dtype=x.dtype)
-                drift = drift * self.drift_scale
+                drift = torch.randn(
+                    1,
+                    self.N,
+                    self.d,
+                    generator=self._field_rng,
+                    dtype=torch.float32,
+                )
+                drift = drift.to(device=x.device, dtype=x.dtype) * self.drift_scale
 
                 updated = (
                     self.alpha * self.W

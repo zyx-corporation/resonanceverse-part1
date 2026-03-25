@@ -6,6 +6,18 @@
 - [アーキテクチャ概要（モジュール構造・クラス設計）](../../implementation/architecture_overview.md)
 - 実装コード: リポジトリ直下の [`core/`](../../../core/)
 
+## 共鳴コンポーネントの対応（理論・実装の索引）
+
+「共鳴」という語が **複数クラス**に付いている。混同しないための対応である。
+
+| クラス（`core/`） | 役割の要約 |
+|-------------------|------------|
+| **`resonance.ResonanceEngine`** | ノード部分集合×文脈から共鳴スコアを出す。**学習可能な** `W`（N×N×d 系）。`LightweightResonanceFacade`・`evel_benchmarks` 等。 |
+| **`resonant_core.ResonantCore`** | 隠れ状態を 6 次元に射影し softmax、**場バッファ** `W`（1×N×d）をインプレース更新。ドリフトは専用 `Generator`。**`AwaiIntegratedSLM`・`slm_downstream` の awai** 経路。 |
+| **`resonant_core.AwaiIntegratedSLM`** | HF 因果 LM の `hidden_states` に `ResonantCore` を重ね、**H+6 連結**で語彙ロジット（`slm_resonance_lm`）。 |
+
+数式上の「共鳴テンソル」との 1:1 対応は置かず、上表を**実装の正**とする。
+
 ## Phase A / A′（実証の索引）
 
 | 文書 | 内容 |

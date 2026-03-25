@@ -24,7 +24,7 @@ def resonant_core_kwargs(cfg: dict[str, Any] | None = None) -> dict[str, Any]:
     model = cfg.get("model", {})
     ap = cfg.get("autopoiesis", {})
     opt = cfg.get("optimization", {})
-    return {
+    out: dict[str, Any] = {
         "alpha": ap.get("alpha", 0.7),
         "beta": ap.get("beta", 0.2),
         "gamma": ap.get("gamma", 0.1),
@@ -33,6 +33,10 @@ def resonant_core_kwargs(cfg: dict[str, Any] | None = None) -> dict[str, Any]:
         "drift_scale": 0.01,
         "initial_obscurity": opt.get("initial_obscurity", 0.15),
     }
+    fds = model.get("field_drift_seed")
+    if fds is not None:
+        out["field_drift_seed"] = int(fds)
+    return out
 
 
 def autopoietic_kwargs(cfg: dict[str, Any] | None = None) -> dict[str, Any]:
