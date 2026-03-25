@@ -1,15 +1,19 @@
 
-# Ethical Standard for the TTST Project
+# Ethical Standard for the Resonanceverse Project
 
-## 1. Our Philosophy
+Japanese / 日本語: [ETHICAL_ja.md](ETHICAL_ja.md)
 
-The TTST project is developed with the belief that science should deepen mutual understanding among humanity, expand creativity, and contribute to the well-being of society as a whole.
+Contributing: [CONTRIBUTING.md](CONTRIBUTING.md) · CLA: [CLA.md](CLA.md)
 
-Based on this belief, we hereby establish the ethical standards that everyone involved in this project should respect.
+## 1. Philosophy
+
+**Resonanceverse** is developed with the belief that science should deepen mutual understanding among humanity, expand creativity, and contribute to the well-being of society as a whole.
+
+On that basis, **the maintainers of this project** establish the ethical standards below. **Contributors, users, and downstream adopters** are asked to respect them.
 
 ## 2. Ethical Use Request
 
-We strongly request, as a social norm, that all individuals and organizations using the AGPL-licensed version of this project refrain from the following uses:
+**Individuals and organizations** using the AGPL-licensed version of Resonanceverse are strongly requested, as a social norm, to refrain from the following uses:
 
 * **Misuse of Life Manipulation**: Application to synthetic biology without ethical consideration
 * **Pseudoscientific Claims**: Use for claims lacking scientific basis
@@ -18,23 +22,23 @@ We strongly request, as a social norm, that all individuals and organizations us
 * **Human Rights Oppression**: Use for surveillance, discrimination, invasion of privacy, or any purpose that suppresses or violates internationally recognized human rights
 * **Excessive Exploitation**: Use in unfair labor practices, provision of highly addictive services, exploitation based on information disparity, or any commercial/non-commercial activity that undermines human dignity
 
-This request is a **social contract** shared by our project community, independent of the legal terms of the AGPL license. We seek open collaboration with those who agree with these values.
+This request is a **social contract** shared by the Resonanceverse community, independent of the legal terms of the AGPL license. **The maintainers** seek open collaboration with those who agree with these values.
 
 ## 3. Legally Binding in Commercial License
 
-The above ethical standards are incorporated as legally binding contractual clauses in the **commercial license** of this project.
+The above ethical standards are incorporated as legally binding contractual clauses in the **commercial license** of Resonanceverse.
 
-Companies obtaining a commercial license must legally agree to comply with these usage restrictions. In case of breach of contract, appropriate measures including license revocation will be taken.
+**Companies** obtaining a commercial license must legally agree to comply with these usage restrictions. In case of breach of contract, appropriate measures including license revocation will be taken.
 
-This ensures ethical consistency in commercial activities as well.
+This arrangement ensures ethical consistency in commercial activities as well.
 
 ## 4. Expectations for Contributors
 
-Contributors to this project are deemed to agree with this ethical standard. We do not accept proposals or implementations of features that violate this standard. Scientific integrity and constructive discussion are expected.
+**Contributors** to Resonanceverse are deemed to agree with this ethical standard. **The maintainers** do not accept proposals or implementations of features that violate this standard. Scientific integrity and constructive discussion are expected.
 
 ---
 
-**Science is not value-neutral. We make responsible choices to ensure its power is used for a better future.**
+**Science is not value-neutral. The Resonanceverse project and its maintainers commit to responsible choices so that its power is used for a better future.**
 
-**Last updated**: September 10, 2025
+**Last updated**: March 25, 2026
 **ZYX Corp. | Artificial Sapience Lab**

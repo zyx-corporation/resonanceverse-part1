@@ -205,3 +205,8 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Local experiment outputs
+experiments/logs/
+# Hugging Face cache when HF_HOME points into repo (実モデル検証用)
+.hf_cache/

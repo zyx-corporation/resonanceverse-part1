@@ -29,22 +29,28 @@ class DynamicROISelector:
         idx_s2 = sorted_indices[self.s1_size : self.s1_size + self.s2_size]
         idx_s3 = sorted_indices[self.s1_size + self.s2_size : self.s1_size + self.s2_size + self.s3_size]
         
-        # 3. 各ティアに応じた共鳴計算 (定理6の朧度を適用)
         results = []
         
-        # S1: フル精度計算 (朧度 0)
-        res_s1 = self._compute_kernel(resonance_tensor[idx_s1], current_state, theta=0.0)
-        results.append(res_s1)
+        if idx_s1.numel() > 0:
+            res_s1 = self._compute_kernel(resonance_tensor[idx_s1], current_state, theta=0.0)
+            results.append(res_s1)
         
-        # S2: 近似計算 (朧度 中)
-        res_s2 = self._compute_kernel(resonance_tensor[idx_s2], current_state, theta=0.4)
-        results.append(res_s2)
+        if idx_s2.numel() > 0:
+            res_s2 = self._compute_kernel(resonance_tensor[idx_s2], current_state, theta=0.4)
+            results.append(res_s2)
         
-        # S3: 背景計算 (朧度 高 / 定理6に基づき計算を85%削減)
-        # S3は代表値（平均）のみで計算を効率化
-        res_s3_mean = self._compute_kernel(resonance_tensor[idx_s3].mean(dim=0, keepdim=True), 
-                                          current_state, theta=0.85)
-        results.append(res_s3_mean)
+        if idx_s3.numel() > 0:
+            res_s3_mean = self._compute_kernel(
+                resonance_tensor[idx_s3].mean(dim=0, keepdim=True),
+                current_state,
+                theta=0.85,
+            )
+            results.append(res_s3_mean)
+        
+        if not results:
+            device = resonance_tensor.device
+            dtype = resonance_tensor.dtype
+            return torch.zeros(0, 1, device=device, dtype=dtype)
         
         return torch.cat(results)
 

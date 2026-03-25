@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "description": "seed=42, dim=256, num_nodes=512, seq 32/64, repeats=3, CPU。regression_check は mean_time_s の悪化（ベースライン×max_slowdown超）のみ検出。CI では --max-slowdown を大きめに。",
+  "result": {
+    "dim": 256,
+    "num_nodes": 512,
+    "device": "cpu",
+    "rows": [
+      {
+        "seq_len": 32,
+        "full_quadratic": {
+          "mean_time_s": 0.00125084708755215,
+          "cuda_peak_bytes": 0
+        },
+        "roi_tiers": {
+          "mean_time_s": 0.004148791699359815,
+          "cuda_peak_bytes": 0
+        },
+        "time_ratio_full_over_roi": 0.30149671957383734
+      },
+      {
+        "seq_len": 64,
+        "full_quadratic": {
+          "mean_time_s": 1.695798709988594e-05,
+          "cuda_peak_bytes": 0
+        },
+        "roi_tiers": {
+          "mean_time_s": 0.00020431975523630777,
+          "cuda_peak_bytes": 0
+        },
+        "time_ratio_full_over_roi": 0.08299729549045826
+      }
+    ]
+  }
+}

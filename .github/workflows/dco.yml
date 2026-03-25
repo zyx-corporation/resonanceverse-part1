@@ -1,0 +1,41 @@
+# DCO: Signed-off-by on each commit (CONTRIBUTING.md).
+# - pull_request: blocks merge if job `dco` is required (cannot merge with failing check).
+# - push: runs after the push; does not prevent the push itself (fix with amend/revert + push).
+# Branch protection (see CONTRIBUTING.md): require `dco` (+ CI `test`); do not require `dco-push`.
+
+name: DCO
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+jobs:
+  dco:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head (fork-safe)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Verify Signed-off-by on each commit
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: bash scripts/check_dco.sh "$BASE_SHA" "$HEAD_SHA"
+
+  dco-push:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify Signed-off-by on pushed commits
+        run: bash scripts/check_dco_push.sh "${{ github.event.before }}" "${{ github.event.after }}"

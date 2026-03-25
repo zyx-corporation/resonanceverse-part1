@@ -1,86 +1,107 @@
+from __future__ import annotations
+
+from contextlib import nullcontext
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .instrumentation import StageTimer
+
+
 class ResonantCore(nn.Module):
     """
-    Resonanceverseの中核：動的共鳴と自己創生更新の実装
+    Resonanceverse の中核：動的共鳴と自己創生更新。
+
+    - 入力 x: (Batch, Seq, Hidden) — 例：SLM の最終隠れ状態
+    - 場 W: (1, num_nodes, d) — register_buffer。更新は copy_ でインプレース
     """
-    def __init__(self, hidden_size, num_nodes=512):
+
+    def __init__(
+        self,
+        hidden_size: int,
+        num_nodes: int = 512,
+        alpha: float = 0.7,
+        beta: float = 0.2,
+        gamma: float = 0.1,
+        tau: float = 1.0,
+        stability_bound: float = 5.0,
+        drift_scale: float = 0.01,
+        initial_obscurity: float = 0.15,
+    ):
         super().__init__()
         self.hidden_size = hidden_size
         self.N = num_nodes
-        self.d = 6  # 基本6次元
-        
-        # オートポイエーシス用パラメータ (論文4.1)
-        self.alpha = 0.7  # 慣性項
-        self.beta = 0.2   # 相互作用項
-        self.gamma = 0.1  # ドリフト項
-        
-        # 6次元評価空間への射影層
-        self.dimension_projector = nn.Linear(hidden_size, self.d)
-        
-        # 朧度（戦略的曖昧性）: 定理6に基づき0.15付近で初期化
-        self.theta = nn.Parameter(torch.tensor(0.15))
-        
-        # 共鳴テンソルの初期化 (セクション3.1)
-        self.register_buffer("W", torch.randn(1, num_nodes, self.d))
+        self.d = 6
 
-    def forward(self, x, context_mask=None):
+        self.alpha = alpha
+        self.beta = beta
+        self.gamma = gamma
+        self.tau = tau
+        self.stability_bound = stability_bound
+        self.drift_scale = drift_scale
+
+        self.dimension_projector = nn.Linear(hidden_size, self.d)
+        self.theta = nn.Parameter(torch.tensor(float(initial_obscurity)))
+
+        w0 = torch.randn(1, num_nodes, self.d) * 0.02
+        self.register_buffer("W", w0)
+
+    def forward(
+        self,
+        x: torch.Tensor,
+        context_mask=None,
+        instrument: StageTimer | None = None,
+    ) -> torch.Tensor:
         """
-        x: SLMの隠れ状態 (Batch, Seq, Hidden)
+        Args:
+            x: (B, S, hidden_size)
+            context_mask: 未使用（将来拡張用）
+            instrument: 与えた場合、区間計測を `instrument.records` に蓄積。
+
+        Returns:
+            resonance_weights: (B, S, d) — 朧度でスケールされた共鳴重み
         """
-        batch_size, seq_len, _ = x.shape
-        
-        # 1. 評価次元の動的抽出 (セクション3.3)
-        # 隠れ状態から信頼、感情などの6次元成分を抽出
-        raw_resonance = self.dimension_projector(x) # (B, S, d)
-        
-        # 2. 動的共鳴カーネルの適用 (定理2 & 5)
-        # Softmaxを用いて最大エントロピー分布へ収束させる
-        tau = 1.0 # 温度パラメータ
-        resonance_weights = F.softmax(raw_resonance / tau, dim=-1)
-        
-        # 3. オートポイエティック更新 (セクション4.1)
-        # 現在の入力(interaction)と過去の場(W)を統合
-        # ※ 実装の簡略化のため、シーケンス平均をinteractionとして使用
-        current_interaction = torch.mean(resonance_weights, dim=1, keepdim=True)
-        
-        # ドリフト項の計算（文脈の推移をシミュレート）
-        drift = torch.randn_like(current_interaction) * 0.01
-        
-        # 更新式: w_new = alpha*w_old + beta*interaction + gamma*drift
-        updated_W = (self.alpha * self.W + 
-                     self.beta * current_interaction + 
-                     self.gamma * drift)
-        
-        # 安定性制約: クランプ処理
-        self.W = torch.clamp(updated_W, -5.0, 5.0)
-        
-        # 4. 戦略的曖昧性（朧化）による出力の調整 (定理6)
-        # 朧度 theta に応じて情報を抑制し、計算の遊び（間合い）を作る
-        output = resonance_weights * (1.0 - torch.sigmoid(self.theta))
-        
+        st = instrument.stage if instrument else lambda _n: nullcontext()
+
+        with st("project"):
+            raw_resonance = self.dimension_projector(x)
+        with st("softmax"):
+            resonance_weights = F.softmax(raw_resonance / self.tau, dim=-1)
+
+        with st("field_update"):
+            ci = resonance_weights.mean(dim=(0, 1))
+            current_interaction = ci.view(1, 1, self.d).expand(1, self.N, self.d).contiguous()
+
+            drift = torch.randn(1, self.N, self.d, device=x.device, dtype=x.dtype)
+            drift = drift * self.drift_scale
+
+            updated = (
+                self.alpha * self.W
+                + self.beta * current_interaction
+                + self.gamma * drift
+            )
+            updated = torch.clamp(updated, -self.stability_bound, self.stability_bound)
+            self.W.copy_(updated)
+
+        with st("obscurity_output"):
+            scale = 1.0 - torch.sigmoid(self.theta)
+            output = resonance_weights * scale
         return output
 
+
 class AwaiIntegratedSLM(nn.Module):
-    """
-    既存のSLMのヘッドにResonanceverseを統合したモデル
-    """
+    """Hugging Face 系 SLM の隠れ状態に ResonantCore を重ね、語彙ロジットを出す。"""
+
     def __init__(self, base_slm_model):
         super().__init__()
         self.base_model = base_slm_model
         self.resonance_layer = ResonantCore(base_slm_model.config.hidden_size)
         self.out_head = nn.Linear(6, base_slm_model.config.vocab_size)
 
-    def forward(self, input_ids):
-        # SLMで特徴抽出
+    def forward(self, input_ids: torch.Tensor):
         outputs = self.base_model(input_ids, output_hidden_states=True)
         last_hidden = outputs.hidden_states[-1]
-        
-        # 共鳴場を通す
         resonant_features = self.resonance_layer(last_hidden)
-        
-        # 最終的なロジット生成
         logits = self.out_head(resonant_features)
         return logits

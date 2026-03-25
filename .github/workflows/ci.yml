@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run tests
+        run: pytest tests/ -v
+
+      - name: Instrumentation smoke + regression (StageTimer)
+        run: |
+          python experiments/instrument_smoke.py --cpu --seed 0 \
+            --out experiments/logs/ci_instrument.json
+          python experiments/regression_check.py --mode instrument \
+            --baseline tests/baselines/instrument_cpu.json \
+            --current experiments/logs/ci_instrument.json \
+            --max-slowdown 100
+
+      - name: Efficiency benchmark + regression check
+        run: |
+          python experiments/efficiency_benchmark.py \
+            --cpu --seed 42 \
+            --seq-lens 32 64 \
+            --repeats 2 \
+            --out experiments/logs/ci_efficiency.json
+          python experiments/regression_check.py --mode efficiency \
+            --baseline tests/baselines/efficiency_cpu_short.json \
+            --current experiments/logs/ci_efficiency.json \
+            --max-slowdown 80

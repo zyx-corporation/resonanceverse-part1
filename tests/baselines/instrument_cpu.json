@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "description": "instrument_smoke.py --cpu --seed 0 の代表出力。区間ごとの elapsed_s 悪化を regression_check --mode instrument で検出。更新時は同条件で再計測し PR に理由を記載。",
+  "seed": 0,
+  "device": "cpu",
+  "stages": [
+    {
+      "name": "embedding",
+      "elapsed_s": 0.004,
+      "cuda_allocated_delta_bytes": null
+    },
+    {
+      "name": "to_resonance",
+      "elapsed_s": 0.004,
+      "cuda_allocated_delta_bytes": null
+    },
+    {
+      "name": "adaptive_pool",
+      "elapsed_s": 0.006,
+      "cuda_allocated_delta_bytes": null
+    },
+    {
+      "name": "roi_select",
+      "elapsed_s": 0.007,
+      "cuda_allocated_delta_bytes": null
+    },
+    {
+      "name": "engine_topk",
+      "elapsed_s": 0.003,
+      "cuda_allocated_delta_bytes": null
+    }
+  ]
+}
