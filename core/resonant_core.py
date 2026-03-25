@@ -10,12 +10,29 @@ from .cultural_modulation import CulturalModulationAdapter
 from .instrumentation import StageTimer
 
 
+def _masked_mean_over_batch_seq(
+    resonance_weights: torch.Tensor,
+    attention_mask: torch.Tensor | None,
+) -> torch.Tensor:
+    """(B,S,d) をマスク付きで (d,) に平均。マスクが無い・全ゼロは従来どおり全平均。"""
+    if attention_mask is None:
+        return resonance_weights.mean(dim=(0, 1))
+    m = attention_mask.to(dtype=resonance_weights.dtype)
+    if m.numel() == 0 or m.sum() < 1e-6:
+        return resonance_weights.mean(dim=(0, 1))
+    num = (resonance_weights * m.unsqueeze(-1)).sum(dim=(0, 1))
+    den = m.sum().clamp(min=1e-6)
+    return num / den
+
+
 class ResonantCore(nn.Module):
     """
     Resonanceverse の中核：動的共鳴と自己創生更新。
 
     - 入力 x: (Batch, Seq, Hidden) — 例：SLM の最終隠れ状態
     - 場 W: (1, num_nodes, d) — register_buffer。更新は copy_ でインプレース
+    - **学習モード時のみ**場を更新（``self.training``）。``eval()`` では ``W`` は不変。
+    - ``attention_mask`` があればパディング位置を除いて場の平均相互作用を計算する。
     """
 
     def __init__(
@@ -52,17 +69,20 @@ class ResonantCore(nn.Module):
         self,
         x: torch.Tensor,
         context_mask=None,
+        attention_mask: torch.Tensor | None = None,
         instrument: StageTimer | None = None,
     ) -> torch.Tensor:
         """
         Args:
             x: (B, S, hidden_size)
-            context_mask: 未使用（将来拡張用）
+            context_mask: ``attention_mask`` の別名（後方互換）。1=有効トークン。
+            attention_mask: (B, S) 省略時は全位置を有効とみなす。パディングを除いて場の平均を取る。
             instrument: 与えた場合、区間計測を `instrument.records` に蓄積。
 
         Returns:
             resonance_weights: (B, S, d) — 朧度でスケールされた共鳴重み
         """
+        pad_mask = attention_mask if attention_mask is not None else context_mask
         st = instrument.stage if instrument else lambda _n: nullcontext()
 
         with st("project"):
@@ -71,19 +91,20 @@ class ResonantCore(nn.Module):
             resonance_weights = F.softmax(raw_resonance / self.tau, dim=-1)
 
         with st("field_update"):
-            ci = resonance_weights.mean(dim=(0, 1))
-            current_interaction = ci.view(1, 1, self.d).expand(1, self.N, self.d).contiguous()
+            if self.training:
+                ci = _masked_mean_over_batch_seq(resonance_weights, pad_mask)
+                current_interaction = ci.view(1, 1, self.d).expand(1, self.N, self.d).contiguous()
 
-            drift = torch.randn(1, self.N, self.d, device=x.device, dtype=x.dtype)
-            drift = drift * self.drift_scale
+                drift = torch.randn(1, self.N, self.d, device=x.device, dtype=x.dtype)
+                drift = drift * self.drift_scale
 
-            updated = (
-                self.alpha * self.W
-                + self.beta * current_interaction
-                + self.gamma * drift
-            )
-            updated = torch.clamp(updated, -self.stability_bound, self.stability_bound)
-            self.W.copy_(updated)
+                updated = (
+                    self.alpha * self.W
+                    + self.beta * current_interaction
+                    + self.gamma * drift
+                )
+                updated = torch.clamp(updated, -self.stability_bound, self.stability_bound)
+                self.W.copy_(updated)
 
         with st("obscurity_output"):
             scale = 1.0 - torch.sigmoid(self.theta)
@@ -114,9 +135,22 @@ class AwaiIntegratedSLM(nn.Module):
     def forward(self, input_ids: torch.Tensor):
         outputs = self.base_model(input_ids, output_hidden_states=True)
         last_hidden = outputs.hidden_states[-1]
-        resonant_features = self.resonance_layer(last_hidden)
+        pad_mask = self._attention_mask_from_input_ids(input_ids)
+        resonant_features = self.resonance_layer(last_hidden, attention_mask=pad_mask)
         if self.cultural_adapter is not None:
             resonant_features = resonant_features * self.cultural_adapter(last_hidden)
         z = torch.cat([last_hidden, resonant_features], dim=-1)
         logits = self.out_head(z)
         return logits
+
+    def _attention_mask_from_input_ids(self, input_ids: torch.Tensor) -> torch.Tensor:
+        """pad_token_id が無いモデルでは全位置を有効とする。"""
+        cfg = self.base_model.config
+        pad_id = getattr(cfg, "pad_token_id", None)
+        if pad_id is None:
+            return torch.ones(
+                input_ids.shape,
+                dtype=torch.long,
+                device=input_ids.device,
+            )
+        return (input_ids != pad_id).long()

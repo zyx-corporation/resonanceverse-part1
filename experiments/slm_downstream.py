@@ -95,7 +95,7 @@ class AwaiClassifier(nn.Module):
     ) -> torch.Tensor:
         out = self.encoder(input_ids=input_ids, attention_mask=attention_mask)
         h = out.last_hidden_state
-        r = self.resonance(h)
+        r = self.resonance(h, attention_mask=attention_mask)
         if self.cultural_adapter is not None:
             r = r * self.cultural_adapter(h)
         pooled_r = _pool_masked(r, attention_mask)
