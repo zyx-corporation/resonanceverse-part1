@@ -161,7 +161,11 @@ def _texts_and_labels_from_glue(split, task: str) -> tuple[list[str], list[int]]
                 strict=True,
             )
         ]
-        labels = [int(x) for x in split["label"]]
+        # スタンドアロン boolq は "answer"（bool）、旧 GLUE 名は "label" の場合あり
+        if "label" in split.column_names:
+            labels = [int(x) for x in split["label"]]
+        else:
+            labels = [int(bool(x)) for x in split["answer"]]
     else:
         raise ValueError(f"unknown glue binary task: {task}")
     return texts, labels
@@ -178,7 +182,11 @@ def _load_glue_binary_tensors(
 ):
     from datasets import load_dataset
 
-    ds = load_dataset("glue", task)
+    # BoolQ は `datasets` の GLUE コレクションに含まれないためスタンドアロンを読む
+    if task == "boolq":
+        ds = load_dataset("boolq")
+    else:
+        ds = load_dataset("glue", task)
     train_ds = ds["train"]
     eval_ds = ds["validation"]
     if max_train > 0 and len(train_ds) > max_train:

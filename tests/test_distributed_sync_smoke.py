@@ -20,4 +20,33 @@ def test_distributed_sync_smoke_runs() -> None:
     assert line.startswith("distributed_sync_smoke_ok ")
     payload = json.loads(line.split(" ", 1)[1])
     assert payload.get("schema_version") == "distributed_sync_smoke.v1"
+    assert payload.get("variant") == "multiprocessing_pipe_pingpong"
     assert "latency_ms_p50" in payload
+
+
+def test_distributed_sync_smoke_tensor_runs() -> None:
+    root = Path(__file__).resolve().parents[1]
+    r = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "experiments.distributed_sync_smoke",
+            "--variant",
+            "tensor",
+            "--tensor-dim",
+            "8",
+            "--rounds",
+            "3",
+            "--warmup",
+            "1",
+        ],
+        cwd=str(root),
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert r.returncode == 0, r.stderr
+    line = r.stdout.strip().splitlines()[-1]
+    payload = json.loads(line.split(" ", 1)[1])
+    assert payload.get("variant") == "multiprocessing_pipe_tensor_pingpong"
+    assert payload.get("tensor_dim") == 8

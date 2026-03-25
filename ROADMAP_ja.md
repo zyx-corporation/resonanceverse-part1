@@ -53,7 +53,7 @@ docs/planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建
 [`experiments/slm_resonance_lm.py`](experiments/slm_resonance_lm.py)（`--demo` でオフライン／CI、`--model gpt2` で実モデル）
 - [x] 固定データ経路（`--data wikitext`）・前処理・**perplexity**（`--eval-ppl`）—
 [`experiments/slm_data.py`](experiments/slm_data.py) ＋ [Phase B データプロトコル](docs/api/modules/phase_b_data_protocol.md)
-- [x] 下流タスクの固定プロトコル（入口）— [phase_b_downstream_protocol.md](docs/api/modules/phase_b_downstream_protocol.md)（v0.4: `--awai-readout`）、[`experiments/slm_downstream.py`](experiments/slm_downstream.py)（SST-2／BoolQ／`--demo`）  
+- [x] 下流タスクの固定プロトコル（入口）— [phase_b_downstream_protocol.md](docs/api/modules/phase_b_downstream_protocol.md)（v0.5: BoolQ データセット・`--awai-readout`）、[`experiments/slm_downstream.py`](experiments/slm_downstream.py)（SST-2／BoolQ／`--demo`）  
 - [x] 抽出型 QA（SQuAD v1 スパン）— [`experiments/squad_span.py`](experiments/squad_span.py)（`--demo` で CI／オフライン、[phase_b_downstream_protocol.md](docs/api/modules/phase_b_downstream_protocol.md) v0.3）
 
 ### Phase 3（二階建て・資源実証／ロードマップ Phase C 相当）

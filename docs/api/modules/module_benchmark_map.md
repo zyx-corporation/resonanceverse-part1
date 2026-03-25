@@ -40,7 +40,7 @@
 | Phase 3（τ 事前登録 P1） | [phase_c_quality_tau_prereg.md](phase_c_quality_tau_prereg.md) | 登録表 | [Phase3 計画 §5.1](../../planning/Phase3_計画_二階建てと実証.md) |
 | Phase 3（因果 LM 層恒等スキップ実測） | `gpt2_layer_skip_benchmark.py` | `gpt2_layer_skip_benchmark_ok` + JSON | [phase_c_gpt2_layer_skip.md](phase_c_gpt2_layer_skip.md)、`causal_lm_layer_skip_benchmark.v1`、`--model` で HF 因果 LM 差し替え、`--demo` |
 | Phase 3（二階建てスタブ） | `core/two_tier/` | `pytest` | Router／Controller／品質 τ、`--router-step-stride`（P3） |
-| Phase 4（単一ホスト IPC スモーク） | `distributed_sync_smoke.py` | `distributed_sync_smoke_ok` + JSON | [ROADMAP Phase 4](../../planning/ROADMAP_Phase4_分散とエッジ_ja.md)、`python -m experiments.distributed_sync_smoke` |
+| Phase 4（単一ホスト IPC スモーク） | `distributed_sync_smoke.py` | `distributed_sync_smoke_ok` + JSON | [ROADMAP Phase 4](../../planning/ROADMAP_Phase4_分散とエッジ_ja.md)、`--variant`（bytes／tensor）、`python -m experiments.distributed_sync_smoke` |
 
 ## 未カバー（ロードマップ Phase B 本格以降）
 
@@ -64,3 +64,4 @@
 | 2026-03-25 | GPT-2 層恒等スキップ実測（`gpt2_layer_skip_benchmark`） |
 | 2026-03-25 | Phase 4 補助（`distributed_sync_smoke`、単一ホスト Pipe 往復） |
 | 2026-03-25 | `slm_downstream`：`--awai-readout`、T3″ 実測（[phase_c_quality_tau_prereg.md](phase_c_quality_tau_prereg.md) v0.3） |
+| 2026-03-25 | `slm_downstream`：BoolQ `load_dataset("boolq")`、T2′・BoolQ 実測、`distributed_sync_smoke --variant tensor` |

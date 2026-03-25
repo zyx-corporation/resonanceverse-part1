@@ -23,7 +23,7 @@ document_type: planning
 
 ## チェックリスト
 
-- [x] 単一マシン上の **IPC 往復スモーク**（`experiments/distributed_sync_smoke.py`、スキーマ `distributed_sync_smoke.v1`）— 同期バリアのオーダー感のプレースホルダ
+- [x] 単一マシン上の **IPC 往復スモーク**（`experiments/distributed_sync_smoke.py`、スキーマ `distributed_sync_smoke.v1`）— バイト往復に加え **`--variant tensor`**（`torch.Tensor` pickle 往復・次元既定 64）で場ベクトル級のオーダー感
 - [ ] 分散ノード上の共鳴・同期・観測の固定プロトコル（本番トポロジ）
 - [ ] ハード選定・クラスタ構成（例: Jetson Orin）と本リポジトリ `core/` の接続方針
 
@@ -74,3 +74,4 @@ document_type: planning
 | 2026-03-25 | `ROADMAP_ja.md` から分離し、独立ロードマップとして新設 |
 | 2026-03-25 | 固定プロトコル草案（v0.1）：観測セット・ハード例・`core/` 接続方針 |
 | 2026-03-25 | `distributed_sync_smoke` 追加（単一ホスト・Pipe 往復、`distributed_sync_smoke.v1`） |
+| 2026-03-25 | `--variant tensor`（テンソル往復）・要約 JSON `distributed_sync_smoke_tensor_dim64_v1.json` |

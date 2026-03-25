@@ -1,6 +1,6 @@
 {
   "schema_version": "phase2_tau_gate_summary.v1",
-  "note": "品質 τ（T2〜T4）のパイプライン記録と登録閾値との照合。2026-03-25 更新: v0.3 T3″（awai projected/dual）を追加。",
+  "note": "品質 τ（T2〜T4）のパイプライン記録と登録閾値との照合。2026-03-25 更新: T2′、BoolQ projected、Phase 4 tensor 往復を追加。",
   "tau_reference": "docs/api/modules/phase_c_quality_tau_prereg.md",
   "T2_slm_resonance_lm": {
     "artifact": "experiments/baselines/slm_resonance_lm_tau_t2_wikitext_gpt2_v1.json",
@@ -9,6 +9,19 @@
     "tau_ppl": 50.0,
     "tau_gate_equal_quality": false,
     "interpretation": "極短ステップの Awai 統合学習スモーク。検証 ppl は τ_ppl を大きく超過。パイプライン検証用であり、等品質主張には用いない。"
+  },
+  "T2_prime_prereg_v04": {
+    "prereg": "v0.4 T2′（phase_c_quality_tau_prereg.md）",
+    "awai_artifact": "experiments/baselines/slm_resonance_lm_tau_t2_prime_prereg_v04_awai.json",
+    "baseline_hf_artifact": "experiments/baselines/slm_resonance_lm_tau_t2_prime_prereg_v04_baseline_hf.json",
+    "command_awai": "python experiments/slm_resonance_lm.py --cpu --seed 0 --model gpt2 --data wikitext --eval-ppl --max-steps 200 --max-chars 80000 --batch 2 --seq-len 32 --lr 3e-5",
+    "command_baseline_hf": "python experiments/slm_resonance_lm.py --cpu --seed 0 --model gpt2 --data wikitext --eval-ppl --max-steps 200 --max-chars 80000 --batch 2 --seq-len 32 --lr 3e-5 --baseline-hf",
+    "perplexity_eval_awai": 50791.90552509253,
+    "perplexity_eval_baseline_hf": 69.3433359196199,
+    "tau_ppl": 50.0,
+    "tau_gate_awai": false,
+    "tau_gate_baseline_hf": false,
+    "interpretation": "200 steps・未凍結。awai は ppl が極大のまま。baseline-hf は約 69 で τ_ppl=50 未達だが awai より桁違いに低い。等品質主張には用いない。"
   },
   "T3_slm_downstream_v01_frozen": {
     "demo_artifact": "experiments/baselines/slm_downstream_tau_t3_demo_v1.json",
@@ -49,6 +62,14 @@
     "tau_gate_awai_dual": true,
     "interpretation": "T3′ と同一学習条件で、awai の読み出しのみ projected / dual に変更。いずれも τ_acc 達成。narrow は T3′ の記録（未達）を参照。baseline（≈0.865）との完全一致は主張しない。"
   },
+  "T3_boolq_awai_projected_v04": {
+    "artifact": "experiments/baselines/slm_downstream_boolq_awai_projected_prereg_v04.json",
+    "command": "python experiments/slm_downstream.py --cpu --seed 0 --task boolq --model distilbert-base-uncased --integration awai --awai-readout projected --max-steps 200 --max-train-samples 4000 --max-eval-samples 2000 --batch-size 16 --lr 2e-5 --max-seq-len 256",
+    "accuracy_eval": 0.628,
+    "tau_acc": 0.55,
+    "tau_gate_equal_quality": true,
+    "interpretation": "BoolQ・awai・projected・未凍結 200 steps。検証 accuracy が τ_acc 以上。SST-2 T3″ とはタスクが異なる別記録。"
+  },
   "T4_squad_v01_short": {
     "artifact": "experiments/baselines/squad_span_tau_t4_hf_v1.json",
     "command": "python experiments/squad_span.py --cpu --seed 0 --model distilbert-base-uncased --max-steps 20 --max-train-samples 128 --max-eval-samples 128 --max-length 256",
@@ -76,5 +97,10 @@
     "artifact": "experiments/baselines/distributed_sync_smoke_sample_v1.json",
     "command": "python -m experiments.distributed_sync_smoke --rounds 200 --out experiments/baselines/distributed_sync_smoke_sample_v1.json",
     "note": "単一ホスト Pipe 往復。分散共鳴場の実レイテンシではない。"
+  },
+  "phase4_tensor_smoke": {
+    "artifact": "experiments/baselines/distributed_sync_smoke_tensor_dim64_v1.json",
+    "command": "python -m experiments.distributed_sync_smoke --variant tensor --tensor-dim 64 --rounds 120 --out experiments/baselines/distributed_sync_smoke_tensor_dim64_v1.json",
+    "note": "torch.Tensor を Pipe で pickle 往復。場ベクトル次元 64 のオーダー感。"
   }
 }

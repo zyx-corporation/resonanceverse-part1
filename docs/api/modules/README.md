@@ -19,7 +19,7 @@
 | [Phase C デコード計測スキーマ（M1）](phase_c_decode_metrics.md) | `decode_benchmark.v1`、p50/p95、CUDA ピーク代理 |
 | [Phase C two_tier_sweep（M3）](phase_c_two_tier_sweep.md) | baseline／two_tier_stub マージ JSON |
 | [Phase C HBM バイト予算（M4）](phase_c_hbm_budget.md) | `hbm_budget.v1`、`hbm_budget_probe.py` |
-| [Phase C 品質 τ 事前登録（P1）](phase_c_quality_tau_prereg.md) | v0.1 閾値・v0.2 T3′／T4′・**v0.3 T3″（`--awai-readout`）**・[Phase3 計画 §5.1](../../planning/Phase3_計画_二階建てと実証.md) |
+| [Phase C 品質 τ 事前登録（P1）](phase_c_quality_tau_prereg.md) | v0.1 閾値・v0.2〜v0.4（T3′／T4′／T3″／**T2′**）・[Phase3 計画 §5.1](../../planning/Phase3_計画_二階建てと実証.md) |
 | [Phase 3 P0 主張バンドル（スナップショット手順）](phase3_p0_baseline_snapshot.md) | `phase3_claim_run`・メタ JSON・表の埋め方・評価・**P2／P3（任意）**・τ との役割分担 |
 | [主張表（論文・対外向け）](../planning/Resonanceverse_主張表_論文用_ja.md) | 査読用の主張一覧・要旨・本文ドラフト（τ・資源・Phase 4・再現性） |
 | [Mac GPU（MPS）計測の考察](measurement_mps_mac.md) | デバイス選択・同期・メモリ指標の限界・運用上の注意 |
