@@ -22,6 +22,7 @@ if str(_ROOT) not in sys.path:
 import torch
 import torch.nn as nn
 
+from core.inference_device import select_inference_device
 from core.reproducibility import set_experiment_seed
 
 # 二階建て計画 §7.2 CSV と対応（列名は JSON 用に snake_case）
@@ -216,7 +217,7 @@ def main() -> None:
     p.add_argument("--out", type=Path, default=None)
     args = p.parse_args()
 
-    device = torch.device("cpu" if args.cpu or not torch.cuda.is_available() else "cuda")
+    device = select_inference_device(force_cpu=args.cpu)
     try:
         payload = run_probe(
             demo=args.demo,

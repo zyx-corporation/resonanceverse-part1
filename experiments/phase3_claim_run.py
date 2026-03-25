@@ -24,6 +24,8 @@ if str(_ROOT) not in sys.path:
 
 import torch
 
+from core.inference_device import select_inference_device
+
 from experiments.hbm_budget_probe import run_probe
 from experiments.two_tier_sweep import run_two_tier_sweep
 
@@ -53,6 +55,12 @@ def _cuda_meta() -> dict[str, Any]:
     }
 
 
+def _mps_meta() -> dict[str, Any]:
+    if not hasattr(torch.backends, "mps"):
+        return {"available": False}
+    return {"available": bool(torch.backends.mps.is_available())}
+
+
 def build_meta(
     *,
     seed: int,
@@ -76,6 +84,7 @@ def build_meta(
         },
         "versions": _versions(),
         "cuda": _cuda_meta(),
+        "mps": _mps_meta(),
         "experiment": {
             "seed": seed,
             "model": model,
@@ -131,7 +140,7 @@ def run_claim_bundle(
         router_step_stride=router_step_stride,
     )
 
-    device = torch.device("cpu" if cpu or not torch.cuda.is_available() else "cuda")
+    device = select_inference_device(force_cpu=cpu)
     hbm = run_probe(
         demo=demo,
         model_name=model,

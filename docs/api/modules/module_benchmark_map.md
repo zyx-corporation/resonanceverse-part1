@@ -28,7 +28,7 @@
 | Phase 1B（SLM 橋） | `experiments/slm_bridge_smoke.py` | 標準出力 `slm_bridge_ok` | `transformers` ＋ `AwaiIntegratedSLM` |
 | Phase 2（最小学習） | `slm_resonance_lm.py` + `slm_data.py` | JSON または `slm_resonance_lm_ok` | `--data random` または `wikitext` |
 | Phase 2（速度・メモリ比較） | `slm_perf_compare.py` | `slm_perf_compare_ok` + JSON | baseline／Awai を連続実行 |
-| Phase 2（下流・分類／QA 二値入口） | `slm_downstream.py` | `slm_downstream_ok` + JSON | `--task sst2`／`boolq` または `--demo`；[phase_b_downstream_protocol.md](phase_b_downstream_protocol.md) |
+| Phase 2（下流・分類／QA 二値入口） | `slm_downstream.py` | `slm_downstream_ok` + JSON | `--task sst2`／`boolq` または `--demo`；`--awai-readout`（narrow／projected／dual）（[phase_c_quality_tau_prereg.md](phase_c_quality_tau_prereg.md) T3″）；[phase_b_downstream_protocol.md](phase_b_downstream_protocol.md) |
 | Phase B プロトコル | [phase_b_data_protocol.md](phase_b_data_protocol.md) | 手順・指標定義 | Wikitext-2-raw、eval 分割、perplexity |
 | 計測フック（区間時間） | `instrument_smoke.py` | JSON（`--out`）、ベースライン | 区間 `elapsed_s` の悪化検出 |
 | 効率（短系列・回帰） | `efficiency_benchmark.py` + `regression_check.py` | JSON | ベースライン、`--max-slowdown` で悪化検出 |
@@ -36,9 +36,11 @@
 | Phase 3 M3（baseline／two_tier スイープ） | `two_tier_sweep.py` | `two_tier_sweep_ok` + JSON | [phase_c_two_tier_sweep.md](phase_c_two_tier_sweep.md) |
 | Phase 3 M4（HBM バイト予算テンプレ） | `hbm_budget_probe.py` | `hbm_budget_probe_ok` + JSON | [phase_c_hbm_budget.md](phase_c_hbm_budget.md)、`--demo` |
 | Phase 3 M5（抽出型 QA・SQuAD） | `squad_span.py` | `squad_span_ok` + JSON | [phase_b_downstream_protocol.md](phase_b_downstream_protocol.md)、`--demo` |
-| Phase 3（主張バンドル P0） | `phase3_claim_run.py` | `phase3_claim_run_ok` + `phase3_claim_bundle.json` | [Phase3 実測計画](../../planning/Phase3_実測と主張完成計画_ja.md)、`--demo` |
+| Phase 3（主張バンドル P0） | `phase3_claim_run.py` | `phase3_claim_run_ok` + `phase3_claim_bundle.json` | [Phase3 実測計画](../../planning/Phase3_実測と主張完成計画_ja.md)、[phase3_p0_baseline_snapshot.md](phase3_p0_baseline_snapshot.md)（**実験結果の評価**）、`--demo` |
 | Phase 3（τ 事前登録 P1） | [phase_c_quality_tau_prereg.md](phase_c_quality_tau_prereg.md) | 登録表 | [Phase3 計画 §5.1](../../planning/Phase3_計画_二階建てと実証.md) |
+| Phase 3（因果 LM 層恒等スキップ実測） | `gpt2_layer_skip_benchmark.py` | `gpt2_layer_skip_benchmark_ok` + JSON | [phase_c_gpt2_layer_skip.md](phase_c_gpt2_layer_skip.md)、`causal_lm_layer_skip_benchmark.v1`、`--model` で HF 因果 LM 差し替え、`--demo` |
 | Phase 3（二階建てスタブ） | `core/two_tier/` | `pytest` | Router／Controller／品質 τ、`--router-step-stride`（P3） |
+| Phase 4（単一ホスト IPC スモーク） | `distributed_sync_smoke.py` | `distributed_sync_smoke_ok` + JSON | [ROADMAP Phase 4](../../planning/ROADMAP_Phase4_分散とエッジ_ja.md)、`python -m experiments.distributed_sync_smoke` |
 
 ## 未カバー（ロードマップ Phase B 本格以降）
 
@@ -59,3 +61,6 @@
 | 2026-03-25 | Phase 3 M1〜M3（`decode_benchmark`、`two_tier_sweep`、`core/two_tier`） |
 | 2026-03-25 | Phase 3 M4〜M5（`hbm_budget_probe`、`squad_span`） |
 | 2026-03-25 | Phase 3 P0〜P3（`phase3_claim_run`、`phase_c_quality_tau_prereg`、Router stride） |
+| 2026-03-25 | GPT-2 層恒等スキップ実測（`gpt2_layer_skip_benchmark`） |
+| 2026-03-25 | Phase 4 補助（`distributed_sync_smoke`、単一ホスト Pipe 往復） |
+| 2026-03-25 | `slm_downstream`：`--awai-readout`、T3″ 実測（[phase_c_quality_tau_prereg.md](phase_c_quality_tau_prereg.md) v0.3） |

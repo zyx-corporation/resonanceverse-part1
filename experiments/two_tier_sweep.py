@@ -36,12 +36,10 @@ def run_two_tier_sweep(
     router_step_stride: int | None = None,
 ) -> dict:
     """baseline / two_tier_stub を同一条件で実行し `two_tier_sweep.v1` オブジェクトを返す。"""
-    import torch
+    from core.inference_device import reset_peak_memory_stats_if_cuda, select_inference_device
 
-    use_cuda = not cpu and torch.cuda.is_available()
-    device = torch.device("cuda" if use_cuda else "cpu")
-    if device.type == "cuda":
-        torch.cuda.reset_peak_memory_stats(device)
+    device = select_inference_device(force_cpu=cpu)
+    reset_peak_memory_stats_if_cuda(device)
 
     mod = _load_decode_benchmark()
     common = dict(
@@ -55,8 +53,7 @@ def run_two_tier_sweep(
         router_step_stride=router_step_stride,
     )
     b = mod.run_decode_benchmark(two_tier_stub=False, **common)
-    if device.type == "cuda":
-        torch.cuda.reset_peak_memory_stats(device)
+    reset_peak_memory_stats_if_cuda(device)
     t = mod.run_decode_benchmark(two_tier_stub=True, **common)
 
     p50b, p50t = b.get("latency_ms_p50"), t.get("latency_ms_p50")

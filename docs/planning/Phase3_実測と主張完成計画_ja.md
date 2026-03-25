@@ -87,6 +87,9 @@ python experiments/hbm_budget_probe.py --model gpt2 --cpu --seq-len 128 --batch-
 - [phase_b_downstream_protocol.md](../api/modules/phase_b_downstream_protocol.md)（`squad_span.v1`）
 - [phase_c_quality_tau_prereg.md](../api/modules/phase_c_quality_tau_prereg.md)（τ 事前登録）
 - `phase3_claim_bundle.v1` / `phase3_claim_meta.v1` — [`experiments/phase3_claim_run.py`](../../experiments/phase3_claim_run.py)（P0）
+- **実行手順の索引（表の転記・メタ）** — [phase3_p0_baseline_snapshot.md](../api/modules/phase3_p0_baseline_snapshot.md)
+- **P2・P3（任意）の具体コマンド** — [phase3_p0_baseline_snapshot.md §Phase 3（続き）](../api/modules/phase3_p0_baseline_snapshot.md)
+- **論文・対外向けの主張表と本文** — [Resonanceverse_主張表_論文用_ja.md](Resonanceverse_主張表_論文用_ja.md)
 
 ## 実装メモ（P0〜P3）
 
@@ -103,3 +106,7 @@ python experiments/hbm_budget_probe.py --model gpt2 --cpu --seq-len 128 --batch-
 |------|------|
 | 2026-03-25 | 初版（「次ステップ」提案の採用を文書化） |
 | 2026-03-25 | P0〜P3 実装追記、`phase3_claim_run`・τ 登録・Router stride |
+| 2026-03-25 | P0 手順のリポジトリ固定 [phase3_p0_baseline_snapshot.md](../api/modules/phase3_p0_baseline_snapshot.md)、P1 と P0 の関係を [phase_c_quality_tau_prereg.md](../api/modules/phase_c_quality_tau_prereg.md) に追記 |
+| 2026-03-25 | P2・P3 のコマンド例を [phase3_p0_baseline_snapshot.md](../api/modules/phase3_p0_baseline_snapshot.md) に集約、ユニットテストで P2 同梱を固定 |
+| 2026-03-25 | P2（SQuAD 同梱デモ）・P3（`router-step-stride 4` デモ）を実行し `experiments/baselines/` に要約 JSON を追加 |
+| 2026-03-25 | [Resonanceverse_主張表_論文用_ja.md](Resonanceverse_主張表_論文用_ja.md) を追加（論文用要旨・主張一覧・四系統の本文） |

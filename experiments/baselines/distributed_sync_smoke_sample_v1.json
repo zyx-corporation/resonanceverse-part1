@@ -1,0 +1,10 @@
+{
+  "schema_version": "distributed_sync_smoke.v1",
+  "variant": "multiprocessing_pipe_pingpong",
+  "rounds": 200,
+  "warmup": 20,
+  "latency_ms_p50": 0.021312618628144264,
+  "latency_ms_p95": 0.059002940542995916,
+  "latency_ms_mean": 0.0317631009966135,
+  "disclaimer": "単一マシン上の Pipe 往復。分散共鳴場の実レイテンシではない。"
+}

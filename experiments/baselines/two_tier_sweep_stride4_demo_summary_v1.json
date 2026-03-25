@@ -1,0 +1,17 @@
+{
+  "schema_version": "two_tier_sweep_summary.v1",
+  "note": "P3: --router-step-stride 4 の decode_benchmark デモ（_demo_linear）。ホスト名なし。完全 JSON は experiments/logs/two_tier_stride4_demo.json。",
+  "command": "python experiments/two_tier_sweep.py --demo --cpu --seed 0 --max-new-tokens 16 --repeats 10 --router-step-stride 4 --out experiments/logs/two_tier_stride4_demo.json",
+  "router_step_stride": 4,
+  "two_tier_stub": {
+    "router_stub_mode": "step_stride",
+    "router_step_stride": 4,
+    "router_keep_fraction_mean": 0.25
+  },
+  "comparison": {
+    "latency_ms_p50_ratio_baseline_over_two_tier": 0.2778417502878763
+  },
+  "baseline_latency_ms_p50": 0.006292015314102173,
+  "two_tier_stub_latency_ms_p50": 0.022646039724349976,
+  "interpretation_note": "デモでは step_stride により keep の平均が 0.25。比率はスタブ・デモ線形層に依存。"
+}

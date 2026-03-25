@@ -1,0 +1,15 @@
+{
+  "schema_version": "phase3_claim_summary.v1",
+  "note": "P2: phase3_claim_run に squad_span（demo 合成）を同梱した 1 回分。ホスト名なし。完全ログは experiments/logs/phase3_claim_p2_demo/（.gitignore）。",
+  "generated_at_utc": "2026-03-25T07:57:23.305514+00:00",
+  "command": "python experiments/phase3_claim_run.py --demo --cpu --seed 0 --max-new-tokens 16 --repeats 10 --seq-len 128 --batch-size 1 --with-squad --squad-demo --out-dir experiments/logs/phase3_claim_p2_demo",
+  "squad_span": {
+    "schema_version": "squad_span.v1",
+    "mode": "demo",
+    "task": "synthetic_span",
+    "max_steps": 50,
+    "final_loss": 3.6559722423553467,
+    "exact_match_eval": 0.0
+  },
+  "tau_T4_note": "デモ合成では EM は参考値。実データ報告時は phase_c_quality_tau_prereg の τ_em を適用。"
+}

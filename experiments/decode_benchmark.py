@@ -22,6 +22,12 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from core.inference_device import (
+    max_memory_allocated_bytes,
+    reset_peak_memory_stats_if_cuda,
+    select_inference_device,
+    sync_inference_device,
+)
 from core.reproducibility import set_experiment_seed
 from core.two_tier import (
     BlockRouterStub,
@@ -62,8 +68,10 @@ def run_decode_benchmark(
 
         def one_step() -> None:
             nonlocal x
+            sync_inference_device(device)
             t0 = time.perf_counter()
             x = layer(x)
+            sync_inference_device(device)
             if two_tier_stub:
                 pr = ctrl(x)
                 keep = router(pr)
@@ -114,6 +122,7 @@ def run_decode_benchmark(
             past_key_values = pre.past_key_values
             next_id = pre.logits[:, -1, :].argmax(dim=-1, keepdim=True)
             for _ in range(max_new_tokens):
+                sync_inference_device(device)
                 t0 = time.perf_counter()
                 with torch.no_grad():
                     out = model(
@@ -122,6 +131,7 @@ def run_decode_benchmark(
                         use_cache=True,
                         output_hidden_states=two_tier_stub,
                     )
+                sync_inference_device(device)
                 if two_tier_stub and ctrl is not None and router is not None:
                     h_last = out.hidden_states[-1][:, -1:, :]
                     pr = ctrl(h_last)
@@ -143,9 +153,7 @@ def run_decode_benchmark(
     total_steps = len(step_times_s)
     mean_s = float(np.mean(step_times_s)) if step_times_s else float("nan")
 
-    cuda_peak = None
-    if device.type == "cuda":
-        cuda_peak = int(torch.cuda.max_memory_allocated(device))
+    cuda_peak = max_memory_allocated_bytes(device)
 
     payload: dict[str, Any] = {
         "schema_version": "decode_benchmark.v1",
@@ -197,9 +205,8 @@ def main() -> None:
     p.add_argument("--out", type=Path, default=None)
     args = p.parse_args()
 
-    device = torch.device("cpu" if args.cpu or not torch.cuda.is_available() else "cuda")
-    if device.type == "cuda":
-        torch.cuda.reset_peak_memory_stats(device)
+    device = select_inference_device(force_cpu=args.cpu)
+    reset_peak_memory_stats_if_cuda(device)
 
     try:
         payload = run_decode_benchmark(

@@ -6,12 +6,15 @@ Phase 2: 下流タスクの固定プロトコル（入口）。
 - `--demo`: ミニスタブ（ネットワーク不要、`transformers` 不要）
 - 既定: HF エンコーダ + マスク平均プール + 線形ヘッド（baseline）または
   エンコーダ + ResonantCore + 線形ヘッド（awai）
+- awai の `--awai-readout`: `narrow`（6→ラベル・従来）、`projected`（6→hidden→ラベル）、
+  `dual`（encoder プールと共鳴 6 次元を連結）
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -54,7 +57,7 @@ class BaselineClassifier(nn.Module):
 
 
 class AwaiClassifier(nn.Module):
-    """エンコーダ隠れ状態 → ResonantCore → マスク平均 → num_labels。"""
+    """エンコーダ隠れ状態 → ResonantCore → 読み出し → num_labels。"""
 
     def __init__(
         self,
@@ -63,12 +66,24 @@ class AwaiClassifier(nn.Module):
         *,
         cultural_modulation: bool = False,
         num_nodes: int = 512,
+        readout: str = "narrow",
     ):
         super().__init__()
         self.encoder = encoder
         h = int(encoder.config.hidden_size)
+        self.readout = readout
         self.resonance = ResonantCore(h, num_nodes=num_nodes)
-        self.head = nn.Linear(6, num_labels)
+        if readout == "narrow":
+            self.head = nn.Linear(6, num_labels)
+            self.up: nn.Linear | None = None
+        elif readout == "projected":
+            self.up = nn.Linear(6, h)
+            self.head = nn.Linear(h, num_labels)
+        elif readout == "dual":
+            self.up = None
+            self.head = nn.Linear(h + 6, num_labels)
+        else:
+            raise ValueError(f"unknown awai readout: {readout}")
         self.cultural_adapter: CulturalModulationAdapter | None
         if cultural_modulation:
             self.cultural_adapter = CulturalModulationAdapter(h)
@@ -83,8 +98,16 @@ class AwaiClassifier(nn.Module):
         r = self.resonance(h)
         if self.cultural_adapter is not None:
             r = r * self.cultural_adapter(h)
-        pooled = _pool_masked(r, attention_mask)
-        return self.head(pooled)
+        pooled_r = _pool_masked(r, attention_mask)
+        if self.readout == "narrow":
+            return self.head(pooled_r)
+        if self.readout == "projected":
+            assert self.up is not None
+            z = self.up(pooled_r)
+            return self.head(z)
+        pooled_h = _pool_masked(h, attention_mask)
+        z = torch.cat([pooled_h, pooled_r], dim=-1)
+        return self.head(z)
 
 
 class _DemoEncoder(nn.Module):
@@ -199,6 +222,12 @@ def main() -> None:
         default="baseline",
         help="baseline=プール+線形、awai=ResonantCore+線形、awai-cultural=調製あり",
     )
+    p.add_argument(
+        "--awai-readout",
+        choices=("narrow", "projected", "dual"),
+        default="narrow",
+        help="awai/awai-cultural のみ: narrow=6→labels、projected=6→hidden→labels、dual=encoder+共鳴の連結",
+    )
     p.add_argument("--max-seq-len", type=int, default=128)
     p.add_argument("--batch-size", type=int, default=8)
     p.add_argument("--max-steps", type=int, default=100)
@@ -228,6 +257,7 @@ def main() -> None:
                 2,
                 cultural_modulation=args.integration == "awai-cultural",
                 num_nodes=32,
+                readout=args.awai_readout,
             ).to(device)
         train_it = _demo_batches(device, args.batch_size, vocab_size, 16, max(1, args.max_steps))
         eval_batches = list(
@@ -251,6 +281,7 @@ def main() -> None:
                 enc,
                 2,
                 cultural_modulation=args.integration == "awai-cultural",
+                readout=args.awai_readout,
             ).to(device)
         try:
             (train_ids, train_mask, train_y), (
@@ -341,17 +372,26 @@ def main() -> None:
             acc_train = float("nan")
 
     task_key = "synthetic" if args.demo else f"glue_{args.task}"
+    acc_tr_out = acc_train
+    if isinstance(acc_train, float) and math.isnan(acc_train):
+        acc_tr_out = None
+    final_loss = losses[-1] if losses else float("nan")
+    final_loss_out = None if (isinstance(final_loss, float) and math.isnan(final_loss)) else final_loss
+
     payload = {
         "mode": "demo" if args.demo else "hf",
         "task": task_key,
         "glue_task": args.task,
         "integration": args.integration,
+        "awai_readout": args.awai_readout
+        if args.integration in ("awai", "awai-cultural")
+        else None,
         "model": args.model if not args.demo else "_DemoEncoder",
         "max_steps": args.max_steps,
         "freeze_encoder": bool(args.freeze_encoder),
         "accuracy_eval": acc_eval,
-        "accuracy_train": acc_train,
-        "final_loss": losses[-1] if losses else float("nan"),
+        "accuracy_train": acc_tr_out,
+        "final_loss": final_loss_out,
         "loss_start": losses[0] if losses else None,
         "device": str(device),
     }

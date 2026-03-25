@@ -1,0 +1,39 @@
+{
+  "schema_version": "two_tier_sweep.v1",
+  "baseline": {
+    "schema_version": "decode_benchmark.v1",
+    "variant": "baseline",
+    "demo": false,
+    "model": "gpt2",
+    "device": "cpu",
+    "max_new_tokens": 16,
+    "warmup_rounds": 1,
+    "repeats": 10,
+    "total_decode_steps": 160,
+    "latency_ms_p50": 12.07116711884737,
+    "latency_ms_p95": 13.503814768046137,
+    "per_step_time_mean_s": 0.012210727136698551,
+    "hbm_proxy_cuda_peak_bytes": null
+  },
+  "two_tier_stub": {
+    "schema_version": "decode_benchmark.v1",
+    "variant": "two_tier_stub",
+    "demo": false,
+    "model": "gpt2",
+    "device": "cpu",
+    "max_new_tokens": 16,
+    "warmup_rounds": 1,
+    "repeats": 10,
+    "total_decode_steps": 160,
+    "latency_ms_p50": 12.20174995251,
+    "latency_ms_p95": 14.826804283075035,
+    "per_step_time_mean_s": 0.012534304975997657,
+    "hbm_proxy_cuda_peak_bytes": null,
+    "router_keep_fraction_mean": 0.25,
+    "router_stub_mode": "step_stride",
+    "router_step_stride": 4
+  },
+  "comparison": {
+    "latency_ms_p50_ratio_baseline_over_two_tier": 0.9892980241218787
+  }
+}

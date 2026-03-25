@@ -1,0 +1,14 @@
+{
+  "mode": "hf",
+  "task": "glue_sst2",
+  "glue_task": "sst2",
+  "integration": "baseline",
+  "model": "distilbert-base-uncased",
+  "max_steps": 300,
+  "freeze_encoder": true,
+  "accuracy_eval": 0.536697247706422,
+  "accuracy_train": null,
+  "final_loss": 0.6750112771987915,
+  "loss_start": 0.6531276106834412,
+  "device": "cpu"
+}

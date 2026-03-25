@@ -1,0 +1,11 @@
+{
+  "schema_version": "squad_span.v1",
+  "mode": "hf",
+  "task": "squad_v1",
+  "model": "distilbert-base-uncased",
+  "max_steps": 600,
+  "max_train_samples": 3000,
+  "max_eval_samples": 500,
+  "final_loss": 2.0133378505706787,
+  "exact_match_eval": 0.384
+}

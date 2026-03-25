@@ -1,0 +1,41 @@
+{
+  "schema_version": "phase3_claim_summary.v1",
+  "note": "phase3_claim_run を device=mps で実行した表用要約。ホスト名は含まない。完全ログは experiments/logs/phase3_claim_mps/（.gitignore）。",
+  "generated_at_utc": "2026-03-25T07:45:08.253214+00:00",
+  "command": "python experiments/phase3_claim_run.py --model gpt2 --seed 0 --max-new-tokens 16 --repeats 10 --seq-len 128 --batch-size 1 --out-dir experiments/logs/phase3_claim_mps",
+  "versions": {
+    "python": "3.12.10",
+    "torch": "2.9.1",
+    "transformers": "4.55.2"
+  },
+  "platform_summary": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "cuda_available": false,
+    "mps_available": true
+  },
+  "experiment": {
+    "seed": 0,
+    "model": "gpt2",
+    "demo": false,
+    "max_new_tokens": 16,
+    "repeats": 10,
+    "hbm_seq_len": 128,
+    "hbm_batch_size": 1
+  },
+  "two_tier_sweep": {
+    "baseline_latency_ms_p50": 8.290041470900178,
+    "baseline_latency_ms_p95": 11.395755526609715,
+    "two_tier_stub_latency_ms_p50": 9.584687417373061,
+    "two_tier_stub_latency_ms_p95": 15.118816751055418,
+    "latency_ms_p50_ratio_baseline_over_two_tier": 0.8649255953693151,
+    "device": "mps",
+    "total_decode_steps": 160,
+    "hbm_proxy_cuda_peak_bytes": null
+  },
+  "hbm_budget": {
+    "variant": "gpt2",
+    "device": "mps",
+    "total_act_bytes_estimated": 52690944
+  }
+}

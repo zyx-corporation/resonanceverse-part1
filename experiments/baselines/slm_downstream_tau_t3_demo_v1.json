@@ -1,0 +1,14 @@
+{
+  "mode": "demo",
+  "task": "synthetic",
+  "glue_task": "sst2",
+  "integration": "baseline",
+  "model": "_DemoEncoder",
+  "max_steps": 100,
+  "freeze_encoder": false,
+  "accuracy_eval": 0.4583333432674408,
+  "accuracy_train": 0.4583333432674408,
+  "final_loss": 0.7075821161270142,
+  "loss_start": 0.7688916325569153,
+  "device": "cpu"
+}

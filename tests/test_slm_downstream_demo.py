@@ -27,4 +27,24 @@ def test_slm_downstream_demo_runs():
     assert data["task"] == "synthetic"
     assert data.get("glue_task") == "sst2"
     assert data["integration"] == "awai"
+    assert data.get("awai_readout") == "narrow"
     assert "accuracy_eval" in data
+
+
+def test_slm_downstream_demo_awai_projected():
+    cmd = [
+        sys.executable,
+        str(ROOT / "experiments" / "slm_downstream.py"),
+        "--demo",
+        "--max-steps",
+        "2",
+        "--cpu",
+        "--integration",
+        "awai",
+        "--awai-readout",
+        "projected",
+    ]
+    out = subprocess.run(cmd, capture_output=True, text=True, cwd=str(ROOT))
+    assert out.returncode == 0, out.stderr + out.stdout
+    data = json.loads(out.stdout.split("slm_downstream_ok", 1)[1].strip())
+    assert data.get("awai_readout") == "projected"

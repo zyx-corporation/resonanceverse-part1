@@ -65,6 +65,10 @@ docs/planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建
 - [x] **M3** 同一条件スイープ — [`experiments/two_tier_sweep.py`](experiments/two_tier_sweep.py)、[phase_c_two_tier_sweep.md](docs/api/modules/phase_c_two_tier_sweep.md)
 - [x] **M4** HBM バイト予算表テンプレートのログ充填 — [`experiments/hbm_budget_probe.py`](experiments/hbm_budget_probe.py)、[phase_c_hbm_budget.md](docs/api/modules/phase_c_hbm_budget.md)（`--demo` で CI 可）
 - [x] **M5（任意）** 抽出型 QA の下流プロトコル拡張 — [`experiments/squad_span.py`](experiments/squad_span.py)、[phase_b_downstream_protocol.md](docs/api/modules/phase_b_downstream_protocol.md)
+- [x] **P0** 主張バンドル（`phase3_claim_run`）の手順・メタ索引 — [phase3_p0_baseline_snapshot.md](docs/api/modules/phase3_p0_baseline_snapshot.md)（出力は `experiments/logs/`、`.gitignore`）
+- [x] **P1** 品質 τ の事前登録と P0 との役割分担 — [phase_c_quality_tau_prereg.md](docs/api/modules/phase_c_quality_tau_prereg.md)
+- [x] **P2（任意）** 主張バンドルに SQuAD 同梱（デモ要約済み）— [phase3_p0_baseline_snapshot.md §P2](docs/api/modules/phase3_p0_baseline_snapshot.md)、[`phase3_claim_p2_demo_with_squad_summary_v1.json`](experiments/baselines/phase3_claim_p2_demo_with_squad_summary_v1.json)
+- [x] **P3（任意）** Router stride 計測（デモ `stride=4` 要約済み）— 同上 §P3、[`two_tier_sweep_stride4_demo_summary_v1.json`](experiments/baselines/two_tier_sweep_stride4_demo_summary_v1.json)
 
 ---
 

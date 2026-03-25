@@ -19,10 +19,11 @@
 | 文書 | 概要 |
 |------|------|
 | [ROADMAP_ja.md（ルート）](../ROADMAP_ja.md) | README から分離した和文チェックリスト・フェーズ対応表（Phase 1A〜3） |
-| [ROADMAP Phase 4（分散・エッジ・和文）](planning/ROADMAP_Phase4_分散とエッジ_ja.md) | Jetson 等・**独立ロードマップ**（Phase A〜C とは別軸） |
+| [ROADMAP Phase 4（分散・エッジ・和文）](planning/ROADMAP_Phase4_分散とエッジ_ja.md) | Jetson 等・**独立ロードマップ**・**固定プロトコル草案（v0.1）**（Phase A〜C とは別軸） |
 | [実証ロードマップ（軽量コアと SLM／二階建て）](planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建て.md) | Phase A〜C の切り分け・判定表・関連リンクのハブ（Phase 4 の位置づけは [ROADMAP Phase 4](planning/ROADMAP_Phase4_分散とエッジ_ja.md) へ） |
 | [Phase3 計画（二階建てと実証）](planning/Phase3_計画_二階建てと実証.md) | **Phase 3**（二階建て・HBM・同一条件スイープ）のマイルストーンとスコープ |
 | [Phase3 実測と主張完成計画（採用済み）](planning/Phase3_実測と主張完成計画_ja.md) | §2 の表を埋める実測・τ 事前登録・任意拡張（P0〜P3） |
+| [Resonanceverse 主張表（論文・対外向け）](planning/Resonanceverse_主張表_論文用_ja.md) | 主張一覧・要旨ドラフト・τ／資源／Phase 4／再現性の論文用本文 |
 | [透明性確保による人間-AI協働研究発展ロードマップ](planning/🚀%20透明性確保による人間-AI協働研究発展ロードマップ.md) | 研究協働・透明性の長期構想 |
 | [⚡ Resonanceverse軽量実証実装：2週間プロトタイプ](planning/⚡%20Resonanceverse軽量実証実装：2週間プロトタイプ.md) | 詳細版プロトタイプ計画（[`tutorials/getting_started.md`](tutorials/getting_started.md) と併用可） |
 

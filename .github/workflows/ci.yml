@@ -47,6 +47,12 @@ jobs:
             --max-new-tokens 4 --repeats 2 --with-squad \
             --out-dir experiments/logs/ci_phase3_claim
 
+      - name: Phase 3 GPT-2 layer skip benchmark (demo, CPU)
+        run: |
+          python experiments/gpt2_layer_skip_benchmark.py --demo --cpu \
+            --seq-len 32 --repeats 3 --warmup 1 --skip-every 2 --seed 0 \
+            --out experiments/logs/ci_gpt2_layer_skip.json
+
       - name: Instrumentation smoke + regression (StageTimer)
         run: |
           python experiments/instrument_smoke.py --cpu --seed 0 \

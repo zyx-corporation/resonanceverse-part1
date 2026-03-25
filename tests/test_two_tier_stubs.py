@@ -2,6 +2,7 @@ import torch
 
 from core.two_tier import (
     BlockRouterStub,
+    IdentityGPT2Block,
     SequenceControllerStub,
     check_quality_tau,
     router_keep_fraction,
@@ -17,6 +18,13 @@ def test_controller_router_forward():
     keep = router(pr)
     assert keep.shape == (b, s)
     assert 0.0 <= router_keep_fraction(keep) <= 1.0
+
+
+def test_identity_gpt2_block():
+    b = IdentityGPT2Block()
+    x = torch.randn(1, 4, 8)
+    y = b(x)[0]
+    assert y.shape == x.shape and torch.allclose(y, x)
 
 
 def test_block_router_stride_deterministic():
