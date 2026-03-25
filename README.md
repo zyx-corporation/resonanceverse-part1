@@ -146,7 +146,7 @@ pytest tests/ -v
 
 ## ロードマップ
 
-フェーズ対応・実装チェックリストの**和文まとめ**は **[ROADMAP_ja.md](ROADMAP_ja.md)** を参照してください。理論・判定表の詳細は [実証ロードマップ（軽量コアと SLM／二階建て）](docs/planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建て.md)、長期の協働・透明性は [透明性・協働ロードマップ](docs/planning/🚀%20透明性確保による人間-AI協働研究発展ロードマップ.md) です。
+フェーズ対応・実装チェックリストの**和文まとめ**は **[ROADMAP_ja.md](ROADMAP_ja.md)** を参照してください（**Phase 3**＝二階建て・資源実証は [Phase3 計画](docs/planning/Phase3_計画_二階建てと実証.md)）。**Phase 4**（大規模ノード・分散／Jetson 等）は **[独立ロードマップ](docs/planning/ROADMAP_Phase4_分散とエッジ_ja.md)** で追跡し、Phase A〜C の技術実証とは別軸です。理論・判定表の詳細は [実証ロードマップ（軽量コアと SLM／二階建て）](docs/planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建て.md)、長期の協働・透明性は [透明性・協働ロードマップ](docs/planning/🚀%20透明性確保による人間-AI協働研究発展ロードマップ.md) です。
 
 ## ライセンス
 

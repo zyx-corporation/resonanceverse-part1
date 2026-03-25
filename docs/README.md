@@ -8,7 +8,7 @@
 
 | ディレクトリ | 内容 |
 |--------------|------|
-| [`api/modules/`](api/modules/README.md) | アルゴリズム仕様・モジュール索引・Phase A/A′ 再現・計測戦略・[Phase B データプロトコル](api/modules/phase_b_data_protocol.md) |
+| [`api/modules/`](api/modules/README.md) | アルゴリズム仕様・モジュール索引・Phase A/A′ 再現・計測戦略・[Phase 1B](api/modules/phase_1b_cultural_slm.md)・[Phase B LM](api/modules/phase_b_data_protocol.md)／[下流](api/modules/phase_b_downstream_protocol.md) |
 | [`implementation/`](implementation/) | モジュール構造・二階建て計画・創発設計・LLM 選定・RCL 等の実装設計 |
 | [`planning/`](planning/) | 実証ロードマップ・透明性ロードマップ・2 週間プロトタイプ原稿（⚡） |
 | [`theory/`](theory/) | 理論整理・数学的基礎・長文の数理／英語フレームワーク・認知とおぼろ性 |
@@ -18,8 +18,11 @@
 
 | 文書 | 概要 |
 |------|------|
-| [ROADMAP_ja.md（ルート）](../ROADMAP_ja.md) | README から分離した和文チェックリスト・フェーズ対応表 |
-| [実証ロードマップ（軽量コアと SLM／二階建て）](planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建て.md) | Phase A〜C の切り分け・判定表・関連リンクのハブ |
+| [ROADMAP_ja.md（ルート）](../ROADMAP_ja.md) | README から分離した和文チェックリスト・フェーズ対応表（Phase 1A〜3） |
+| [ROADMAP Phase 4（分散・エッジ・和文）](planning/ROADMAP_Phase4_分散とエッジ_ja.md) | Jetson 等・**独立ロードマップ**（Phase A〜C とは別軸） |
+| [実証ロードマップ（軽量コアと SLM／二階建て）](planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建て.md) | Phase A〜C の切り分け・判定表・関連リンクのハブ（Phase 4 の位置づけは [ROADMAP Phase 4](planning/ROADMAP_Phase4_分散とエッジ_ja.md) へ） |
+| [Phase3 計画（二階建てと実証）](planning/Phase3_計画_二階建てと実証.md) | **Phase 3**（二階建て・HBM・同一条件スイープ）のマイルストーンとスコープ |
+| [Phase3 実測と主張完成計画（採用済み）](planning/Phase3_実測と主張完成計画_ja.md) | §2 の表を埋める実測・τ 事前登録・任意拡張（P0〜P3） |
 | [透明性確保による人間-AI協働研究発展ロードマップ](planning/🚀%20透明性確保による人間-AI協働研究発展ロードマップ.md) | 研究協働・透明性の長期構想 |
 | [⚡ Resonanceverse軽量実証実装：2週間プロトタイプ](planning/⚡%20Resonanceverse軽量実証実装：2週間プロトタイプ.md) | 詳細版プロトタイプ計画（[`tutorials/getting_started.md`](tutorials/getting_started.md) と併用可） |
 

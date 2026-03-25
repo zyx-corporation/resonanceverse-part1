@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .cultural_modulation import CulturalModulationAdapter
 from .instrumentation import StageTimer
 
 
@@ -93,15 +94,23 @@ class ResonantCore(nn.Module):
 class AwaiIntegratedSLM(nn.Module):
     """Hugging Face 系 SLM の隠れ状態に ResonantCore を重ね、語彙ロジットを出す。"""
 
-    def __init__(self, base_slm_model):
+    def __init__(self, base_slm_model, *, cultural_modulation: bool = False):
         super().__init__()
         self.base_model = base_slm_model
-        self.resonance_layer = ResonantCore(base_slm_model.config.hidden_size)
+        h = int(base_slm_model.config.hidden_size)
+        self.resonance_layer = ResonantCore(h)
         self.out_head = nn.Linear(6, base_slm_model.config.vocab_size)
+        self.cultural_adapter: CulturalModulationAdapter | None
+        if cultural_modulation:
+            self.cultural_adapter = CulturalModulationAdapter(h)
+        else:
+            self.cultural_adapter = None
 
     def forward(self, input_ids: torch.Tensor):
         outputs = self.base_model(input_ids, output_hidden_states=True)
         last_hidden = outputs.hidden_states[-1]
         resonant_features = self.resonance_layer(last_hidden)
+        if self.cultural_adapter is not None:
+            resonant_features = resonant_features * self.cultural_adapter(last_hidden)
         logits = self.out_head(resonant_features)
         return logits

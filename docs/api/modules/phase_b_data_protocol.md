@@ -2,7 +2,8 @@
 
 ## 目的
 
-`AwaiIntegratedSLM`（HF 因果 LM ＋ `ResonantCore` ＋語彙ヘッド）について、**再現可能な**データ経路と **perplexity** 定義を固定する。下流タスク（分類・QA）は本稿のスコープ外（別途登録）。
+`AwaiIntegratedSLM`（HF 因果 LM ＋ `ResonantCore` ＋語彙ヘッド）について、**再現可能な**データ経路と **perplexity** 定義を固定する。  
+下流タスク（分類など）は **[Phase B 下流プロトコル](phase_b_downstream_protocol.md)** と [`experiments/slm_downstream.py`](../../../experiments/slm_downstream.py) を参照（QA は v0.1 では未登録）。
 
 ## データソース
 

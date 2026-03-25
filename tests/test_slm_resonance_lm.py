@@ -24,8 +24,26 @@ def test_slm_resonance_lm_demo_runs():
     data = json.loads(out.stdout.split("slm_resonance_lm_ok", 1)[1].strip())
     assert data["mode"] == "demo"
     assert data.get("integration") == "demo_stub"
+    assert data.get("cultural_modulation") is False
     assert "train_time_s" in data and data["train_time_s"] >= 0
     assert "final_loss" in data
+
+
+def test_slm_resonance_lm_demo_cultural_modulation_runs():
+    cmd = [
+        sys.executable,
+        str(ROOT / "experiments" / "slm_resonance_lm.py"),
+        "--demo",
+        "--cultural-modulation",
+        "--max-steps",
+        "2",
+        "--cpu",
+        "--freeze-base",
+    ]
+    out = subprocess.run(cmd, capture_output=True, text=True, cwd=str(ROOT))
+    assert out.returncode == 0, out.stderr + out.stdout
+    data = json.loads(out.stdout.split("slm_resonance_lm_ok", 1)[1].strip())
+    assert data.get("cultural_modulation") is True
 
 
 def test_slm_resonance_lm_baseline_hf_rejects_demo():

@@ -27,6 +27,26 @@ jobs:
       - name: Run tests
         run: pytest tests/ -v
 
+      - name: Phase 3 decode benchmark + two_tier sweep (demo, CPU)
+        run: |
+          python experiments/decode_benchmark.py --demo --cpu \
+            --max-new-tokens 4 --repeats 2 --out experiments/logs/ci_decode_bench.json
+          python experiments/two_tier_sweep.py --demo --cpu \
+            --max-new-tokens 4 --repeats 2 --out experiments/logs/ci_two_tier_sweep.json
+
+      - name: Phase 3 M4 HBM probe + M5 squad span (demo, CPU)
+        run: |
+          python experiments/hbm_budget_probe.py --demo --cpu --seed 0 \
+            --out experiments/logs/ci_hbm_budget.json
+          python experiments/squad_span.py --demo --cpu --max-steps 10 --seed 0 \
+            --out experiments/logs/ci_squad_span.json
+
+      - name: Phase 3 P0 claim bundle (demo, CPU)
+        run: |
+          python experiments/phase3_claim_run.py --demo --cpu --seed 0 \
+            --max-new-tokens 4 --repeats 2 --with-squad \
+            --out-dir experiments/logs/ci_phase3_claim
+
       - name: Instrumentation smoke + regression (StageTimer)
         run: |
           python experiments/instrument_smoke.py --cpu --seed 0 \

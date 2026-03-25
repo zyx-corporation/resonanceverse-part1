@@ -25,6 +25,11 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--model", default="gpt2", help="transformers モデル名（既定: 小さめ gpt2）")
     parser.add_argument("--cpu", action="store_true")
+    parser.add_argument(
+        "--cultural-modulation",
+        action="store_true",
+        help="Phase 1B: CulturalModulationAdapter を AwaiIntegratedSLM に接続",
+    )
     args = parser.parse_args()
 
     set_experiment_seed(args.seed)
@@ -41,14 +46,24 @@ def main() -> None:
         tok.pad_token = tok.eos_token
     base = AutoModelForCausalLM.from_pretrained(args.model).to(device)
     base.eval()
-    model = AwaiIntegratedSLM(base).to(device)
+    model = AwaiIntegratedSLM(base, cultural_modulation=args.cultural_modulation).to(
+        device
+    )
     model.eval()
 
     text = "Hello"
     ids = tok.encode(text, return_tensors="pt").to(device)
     with torch.no_grad():
         logits = model(ids)
-    print("slm_bridge_ok", "logits", tuple(logits.shape), "device", device)
+    print(
+        "slm_bridge_ok",
+        "logits",
+        tuple(logits.shape),
+        "device",
+        device,
+        "cultural_modulation",
+        args.cultural_modulation,
+    )
 
 
 if __name__ == "__main__":

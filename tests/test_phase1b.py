@@ -61,3 +61,12 @@ def test_awai_integrated_slm_fake_base():
     ids = torch.randint(0, 100, (1, 5))
     logits = m(ids)
     assert logits.shape == (1, 5, 100)
+
+
+def test_awai_integrated_slm_cultural_modulation():
+    base = _FakeHF()
+    m = AwaiIntegratedSLM(base, cultural_modulation=True)
+    ids = torch.randint(0, 100, (1, 5))
+    logits = m(ids)
+    assert logits.shape == (1, 5, 100)
+    assert m.cultural_adapter is not None
