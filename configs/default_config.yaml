@@ -1,0 +1,25 @@
+# Resonanceverse Global Configuration
+#
+
+model:
+  num_nodes: 10000        # システムが扱う最大概念/実体数
+  resonance_dim: 6        # 評価次元 (信頼, 近接性, 権威, 意図, 情動, 履歴)
+  temperature: 1.0        # 最大エントロピー収束用の温度パラメータ tau
+  learning_rate: 0.001    # 定理3に基づく安定学習率 η
+
+autopoiesis:
+  # 自己創生更新係数 (alpha + beta + gamma = 1.0)
+  alpha: 0.7              # 慣性（自己同一性の維持）
+  beta: 0.2               # 相互作用（新規入力の受容）
+  gamma: 0.1              # ドリフト（文脈の流動性）
+  stability_bound: 5.0    # テンソル値のクランプ閾値
+
+optimization:
+  # 定理6: 戦略的曖昧性（おぼろ）の設定
+  initial_obscurity: 0.15 # 初期の朧度 theta
+  roi_control: True       # O(N log N) 計算量制御の有効化
+
+training:
+  batch_size: 32
+  epochs: 100
+  validation_split: 0.2
