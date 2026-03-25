@@ -1,0 +1,45 @@
+{
+  "schema_version": "phase3_claim_summary.v1",
+  "note": "phase3_claim_run を device=cpu・--router-step-stride 4 で実行した表用要約（P0 バンドル）。ホスト名は含まない。完全ログは experiments/logs/phase3_claim_cpu_stride4/（.gitignore）。",
+  "generated_at_utc": "2026-03-25T22:03:28.847396+00:00",
+  "command": "python experiments/phase3_claim_run.py --model gpt2 --cpu --seed 0 --max-new-tokens 16 --repeats 10 --seq-len 128 --batch-size 1 --router-step-stride 4 --out-dir experiments/logs/phase3_claim_cpu_stride4",
+  "versions": {
+    "python": "3.12.10",
+    "torch": "2.9.1",
+    "transformers": "4.55.2"
+  },
+  "platform_summary": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "cuda_available": false,
+    "mps_available": true
+  },
+  "experiment": {
+    "seed": 0,
+    "model": "gpt2",
+    "demo": false,
+    "max_new_tokens": 16,
+    "repeats": 10,
+    "hbm_seq_len": 128,
+    "hbm_batch_size": 1,
+    "router_step_stride": 4
+  },
+  "two_tier_sweep": {
+    "baseline_latency_ms_p50": 12.210395885631442,
+    "baseline_latency_ms_p95": 14.535970683209595,
+    "two_tier_stub_latency_ms_p50": 19.96960397809744,
+    "two_tier_stub_latency_ms_p95": 33.52383959572762,
+    "latency_ms_p50_ratio_baseline_over_two_tier": 0.6114490752557609,
+    "device": "cpu",
+    "total_decode_steps": 160,
+    "router_stub_mode": "step_stride",
+    "router_step_stride": 4,
+    "router_keep_fraction_mean": 0.25,
+    "hbm_proxy_cuda_peak_bytes": null
+  },
+  "hbm_budget": {
+    "variant": "gpt2",
+    "device": "cpu",
+    "total_act_bytes_estimated": 52690944
+  }
+}

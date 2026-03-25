@@ -113,3 +113,4 @@ python experiments/hbm_budget_probe.py --model gpt2 --cpu --seq-len 128 --batch-
 | 2026-03-25 | `slm_downstream` の **awai 読み出し**（`--awai-readout`）と **事前登録 v0.3（T3″）** を反映。[phase_b_downstream_protocol.md](../api/modules/phase_b_downstream_protocol.md) v0.4 にプロトコル追記 |
 | 2026-03-25 | **T2′**・BoolQ（`boolq`）・Phase 4 tensor 往復・[phase_b_downstream_protocol.md](../api/modules/phase_b_downstream_protocol.md) v0.5 |
 | 2026-03-25 | P3 **`router-step-stride 4`** を **MPS** で `phase3_claim_run`（P0 バンドル）実行し [`phase3_claim_gpt2_mps_stride4_summary_v1.json`](../../experiments/baselines/phase3_claim_gpt2_mps_stride4_summary_v1.json) を追加 |
+| 2026-03-25 | 同条件を **`--cpu`** で P0 バンドル実行し [`phase3_claim_gpt2_cpu_stride4_summary_v1.json`](../../experiments/baselines/phase3_claim_gpt2_cpu_stride4_summary_v1.json) を追加（`two_tier_stride4_gpt2_cpu_full.json` はスイープ単体の別記録） |
