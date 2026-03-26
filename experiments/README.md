@@ -2,14 +2,23 @@
 
 **正本**: [v7.0 実証実験設計書](../docs/v7/Resonanceverse_v7.0_Experimental_Design.md) · [EXPERIMENT_ROADMAP_v7.md](../docs/planning/EXPERIMENT_ROADMAP_v7.md)
 
-## フェーズ別の入口（現行スクリプト）
+## v7 一括実行
 
-| v7 | 主なスクリプト |
-|----|----------------|
-| **I（概念実証）** | `evel_benchmarks.py`（軽量コア）、`efficiency_benchmark.py`（計算量）、`emergence_metrics.py`（創発） |
-| **II（安定性・遅延）** | *将来*: 遅延 τ スイープ・V_K ログ用ハーネスを追加予定 |
-| **III（あわい・朧）** | 理論指標は v7 定義。**人間評価**は外部コーパス・手順が必要 |
-| **IV（Transformer）** | `slm_resonance_lm.py`、`slm_downstream.py`、`decode_benchmark.py`、`two_tier_sweep.py`、`phase3_claim_run.py` |
+```bash
+python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.json
+```
+
+要約 JSON（デモ）: [`baselines/v7_suite_bundle_demo_v1.json`](baselines/v7_suite_bundle_demo_v1.json)
+
+## v7 フェーズ別スクリプト
+
+| スクリプト | 内容 |
+|------------|------|
+| `v7_run_suite.py` | I-A・I-B・II-A・III-A（合成）を連続実行 |
+| `v7_phase1a_phi_correlation.py` | Phase I-A: S_asym と相関（`--demo`＝合成） |
+| `v7_phase1b_directed_tensor.py` | Phase I-B: 有向テンソル非対称性 |
+| `v7_phase2a_delay_sweep.py` | Phase II-A: τ 掃引 |
+| `v7_phase3a_awai_metrics.py` | あわい Ω（合成軌跡） |
 
 ## レガシー Phase B/C の記録
 

@@ -1,0 +1,160 @@
+{
+  "schema_version": "v7_suite_bundle.v1",
+  "generated_at_utc": "2026-03-26T23:17:36.615962+00:00",
+  "seed": 0,
+  "phase1a": {
+    "schema_version": "v7_phase1a.v1",
+    "mode": "synthetic_demo",
+    "n_samples": 120,
+    "seed": 0,
+    "feature": "frobenius_norm_S_asym",
+    "note": "合成ラベルは ||S_asym||_F の線形＋ノイズ。実コーパスでは 6 軸人手アノテとペアリング。",
+    "correlations_vs_scalar_feature": {
+      "trust": {
+        "pearson_r": 0.93078983239912,
+        "spearman_rho": 0.90454892700882
+      },
+      "authority": {
+        "pearson_r": 0.9583877368114482,
+        "spearman_rho": 0.9566636571984164
+      },
+      "proximity": {
+        "pearson_r": 0.9725630110391655,
+        "spearman_rho": 0.9615737203972498
+      },
+      "intent": {
+        "pearson_r": 0.9845409188166167,
+        "spearman_rho": 0.9806722689075629
+      },
+      "affect": {
+        "pearson_r": 0.9852663821254042,
+        "spearman_rho": 0.9799708313077297
+      },
+      "history": {
+        "pearson_r": 0.9902766644320087,
+        "spearman_rho": 0.9846656017779012
+      }
+    }
+  },
+  "phase1b": {
+    "schema_version": "v7_phase1b.v1",
+    "N": 16,
+    "d": 6,
+    "steps": 40,
+    "lr": 0.05,
+    "seed": 0,
+    "final_asymmetry_fro": 13.780998229980469,
+    "trace_tail": [
+      {
+        "step": 35,
+        "loss": 16.000659942626953,
+        "asymmetry_fro": 13.781034469604492
+      },
+      {
+        "step": 36,
+        "loss": 16.000661849975586,
+        "asymmetry_fro": 13.781025886535645
+      },
+      {
+        "step": 37,
+        "loss": 16.000661849975586,
+        "asymmetry_fro": 13.781018257141113
+      },
+      {
+        "step": 38,
+        "loss": 16.000661849975586,
+        "asymmetry_fro": 13.781006813049316
+      },
+      {
+        "step": 39,
+        "loss": 16.000661849975586,
+        "asymmetry_fro": 13.780998229980469
+      }
+    ],
+    "note": "ResonanceEngine はパラメータ W が一般に非対称。対称化制約は無い。"
+  },
+  "phase2a": {
+    "schema_version": "v7_phase2a.v1",
+    "N": 8,
+    "d": 6,
+    "steps": 800,
+    "dt": 0.05,
+    "alpha": 0.15,
+    "beta": 0.85,
+    "noise": 0.02,
+    "seed_base": 0,
+    "note": "離散近似。oscillation_score は遅延導入後のエネルギー変動の目安。",
+    "by_tau": [
+      {
+        "tau": 0,
+        "energy_mean_tail": 2.098235496622676,
+        "energy_std_tail": 0.08507722179988754,
+        "oscillation_score": 0.040547031968661745,
+        "asymmetry_fro_tail": 4.566791986631921
+      },
+      {
+        "tau": 1,
+        "energy_mean_tail": 2.064940040417808,
+        "energy_std_tail": 0.0812971172016626,
+        "oscillation_score": 0.03937020715906269,
+        "asymmetry_fro_tail": 4.489611095861586
+      },
+      {
+        "tau": 2,
+        "energy_mean_tail": 2.064991913594828,
+        "energy_std_tail": 0.07664452530056683,
+        "oscillation_score": 0.03711613820803034,
+        "asymmetry_fro_tail": 4.326093764483221
+      },
+      {
+        "tau": 3,
+        "energy_mean_tail": 2.166239119208915,
+        "energy_std_tail": 0.09133784031919888,
+        "oscillation_score": 0.04216424653543793,
+        "asymmetry_fro_tail": 4.462249497975481
+      },
+      {
+        "tau": 4,
+        "energy_mean_tail": 2.002090110026388,
+        "energy_std_tail": 0.0783808087008228,
+        "oscillation_score": 0.03914949095904591,
+        "asymmetry_fro_tail": 3.766398097518797
+      },
+      {
+        "tau": 5,
+        "energy_mean_tail": 2.0814918509562235,
+        "energy_std_tail": 0.09965153321624688,
+        "oscillation_score": 0.04787505323289763,
+        "asymmetry_fro_tail": 4.411514217516093
+      },
+      {
+        "tau": 6,
+        "energy_mean_tail": 2.121273016942132,
+        "energy_std_tail": 0.08953662807621039,
+        "oscillation_score": 0.042208912911677325,
+        "asymmetry_fro_tail": 4.014312319721175
+      }
+    ],
+    "tau_largest_jump": 5,
+    "oscillation_scores": [
+      0.040547031968661745,
+      0.03937020715906269,
+      0.03711613820803034,
+      0.04216424653543793,
+      0.03914949095904591,
+      0.04787505323289763,
+      0.042208912911677325
+    ]
+  },
+  "phase3a": {
+    "schema_version": "v7_phase3a.v1",
+    "mode": "synthetic_trajectory",
+    "T": 200,
+    "d": 6,
+    "seed": 0,
+    "awai_mean": 0.17662883438572075,
+    "awai_std": 0.10081368537795558,
+    "awai_p95": 0.3054351939519099,
+    "note": "人手の間合い評価との相関は別途 Phase III-A。"
+  }
+}

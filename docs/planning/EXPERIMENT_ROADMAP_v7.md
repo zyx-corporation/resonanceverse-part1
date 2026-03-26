@@ -2,33 +2,42 @@
 
 **正本**: [Resonanceverse v7.0 実証実験設計書](../v7/Resonanceverse_v7.0_Experimental_Design.md)
 
-本文書は、上記に定義された **Phase I〜IV** と、本リポジトリの **既存スクリプト・モジュール**との対応を示す。レガシー表記（Phase A〜C、Phase 3 主張バンドル等）は [ROADMAP_ja.md](../../ROADMAP_ja.md) に残すが、**新規計画・論文記述は v7 のフェーズを正**とする。
+本文書は **Phase I〜IV** と本リポジトリの **スクリプト** の対応を示す。レガシー（Phase A〜C）は [ROADMAP_ja.md](../../ROADMAP_ja.md)。
 
-## 対応表（概要）
+## 実行コマンド（一括）
 
-| v7 | 検証の核 | リポジトリでの位置づけ（現状） |
-|----|----------|--------------------------------|
-| **Phase I-A** | 写像 φ（S_asym → 6 軸）の有効性 | **未完了・最優先**。新規: アテンション抽出＋ラベル付きコーパス相関（`experiments/` へスクリプト追加予定） |
-| **Phase I-B** | 有向テンソル W_D の最小ダイナミクス | `ResonanceEngine` / 合成テンソルで部分対応。**厳密 DDE・τ スイープ**は拡張タスク |
-| **Phase II-A** | ホプフ分岐閾値 τ* の同定 | **未完了**。安定性・遅延は理論 v7 §3.3／実験設計 §3.1 |
-| **Phase II-B** | 軸別非対称度の長期安定性 | 部分: `ResonanceEngine` の学習更新。10k ステップの系統ログは今後 |
-| **Phase III** | 「あわい」A_ij・朧 Θ_id の行動指標 | 概念・指標は v7 定義。**人間アノテーション**はデータセット作業が必要 |
-| **Phase IV** | 方式 B（中間層介入）の統合・ABL | `AwaiIntegratedSLM`・`decode_benchmark`・`two_tier_sweep` が **スタブ／部分統合**として対応 |
+```bash
+# 軽量デモ（CI 向け・JSON 出力）
+python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.json
 
-## レガシー実証（リポジトリに既存）との関係
+# フル（時間がかかる）
+python experiments/v7_run_suite.py --out experiments/logs/v7_suite/suite_full.json
+```
 
-| レガシー | 内容 | v7 との関係 |
-|----------|------|-------------|
-| Phase A〜A′ | 軽量コア・ベンチ・CI | I-B の「最小動作」＋運用上の回帰ゲート |
-| Phase B | SLM・下流・τ | IV の前提整備・品質ゲート（因果 LM／GLUE／SQuAD 等） |
-| Phase C / Phase 3 | デコード・HBM・主張バンドル | 資源・レイテンシの記録（**方式 B の全体最適化とは別軸**） |
-| Phase 4 | 分散・IPC スモーク | v7 本文の PoP／多ノードとは**別ロードマップ**で追跡 |
+デモ結果の要約 JSON 例: [`experiments/baselines/v7_suite_bundle_demo_v1.json`](../../experiments/baselines/v7_suite_bundle_demo_v1.json)
 
-## 次の実装優先（v7 実験設計 §1.1 に準拠）
+## 対応表（実装済みハーネス）
 
-1. **Phase I-A**: 関係ラベル付きターンで **S_asym と 6 軸アノテーションの相関**を計算するスクリプトを `experiments/` に追加する。
-2. **Phase II-A**: 小規模 N で τ を掃引し、**V_K またはエネルギー**の符号変化を記録するハーネス（`experiments/` または `core/` 拡張）。
-3. 既存の **τ 事前登録・主張表**は、品質面のゲートとして維持し、`experiments/baselines/` と併記する。
+| v7 | 検証の核 | スクリプト |
+|----|----------|------------|
+| **Phase I-A** | S_asym と 6 軸（または代理特徴）の相関 | [`experiments/v7_phase1a_phi_correlation.py`](../../experiments/v7_phase1a_phi_correlation.py)（`--demo`＝合成検証；実モデルは `--demo` なしで層別 S_asym 統計） |
+| **Phase I-B** | 有向テンソルが対称化に落ちない | [`experiments/v7_phase1b_directed_tensor.py`](../../experiments/v7_phase1b_directed_tensor.py) |
+| **Phase II-A** | τ 掃引・安定性プロキシ | [`experiments/v7_phase2a_delay_sweep.py`](../../experiments/v7_phase2a_delay_sweep.py) |
+| **Phase III（合成）** | あわい Ω の数値出力 | [`experiments/v7_phase3a_awai_metrics.py`](../../experiments/v7_phase3a_awai_metrics.py) |
+| **Phase III-A（本番）** | 人間「間合い」アノテとの相関 | **未着手**（コーパス・アノテが必要） |
+| **Phase IV** | 方式 B 統合 | 既存: `AwaiIntegratedSLM`・`decode_benchmark`・`two_tier_sweep` 等 |
+
+## レガシー実証との関係
+
+| レガシー | v7 との関係 |
+|----------|-------------|
+| Phase A〜A′ | I-B の最小動作＋ CI 回帰 |
+| Phase B / C / 3 | 品質・資源の記録（方式 B 全体とは別軸） |
+| Phase 4 | 分散ロードマップ（v7 PoP 議論とは別） |
+
+## テスト
+
+`tests/test_v7_experiments.py` が `--demo` 相当の関数をオフライン検証する。
 
 ---
 

@@ -23,6 +23,7 @@
 - **`ResonantCore`**: 場ドリフトの `Generator`・`field_drift_seed`、`eval` で場固定、`attention_mask` による除外平均。
 - **共鳴コンポーネント**: [API・モジュール索引の「共鳴コンポーネントの対応」](api/modules/README.md) を実装上の正とする。
 - **品質ゲート**: `tests/` の `pytest`。分散同期スモークのテンソル経路は numpy ペイロード。
+- **v7 実験ハーネス**: `experiments/v7_run_suite.py`（`--demo` で Phase I-A/I-B/II-A/III 合成を一括）、[EXPERIMENT_ROADMAP_v7](planning/EXPERIMENT_ROADMAP_v7.md) を参照。
 
 ## ディレクトリ構成
 
