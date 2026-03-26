@@ -17,6 +17,8 @@ document_type: design_doc
 
 # Resonanceverse実装基本設計：モジュール構造とクラス設計
 
+**理論の正本**: [Resonanceverse 理論 v7.0](../v7/Resonanceverse_Theory_v7.0.md)（有向遅延共鳴場 DDRF）。実装索引: [理論索引](../theory/resonanceverse_theory.md)。
+
 ## 1. 全体アーキテクチャ概要
 
 ### 1.1 システム構成の基本方針

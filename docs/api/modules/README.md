@@ -2,6 +2,8 @@
 
 自動生成の Sphinx 等は未整備のため、本ディレクトリでは設計仕様と `core/` 実装の対応をまとめます。
 
+**理論・実験の正本**は [Resonanceverse 理論 v7.0](../v7/Resonanceverse_Theory_v7.0.md) および [実証実験設計 v7.0](../v7/Resonanceverse_v7.0_Experimental_Design.md) である。下表・Phase A〜C の文書は**実装索引・レガシー実証**として併存する。
+
 - [アルゴリズム仕様（文章表現による設計）](algorithm_spec.md)
 - [アーキテクチャ概要（モジュール構造・クラス設計）](../../implementation/architecture_overview.md)
 - 実装コード: リポジトリ直下の [`core/`](../../../core/)

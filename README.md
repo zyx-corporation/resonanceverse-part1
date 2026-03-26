@@ -4,18 +4,20 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
-**Resonanceverse** は、オートポイエーシスと動的共鳴による社会的文脈理解を目指す AI アーキテクチャの研究実装です。従来の大規模言語モデル（LLM）に依存しない軽量コア（共鳴場・ROI・創発指標）から検証できます。
+**Resonanceverse** は、オートポイエーシスと**有向遅延共鳴場（DDRF）**による社会的文脈理解を目指す AI アーキテクチャの研究実装です。理論の**正本**は [Resonanceverse 理論 v7.0](docs/v7/Resonanceverse_Theory_v7.0.md) です。従来の大規模言語モデル（LLM）に依存しない軽量コア（共鳴場・ROI・創発指標）から検証できます。
 
-## 理論的コア（Theoretical Core）
+## 理論的コア（Theoretical Core · v7.0）
 
-Tomoyuki Kano 氏の理論整理に基づき、以下の観点をコード上で扱います。
+[理論 v7.0](docs/v7/Resonanceverse_Theory_v7.0.md) に基づき、コード上では次の観点を扱います（実装は段階的に DDRF に近づける）。
 
-1. **情報理論的非分解性**: 階層分解による情報損失の回避。
-2. **動的共鳴の最適性**: 変分原理下での適応的重み付け。
-3. **大域的漸近安定性**: Lyapunov 理論による安定性の議論枠。
-4. **計算複雑度 O(N log N) 寄り**: 動的関心領域（ROI）制御による削減の実証。
-5. **最大エントロピー収束**: Softmax 分布への正則化イメージ。
-6. **戦略的曖昧性**: 「おぼろ（Obscurity）」による計算資源の調整。
+1. **有向関係性テンソル**: 一般に **w_ij ≠ w_ji**（非対称）を前提とした共鳴スコア・更新。
+2. **時間遅延 τ**: 遅延微分方程式としての共鳴ダイナミクスと、安定性（リアプノフ＝クラソフスキー）の枠組み。
+3. **情報理論的非分解性**: 階層分解による相互作用情報の損失の定式化。
+4. **動的共鳴の最適性**: 変分原理下での有向テンソルの時変最適化。
+5. **計算量の分離記述**: 軸選択 O(1) とテンソル更新、動的 ROI による **O(N log N) 寄り**の期待複雑度。
+6. **「あわい」**: 遅延窓における関係性の未完了状態としての測度 **A_ij(t)**。
+7. **朧（Obscurity）**: 一次過程の計算論的解除としての **Θ_id**（忘却の減算モデルに限定しない）。
+8. **Transformer 接続（方式 B）**: アテンション非対称成分を 6 軸写像 **φ** のシグナルとする中間層介入。
 
 ## 主な特徴
 
@@ -34,7 +36,7 @@ Tomoyuki Kano 氏の理論整理に基づき、以下の観点をコード上で
 
 ### 理論的革新性
 
-- **動的共鳴場・オートポイエーシス**: 詳細は [理論ドキュメント](docs/theory/resonanceverse_theory.md) を参照。
+- **DDRF・オートポイエーシス**: 詳細は [理論 v7.0（正本）](docs/v7/Resonanceverse_Theory_v7.0.md) と [リポジトリ索引](docs/theory/resonanceverse_theory.md) を参照。
 
 ## 性能実証（文書・目標値の例）
 
@@ -110,15 +112,17 @@ python experiments/efficiency_benchmark.py --cpu --seq-lens 64 128 256 512
 
 ### 理論・設計（抜粋）
 
-- [Resonanceverse 理論（完全理論と実装）](docs/theory/resonanceverse_theory.md)
-- [数学的基礎（証明の完全版）](docs/theory/mathematical_foundation.md)
+- **[Resonanceverse 理論 v7.0（正本）](docs/v7/Resonanceverse_Theory_v7.0.md)**
+- [実証実験設計 v7.0](docs/v7/Resonanceverse_v7.0_Experimental_Design.md) · [EXPERIMENT_ROADMAP_v7](docs/planning/EXPERIMENT_ROADMAP_v7.md)
+- [理論索引（実装対応・旧版へのリンク）](docs/theory/resonanceverse_theory.md)
+- [数学的基礎（先行版・証明スケッチ）](docs/theory/mathematical_foundation.md)
 - [アーキテクチャ設計（モジュール構造とクラス設計）](docs/implementation/architecture_overview.md)
 
 ### チュートリアル・実証計画
 
 - [始め方・2 週間軽量プロトタイプ計画](docs/tutorials/getting_started.md)
-- [ロードマップ（和文チェックリスト）](ROADMAP_ja.md)
-- [実証ロードマップ（軽量コアと SLM／二階建て）](docs/planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建て.md)
+- [ロードマップ（和文チェックリスト）](ROADMAP_ja.md)（**v7 正本**は上記 v7 リンク）
+- [実証ロードマップ（軽量コアと SLM／二階建て）](docs/planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建て.md)（レガシー実証の索引）
 
 ### API・モジュール索引
 
@@ -146,7 +150,7 @@ pytest tests/ -v
 
 ## ロードマップ
 
-フェーズ対応・実装チェックリストの**和文まとめ**は **[ROADMAP_ja.md](ROADMAP_ja.md)** を参照してください（**Phase 3**＝二階建て・資源実証は [Phase3 計画](docs/planning/Phase3_計画_二階建てと実証.md)）。**Phase 4**（大規模ノード・分散／Jetson 等）は **[独立ロードマップ](docs/planning/ROADMAP_Phase4_分散とエッジ_ja.md)** で追跡し、Phase A〜C の技術実証とは別軸です。理論・判定表の詳細は [実証ロードマップ（軽量コアと SLM／二階建て）](docs/planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建て.md)、長期の協働・透明性は [透明性・協働ロードマップ](docs/planning/🚀%20透明性確保による人間-AI協働研究発展ロードマップ.md) です。
+**理論・実験設計の正本**は **v7.0**（[理論](docs/v7/Resonanceverse_Theory_v7.0.md)、[実験設計](docs/v7/Resonanceverse_v7.0_Experimental_Design.md)、[スクリプト対応](docs/planning/EXPERIMENT_ROADMAP_v7.md)）です。**実装チェックリスト**の和文まとめは **[ROADMAP_ja.md](ROADMAP_ja.md)**（Phase 1A〜3・Phase 4）。**Phase 3**（二階建て・資源）の詳細は [Phase3 計画](docs/planning/Phase3_計画_二階建てと実証.md)。**Phase 4**（分散／Jetson）は **[独立ロードマップ](docs/planning/ROADMAP_Phase4_分散とエッジ_ja.md)**。レガシー実証の詳細は [実証ロードマップ（軽量コアと SLM／二階建て）](docs/planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建て.md)、長期協働は [透明性・協働ロードマップ](docs/planning/🚀%20透明性確保による人間-AI協働研究発展ロードマップ.md) です。
 
 ## ライセンス
 

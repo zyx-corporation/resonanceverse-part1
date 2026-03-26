@@ -1,7 +1,21 @@
 # Resonanceverse ロードマップ（和文・実装チェックリスト）
 
+## 理論・実験の正本（v7.0）
+
+**理論・実証実験設計の正本**は `docs/v7/` に置く。
+
+| 文書 | 内容 |
+|------|------|
+| [Resonanceverse 理論 v7.0](docs/v7/Resonanceverse_Theory_v7.0.md) | DDRF（有向遅延共鳴場）、定理、「あわい」、朧、Transformer 方式 B |
+| [実証実験設計 v7.0](docs/v7/Resonanceverse_v7.0_Experimental_Design.md) | Phase I〜IV、判定基準 |
+| [EXPERIMENT_ROADMAP_v7](docs/planning/EXPERIMENT_ROADMAP_v7.md) | v7 フェーズと本リポジトリのスクリプト対応 |
+
+下記の **Phase 1A〜3** は**実装・レガシー実証**のチェックリストとして維持する（v7 の Phase I〜IV とは番号体系が異なる）。対応の目安は [EXPERIMENT_ROADMAP_v7](docs/planning/EXPERIMENT_ROADMAP_v7.md) を参照。
+
+---
+
 本稿はリポジトリ上の**フェーズ対応とチェックリスト**をまとめたものです（**Phase 1A〜3**。**Phase 4**＝分散・エッジは [独立ロードマップ](docs/planning/ROADMAP_Phase4_分散とエッジ_ja.md)）。
-理論・判定表の詳細は [実証ロードマップ（軽量コアと SLM／二階建て）](
+レガシー実証の詳細は [実証ロードマップ（軽量コアと SLM／二階建て）](
 docs/planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建て.md) を参照してください。
 
 ## README 簡易フェーズと実証ロードマップの対応
@@ -76,6 +90,9 @@ docs/planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建
 
 | 文書 | 内容 |
 |------|------|
+| [理論 v7.0（正本）](docs/v7/Resonanceverse_Theory_v7.0.md) | DDRF・実験計画 §8 |
+| [実証実験設計 v7.0](docs/v7/Resonanceverse_v7.0_Experimental_Design.md) | Phase I〜IV |
+| [EXPERIMENT_ROADMAP_v7](docs/planning/EXPERIMENT_ROADMAP_v7.md) | v7 とスクリプトの対応 |
 | [実証ロードマップ（詳細・フェーズ定義）](docs/planning/Resonanceverse実証ロードマップ_軽量コアとSLM二階建て.md) | Phase A〜C の主張・成果物・関連文書 |
 | [Phase 4 分散・エッジ（和文・独立）](docs/planning/ROADMAP_Phase4_分散とエッジ_ja.md) | Jetson 等・チェックリスト（本稿の Phase 1A〜3 とは別軸） |
 | [Phase3 計画（二階建てと実証）](docs/planning/Phase3_計画_二階建てと実証.md) | Phase 3 の目的・マイルストーン・スコープ（Phase C 相当） |
