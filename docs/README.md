@@ -11,6 +11,7 @@
 | [v7 ディレクトリ索引](v7/README.md) | 上記への入口 |
 | [理論索引（実装との対応）](theory/resonanceverse_theory.md) | v7 と `core/` の対応・旧版リンク |
 | [EXPERIMENT_ROADMAP_v7](planning/EXPERIMENT_ROADMAP_v7.md) | v7 フェーズと `experiments/` の対応 |
+| [Phase I-A / III-A 本番手順設計（v7）](planning/Phase_IA_IIIA_本番手順設計_v7.md) | データ・アノテ・解析・判定の設計チェックリスト |
 
 - **実装フェーズ・チェックリスト（和文・レガシー）**: [ROADMAP_ja.md](../ROADMAP_ja.md)（ルート）
 
