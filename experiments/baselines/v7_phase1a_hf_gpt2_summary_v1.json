@@ -1,0 +1,11 @@
+{
+  "schema_version": "v7_phase1a_summary.v1",
+  "note": "Phase I-A 最小の次: HF gpt2 で層別 S_asym 統計（ラベル無し）。完全ログは experiments/logs/（.gitignore）。",
+  "command": "python experiments/v7_phase1a_phi_correlation.py --cpu --model gpt2 --seed 0 --text \"Hello, we need to align on the deadline before Friday.\" --out experiments/logs/v7_suite/phase1a_hf_gpt2_stats.json",
+  "model": "gpt2",
+  "text_len_tokens": 12,
+  "layers_reported": 12,
+  "frobenius_S_asym_last_layer": 3.8651211261749268,
+  "mean_abs_S_asym_last_layer": 0.14836354553699493,
+  "implementation_note": "AutoModelForCausalLM は attn_implementation=eager で output_attentions を取得"
+}

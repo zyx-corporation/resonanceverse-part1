@@ -10,6 +10,8 @@ python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.
 
 要約 JSON（デモ）: [`baselines/v7_suite_bundle_demo_v1.json`](baselines/v7_suite_bundle_demo_v1.json)
 
+最小の次（**gpt2・層別 S_asym 統計・ラベル無し**）: [`baselines/v7_phase1a_hf_gpt2_summary_v1.json`](baselines/v7_phase1a_hf_gpt2_summary_v1.json)
+
 ## v7 フェーズ別スクリプト
 
 | スクリプト | 内容 |

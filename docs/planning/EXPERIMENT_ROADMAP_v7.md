@@ -16,6 +16,18 @@ python experiments/v7_run_suite.py --out experiments/logs/v7_suite/suite_full.js
 
 デモ結果の要約 JSON 例: [`experiments/baselines/v7_suite_bundle_demo_v1.json`](../../experiments/baselines/v7_suite_bundle_demo_v1.json)
 
+## 最小の「次」（HF ベースライン・Phase I-A）
+
+合成デモのあと、**実モデルで層別 `S_asym` 統計**だけ取る場合（人手ラベル不要）:
+
+```bash
+python experiments/v7_phase1a_phi_correlation.py --cpu --model gpt2 --seed 0 \
+  --text "Hello, we need to align on the deadline before Friday." \
+  --out experiments/logs/v7_suite/phase1a_hf_gpt2_stats.json
+```
+
+`GPT2LMHead` 系は **`attn_implementation=\"eager\"`** で `output_attentions` を取得する（スクリプト内で指定済み）。要約: [`experiments/baselines/v7_phase1a_hf_gpt2_summary_v1.json`](../../experiments/baselines/v7_phase1a_hf_gpt2_summary_v1.json)
+
 ## 対応表（実装済みハーネス）
 
 | v7 | 検証の核 | スクリプト |

@@ -107,7 +107,10 @@ def run_hf_no_labels(
     tok = AutoTokenizer.from_pretrained(model_name)
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
-    m = AutoModelForCausalLM.from_pretrained(model_name).to(device)
+    m = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        attn_implementation="eager",
+    ).to(device)
     m.eval()
     ids = tok.encode(text, return_tensors="pt").to(device)
     with torch.no_grad():
@@ -118,6 +121,8 @@ def run_hf_no_labels(
 
     layer_stats: list[dict[str, Any]] = []
     for li, layer_attn in enumerate(attns):
+        if layer_attn is None:
+            continue
         a = layer_attn[0].mean(dim=0).cpu().numpy()
         s = s_asym_from_attention(a)
         layer_stats.append(
