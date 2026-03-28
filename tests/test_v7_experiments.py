@@ -58,6 +58,31 @@ def test_v7_run_suite_demo():
     assert "phase1a" in b and "phase2a" in b
 
 
+def test_v7_phase1a_pilot_jsonl_demo():
+    from pathlib import Path
+
+    from experiments.v7_phase1a_pilot_jsonl import load_jsonl, run_pilot
+
+    p = (
+        Path(__file__).resolve().parents[1]
+        / "experiments"
+        / "data"
+        / "v7_phase1a_pilot.jsonl"
+    )
+    rows = load_jsonl(p)
+    out = run_pilot(
+        rows=rows,
+        demo=True,
+        model_name="gpt2",
+        cpu=True,
+        seed=0,
+        layer_index=-1,
+    )
+    assert out["schema_version"] == "v7_phase1a_pilot.v1"
+    assert out["n_rows"] == 8
+    assert out["correlations_label_vs_fro"]["intent_ab"]["n"] == 8
+
+
 def test_v7_cli_smoke(tmp_path):
     out = tmp_path / "suite.json"
     r = subprocess.run(

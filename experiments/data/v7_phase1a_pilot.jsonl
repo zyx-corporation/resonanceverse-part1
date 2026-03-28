@@ -1,0 +1,8 @@
+{"id": "p01", "text": "A: 来週のレビュー、金曜に寄せられない？ B: 金曜は無理かも。木曜までに上を通さないと。", "intent_ab": 0.35, "trust_ab": 0.42, "note": "illustrative pilot labels 0-1"}
+{"id": "p02", "text": "A: そのリンク、昨日のまま？ B: 更新した。見えない？", "intent_ab": 0.2, "trust_ab": 0.55}
+{"id": "p03", "text": "A: 納期、前回より厳しめです。御社の線、教えてください。 B: 厳しめ、具体的にどの程度でしょう。", "intent_ab": 0.62, "trust_ab": 0.38}
+{"id": "p04", "text": "A: お母さん、口うるさかったかしら。 B: うるさい。ありがとう。", "intent_ab": 0.15, "trust_ab": 0.7}
+{"id": "p05", "text": "A: 次の検査はリスクを説明した上で決めます。 B: 怖いですけど、聞きたいです。", "intent_ab": 0.5, "trust_ab": 0.6}
+{"id": "p06", "text": "A: 本当にそれ言う？ B: 言うよ。本気だから。", "intent_ab": 0.4, "trust_ab": 0.45}
+{"id": "p07", "text": "A: Hello. B: Hi there.", "intent_ab": 0.1, "trust_ab": 0.5}
+{"id": "p08", "text": "A: 検討する。 B: わかりました、待ちます。", "intent_ab": 0.28, "trust_ab": 0.33}

@@ -45,8 +45,8 @@ def run_synthetic_demo(*, seed: int, n_samples: int) -> dict[str, Any]:
     f_list: list[float] = []
     y_lists: list[list[float]] = [[] for _ in range(6)]
     for _ in range(n_samples):
-        l = int(rng.integers(6, 14))
-        logits = rng.standard_normal((l, l)).astype(np.float64)
+        seq_len = int(rng.integers(6, 14))
+        logits = rng.standard_normal((seq_len, seq_len)).astype(np.float64)
         a = _softmax_rows(logits)
         s = s_asym_from_attention(a)
         f = frobenius_s_asym(s)
@@ -84,20 +84,28 @@ def run_synthetic_demo(*, seed: int, n_samples: int) -> dict[str, Any]:
     }
 
 
-def run_hf_no_labels(
+def extract_hf_attention_layer_stats(
     *,
-    model_name: str,
     text: str,
+    model_name: str,
     cpu: bool,
     seed: int,
-) -> dict[str, Any]:
-    """ラベル無し: 層ごとの S_asym のノルム統計。"""
+) -> tuple[list[dict[str, Any]] | None, dict[str, Any] | None, int]:
+    """
+    層ごとの S_asym 統計を返す。
+
+    Returns
+    -------
+    (layer_stats, error_payload, num_tokens)
+        error_payload が None でないときは layer_stats は None。
+    """
     import torch
 
     try:
         from transformers import AutoModelForCausalLM, AutoTokenizer
     except ImportError as e:
-        return {"schema_version": "v7_phase1a.v1", "error": f"transformers: {e}", "skipped": True}
+        err = {"schema_version": "v7_phase1a.v1", "error": f"transformers: {e}", "skipped": True}
+        return None, err, 0
 
     from core.inference_device import select_inference_device
     from core.reproducibility import set_experiment_seed
@@ -117,7 +125,9 @@ def run_hf_no_labels(
         out = m(ids, output_attentions=True)
     attns = out.attentions
     if not attns:
-        return {"schema_version": "v7_phase1a.v1", "error": "no attentions", "skipped": True}
+        ntok = int(ids.shape[1])
+        err = {"schema_version": "v7_phase1a.v1", "error": "no attentions", "skipped": True}
+        return None, err, ntok
 
     layer_stats: list[dict[str, Any]] = []
     for li, layer_attn in enumerate(attns):
@@ -133,24 +143,59 @@ def run_hf_no_labels(
             }
         )
 
+    return layer_stats, None, int(ids.shape[1])
+
+
+def run_hf_no_labels(
+    *,
+    model_name: str,
+    text: str,
+    cpu: bool,
+    seed: int,
+) -> dict[str, Any]:
+    """ラベル無し: 層ごとの S_asym のノルム統計。"""
+    layer_stats, err, ntok = extract_hf_attention_layer_stats(
+        text=text,
+        model_name=model_name,
+        cpu=cpu,
+        seed=seed,
+    )
+    if err is not None:
+        return err
+    assert layer_stats is not None
     return {
         "schema_version": "v7_phase1a.v1",
         "mode": "hf_attention_stats",
         "model": model_name,
-        "text_len_tokens": int(ids.shape[1]),
+        "text_len_tokens": ntok,
         "layers": layer_stats,
         "labels_available": False,
     }
 
 
+def frobenius_s_asym_demo_from_text(text: str) -> float:
+    """text のハッシュで決定論的な合成アテンションの ||S_asym||_F（HF 無し）。"""
+    rng = np.random.default_rng(abs(hash(text)) % (2**32))
+    seq_len = int(min(max(len(text) // 4 + 3, 6), 24))
+    logits = rng.standard_normal((seq_len, seq_len)).astype(np.float64)
+    a = _softmax_rows(logits)
+    s = s_asym_from_attention(a)
+    return frobenius_s_asym(s)
+
+
 def main() -> None:
-    p = argparse.ArgumentParser(description="v7 Phase I-A: S_asym と 6 軸相関（demo / HF 統計）")
+    p = argparse.ArgumentParser(
+        description="v7 Phase I-A: S_asym と 6 軸相関（demo / HF 統計）",
+    )
     p.add_argument("--demo", action="store_true", help="合成のみ（CI 向け）")
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--n-samples", type=int, default=400)
     p.add_argument("--model", default="gpt2")
     p.add_argument("--cpu", action="store_true")
-    p.add_argument("--text", default="Hello, this is a short test for attention asymmetry.")
+    p.add_argument(
+        "--text",
+        default="Hello, this is a short test for attention asymmetry.",
+    )
     p.add_argument("--out", type=Path, default=None)
     args = p.parse_args()
 

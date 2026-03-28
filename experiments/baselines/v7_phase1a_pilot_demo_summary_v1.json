@@ -1,0 +1,13 @@
+{
+  "schema_version": "v7_phase1a_pilot_summary.v1",
+  "note": "JSONL パイロット（--demo・合成 Frobenius）。ラベルは experiments/data/v7_phase1a_pilot.jsonl の例示値。",
+  "command": "python experiments/v7_phase1a_pilot_jsonl.py --demo --out experiments/logs/v7_suite/pilot_demo.json",
+  "jsonl": "experiments/data/v7_phase1a_pilot.jsonl",
+  "n_rows": 8,
+  "mode": "demo_synthetic_fro",
+  "correlations_example": {
+    "intent_ab_pearson_r": 0.6706952951374805,
+    "trust_ab_pearson_r": -0.19529982905464374
+  },
+  "next_step": "人手ラベルを差し替えた JSONL で --demo を外し gpt2 を実行（時間・ネットあり）"
+}

@@ -28,6 +28,22 @@ python experiments/v7_phase1a_phi_correlation.py --cpu --model gpt2 --seed 0 \
 
 `GPT2LMHead` 系は **`attn_implementation=\"eager\"`** で `output_attentions` を取得する（スクリプト内で指定済み）。要約: [`experiments/baselines/v7_phase1a_hf_gpt2_summary_v1.json`](../../experiments/baselines/v7_phase1a_hf_gpt2_summary_v1.json)
 
+### JSONL パイロット（例示ラベル × Frobenius）
+
+短い対話＋数値ラベル（`intent_ab`, `trust_ab` 等）を [`experiments/data/v7_phase1a_pilot.jsonl`](../../experiments/data/v7_phase1a_pilot.jsonl) に置き、相関を出す。
+
+```bash
+# 合成特徴（HF 不要）
+python experiments/v7_phase1a_pilot_jsonl.py --demo --out experiments/logs/v7_suite/pilot_demo.json
+
+# 本番に近い（gpt2・最終層・各 text 前向き）
+python experiments/v7_phase1a_pilot_jsonl.py --cpu --model gpt2 --seed 0 \
+  --jsonl experiments/data/v7_phase1a_pilot.jsonl \
+  --out experiments/logs/v7_suite/pilot_hf.json
+```
+
+要約（demo）: [`experiments/baselines/v7_phase1a_pilot_demo_summary_v1.json`](../../experiments/baselines/v7_phase1a_pilot_demo_summary_v1.json)
+
 ## 対応表（実装済みハーネス）
 
 | v7 | 検証の核 | スクリプト |

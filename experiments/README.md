@@ -21,6 +21,9 @@ python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.
 | `v7_phase1b_directed_tensor.py` | Phase I-B: 有向テンソル非対称性 |
 | `v7_phase2a_delay_sweep.py` | Phase II-A: τ 掃引 |
 | `v7_phase3a_awai_metrics.py` | あわい Ω（合成軌跡） |
+| `v7_phase1a_pilot_jsonl.py` | Phase I-A: **JSONL + ラベル**と最終層 `S_asym` の相関（`--demo` で合成特徴） |
+
+データ例: [`data/v7_phase1a_pilot.jsonl`](data/v7_phase1a_pilot.jsonl)
 
 ## レガシー Phase B/C の記録
 
