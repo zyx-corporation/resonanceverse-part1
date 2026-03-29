@@ -1,13 +1,42 @@
 {
   "schema_version": "v7_prereg_stub.v1",
-  "revision": "v1",
+  "revision": "v1.1",
   "title": "Phase I-A リポジトリ内実証ベースライン",
   "registered_at": "2026-03-29",
   "design_reference": "docs/v7/Resonanceverse_v7.0_Experimental_Design.md §2.1",
   "procedure_reference": "docs/planning/Phase_IA_IIIA_本番手順設計_v7.md",
   "corpus_planning_v7": "docs/planning/v7_corpus_MRMP.md",
   "corpus_primary_hf_id": "nu-dialogue/multi-relational-multi-party-chat-corpus",
-  "hypothesis_boundary_ja": "本番コーパスは MRMP のみを対象とする（取得・ペア規則は v7_corpus_MRMP.md）。リポジトリ内パイロット JSONL の数値ラベルは例示であり、6 軸の人手妥当性の根拠とはしない。autoproxy は長さ代理であり 6 軸の代替ではない。",
+  "hypothesis_boundary_ja": "本番コーパスは MRMP のみを対象とする（取得・ペア規則は v7_corpus_MRMP.md）。リポジトリ内パイロット JSONL の数値ラベルは例示であり、6 軸の人手妥当性の根拠とはしない。autoproxy は長さ代理であり 6 軸の代替ではない。6 軸を LLM で付ける場合は llm_judge_six_axes を埋め、人手金標準と区別して報告する。",
+  "llm_judge_six_axes": {
+    "status": "optional_stub",
+    "role_ja": "人手アノテの金標準の代替ではなく、事前登録された補助条件としての疑似6軸スコア。主解析の主張境界は実行時に固定する。",
+    "axes": [
+      "trust",
+      "authority",
+      "proximity",
+      "intent",
+      "affect",
+      "history"
+    ],
+    "directions_required": "per_axis_ab_ba",
+    "label_model": null,
+    "label_model_api_or_checkpoint": null,
+    "prompt_template_id": null,
+    "prompt_sha256": null,
+    "decoding": {
+      "temperature": null,
+      "top_p": null,
+      "seed": null
+    },
+    "aggregation": "single_run | dual_run_majority | n_samples_median",
+    "circularity_mitigation_ja": "注意特徴抽出に用いるモデル（例: gpt2）とラベル付け LLM を同一にしないことを推奨。同一の場合は補助解析または感度分析として位置づける。",
+    "human_overlap_plan": {
+      "subset_size_for_calibration": null,
+      "agreement_metric": "pearson_r_or_krippendorff_alpha"
+    },
+    "output_schema_ja": "JSONL 列例: dialogue_id, turn_idx, speaker_src, speaker_tgt, trust_ab, trust_ba, … , history_ba, llm_judge_meta（モデル名・プロンプト版・集約方法）"
+  },
   "model_preregistered": "gpt2",
   "attention_backend": "eager (output_attentions)",
   "data_manifest": [
