@@ -14,6 +14,15 @@
     {
       "path": "experiments/data/v7_phase1a_pilot.jsonl",
       "role": "pilot_dialogues_illustrative_labels"
+    },
+    {
+      "path": "experiments/logs/mrmp_prepared/windows.jsonl",
+      "role": "mrmp_prepared_full_generated_local",
+      "note": "v7_mrmp_prepare.py の出力。リポジトリには含めない。"
+    },
+    {
+      "path": "experiments/data/v7_mrmp_sample.jsonl",
+      "role": "mrmp_prepared_sample_committed"
     }
   ],
   "primary_outputs": [

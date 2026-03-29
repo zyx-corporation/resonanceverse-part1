@@ -24,7 +24,7 @@
 - **`ResonantCore`**: 場ドリフトの `Generator`・`field_drift_seed`、`eval` で場固定、`attention_mask` による除外平均。
 - **共鳴コンポーネント**: [API・モジュール索引の「共鳴コンポーネントの対応」](api/modules/README.md) を実装上の正とする。
 - **品質ゲート**: `tests/` の `pytest`。分散同期スモークのテンソル経路は numpy ペイロード。
-- **v7 実験ハーネス**: `experiments/v7_run_suite.py`（`--demo` で Phase I-A/I-B/II-A/III 合成を一括）、[EXPERIMENT_ROADMAP_v7](planning/EXPERIMENT_ROADMAP_v7.md) を参照。JSONL パイロットは `experiments/v7_phase1a_pilot_jsonl.py` と [`data/v7_phase1a_pilot.jsonl`](data/v7_phase1a_pilot.jsonl)。**実証ベースライン一括**は `experiments/v7_empirical_run.py` と [事前登録スタブ v1](planning/v7_phase1a_empirical_prereg_v1.json)。**本番コーパス（Phase I-A）は MRMP のみ** — [v7_corpus_MRMP.md](planning/v7_corpus_MRMP.md)。
+- **v7 実験ハーネス**: `experiments/v7_run_suite.py`（`--demo` で Phase I-A/I-B/II-A/III 合成を一括）、[EXPERIMENT_ROADMAP_v7](planning/EXPERIMENT_ROADMAP_v7.md) を参照。JSONL パイロットは `experiments/v7_phase1a_pilot_jsonl.py` と [`data/v7_phase1a_pilot.jsonl`](data/v7_phase1a_pilot.jsonl)。**実証ベースライン一括**は `experiments/v7_empirical_run.py` と [事前登録スタブ v1](planning/v7_phase1a_empirical_prereg_v1.json)。**本番コーパス（Phase I-A）は MRMP のみ** — [v7_corpus_MRMP.md](planning/v7_corpus_MRMP.md)。整形 [`v7_mrmp_prepare.py`](../experiments/v7_mrmp_prepare.py)、サンプル [`v7_mrmp_sample.jsonl`](../experiments/data/v7_mrmp_sample.jsonl)。
 
 ## ディレクトリ構成
 

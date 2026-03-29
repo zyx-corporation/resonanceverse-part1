@@ -17,6 +17,8 @@ python experiments/v7_empirical_run.py --cpu --model gpt2 --seed 0 --out experim
 
 **本番コーパス（v7）**: **MRMP のみ** — 取得・仕様・6 軸との境界は [v7_corpus_MRMP.md](v7_corpus_MRMP.md)。HF: `nu-dialogue/multi-relational-multi-party-chat-corpus`。
 
+**整形**: `python experiments/v7_mrmp_prepare.py` → `experiments/logs/mrmp_prepared/windows.jsonl` 等。サンプル行: [`experiments/data/v7_mrmp_sample.jsonl`](../../experiments/data/v7_mrmp_sample.jsonl)。相関は `v7_phase1a_pilot_jsonl.py --mrmp-labels`。
+
 ## 実行コマンド（一括）
 
 ```bash

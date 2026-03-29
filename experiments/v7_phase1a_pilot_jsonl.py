@@ -36,6 +36,16 @@ PILOT_KEYS = (
     "history_ba",
 )
 
+# MRMP 整形行（v7_mrmp_prepare.py）の正規化スコア（v7 の 6 軸ではない）
+MRMP_LABEL_KEYS = (
+    "mrmp_informativeness_01",
+    "mrmp_comprehension_01",
+    "mrmp_familiarity_01",
+    "mrmp_interest_01",
+    "mrmp_proactiveness_01",
+    "mrmp_satisfaction_01",
+)
+
 
 def _pearson(x: np.ndarray, y: np.ndarray) -> float | None:
     if x.size < 2 or y.size < 2:
@@ -64,6 +74,7 @@ def run_pilot(
     cpu: bool,
     seed: int,
     layer_index: int,
+    label_keys: tuple[str, ...] | None = None,
 ) -> dict[str, Any]:
     from experiments.v7_phase1a_phi_correlation import (
         extract_hf_attention_layer_stats,
@@ -95,8 +106,9 @@ def run_pilot(
         kept_ids.append(str(row.get("id", "")))
         kept_rows.append(row)
 
+    keys = label_keys if label_keys is not None else PILOT_KEYS
     correlations: dict[str, dict[str, Any]] = {}
-    for key in PILOT_KEYS:
+    for key in keys:
         ys: list[float] = []
         fs: list[float] = []
         for row, f in zip(kept_rows, fros):
@@ -118,7 +130,12 @@ def run_pilot(
         "n_rows": len(fros),
         "row_ids": kept_ids,
         "feature": "frobenius_S_asym",
-        "note": "パイロット用。ラベルは例示。本番は人手アノテと事前登録。",
+        "note": "パイロット用。ラベルは例示。本番は人手アノテと事前登録。"
+        + (
+            " MRMP キーは対話印象スコアであり v7 の 6 軸ではない。"
+            if label_keys is not None and tuple(label_keys) == MRMP_LABEL_KEYS
+            else ""
+        ),
         "correlations_label_vs_fro": correlations,
     }
 
@@ -141,9 +158,23 @@ def main() -> None:
         help="使用する層インデックス（-1 で最終層）",
     )
     p.add_argument("--out", type=Path, default=None)
+    p.add_argument(
+        "--max-rows",
+        type=int,
+        default=None,
+        help="先頭 N 行だけ（大規模 MRMP windows.jsonl 用）",
+    )
+    p.add_argument(
+        "--mrmp-labels",
+        action="store_true",
+        help="MRMP 正規化ラベル（mrmp_*_01）と Frobenius の相関",
+    )
     args = p.parse_args()
 
     rows = load_jsonl(args.jsonl)
+    if args.max_rows is not None:
+        rows = rows[: max(0, args.max_rows)]
+    lk = MRMP_LABEL_KEYS if args.mrmp_labels else None
     payload = run_pilot(
         rows=rows,
         demo=args.demo,
@@ -151,6 +182,7 @@ def main() -> None:
         cpu=args.cpu,
         seed=args.seed,
         layer_index=args.layer,
+        label_keys=lk,
     )
     js = json.dumps(payload, indent=2, ensure_ascii=False)
     if args.out:

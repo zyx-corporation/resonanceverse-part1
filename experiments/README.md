@@ -31,6 +31,8 @@ python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.
 
 **MRMP 全文取得**: [`fetch_mrmp_corpus.py`](fetch_mrmp_corpus.py) — 公式 GitHub の浅い clone → `experiments/logs/mrmp_repo/`（`.gitignore`）。手順: [`docs/planning/v7_corpus_MRMP.md`](../docs/planning/v7_corpus_MRMP.md)。
 
+**MRMP 実証用整形**: [`v7_mrmp_prepare.py`](v7_mrmp_prepare.py) — `windows.jsonl` / `dialogue_eval.jsonl` / `manifest.json` を `experiments/logs/mrmp_prepared/` に生成。サンプル: [`data/v7_mrmp_sample.jsonl`](data/v7_mrmp_sample.jsonl)。Frobenius 相関は [`v7_phase1a_pilot_jsonl.py`](v7_phase1a_pilot_jsonl.py) の `--mrmp-labels`（`--max-rows` で件数制限）。
+
 ## レガシー Phase B/C の記録
 
 - 下流・τ: `slm_downstream.py`、`squad_span.py`
