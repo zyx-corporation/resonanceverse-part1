@@ -58,6 +58,21 @@ def test_v7_run_suite_demo():
     assert "phase1a" in b and "phase2a" in b
 
 
+def test_v7_phase1a_autoproxy_demo():
+    from experiments.v7_phase1a_autoproxy import _BUILTIN_TEXTS, run_autoproxy
+
+    out = run_autoproxy(
+        texts=list(_BUILTIN_TEXTS),
+        demo=True,
+        model_name="gpt2",
+        cpu=True,
+        seed=0,
+    )
+    assert out["schema_version"] == "v7_phase1a_autoproxy.v1"
+    assert out["n_rows"] == len(_BUILTIN_TEXTS)
+    assert "disclaimer" in out
+
+
 def test_v7_phase1a_pilot_jsonl_demo():
     from pathlib import Path
 

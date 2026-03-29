@@ -44,6 +44,15 @@ python experiments/v7_phase1a_pilot_jsonl.py --cpu --model gpt2 --seed 0 \
 
 要約（demo）: [`experiments/baselines/v7_phase1a_pilot_demo_summary_v1.json`](../../experiments/baselines/v7_phase1a_pilot_demo_summary_v1.json)
 
+### 人手なし（代理変数）
+
+トークン数（または `--demo` 時は文字長）と最終層 `||S_asym||_F` の相関。**6 軸の代替ではない**（[Phase_IA_IIIA_本番手順設計_v7](Phase_IA_IIIA_本番手順設計_v7.md)「人手を省略する場合」参照）。
+
+```bash
+python experiments/v7_phase1a_autoproxy.py --demo --out experiments/baselines/v7_phase1a_autoproxy_demo.json
+python experiments/v7_phase1a_autoproxy.py --cpu --model gpt2 --seed 0 --out experiments/logs/v7_suite/autoproxy_hf.json
+```
+
 ## 対応表（実装済みハーネス）
 
 | v7 | 検証の核 | スクリプト |

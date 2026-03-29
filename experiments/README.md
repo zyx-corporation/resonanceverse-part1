@@ -25,6 +25,8 @@ python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.
 
 データ例: [`data/v7_phase1a_pilot.jsonl`](data/v7_phase1a_pilot.jsonl)
 
+人手なし代理（トークン数 × S_asym）: [`v7_phase1a_autoproxy.py`](v7_phase1a_autoproxy.py)
+
 ## レガシー Phase B/C の記録
 
 - 下流・τ: `slm_downstream.py`、`squad_span.py`

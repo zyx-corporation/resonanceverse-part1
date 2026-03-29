@@ -142,11 +142,26 @@ document_type: planning
 
 ---
 
+## 人手を省略する場合の採用経路（v7 Phase I-A 周辺）
+
+本番（6 軸人手・間合い 7 段階）は**据え置き**とし、次に進むときは次を**正**とする。
+
+| 目的 | 採用するもの | 主張の境界 |
+|------|----------------|------------|
+| パイプライン検証 | `v7_run_suite.py --demo`、`v7_phase1a_phi_correlation.py --demo` | 合成データの健全性のみ |
+| HF ベースライン | `v7_phase1a_phi_correlation.py`（層別 S_asym 統計）、`attn_implementation=eager` | **ラベルとの対応は主張しない** |
+| 例示 JSONL | `experiments/data/v7_phase1a_pilot.jsonl` + `v7_phase1a_pilot_jsonl.py` | 数値は**例示**。本番相関の根拠には**しない** |
+| **人手なし代理** | `experiments/v7_phase1a_autoproxy.py`：**トークン数（または文字長）**と最終層 `||S_asym||_F` の Pearson | **6 軸の代替ではない**。長さと注意非対称の**粗い共変動**のログ用 |
+
+Phase III-A（人間の間合い）を人手なしで進める場合は、**合成 Ω のみ**（`v7_phase3a_awai_metrics.py`）を継続し、**人間妥当性の主張は行わない**。
+
+---
+
 ## リポジトリへの実装ギャップ（次の開発タスク）
 
 | 項目 | 現状 | 本番に必要な拡張 |
 |------|------|------------------|
-| Phase I-A | `v7_phase1a` の合成／HF 統計のみ | **ラベル付き JSONL 読み込み**、**ペア整列**、**層別一括相関**、**S_sym 対照** |
+| Phase I-A | 合成／HF／JSONL 例示／**autoproxy**（人手なし経路は上表） | 本番は **人手 6 軸**＋**ペア整列**＋**S_sym 対照** |
 | Phase III-A | 合成軌跡の Ω のみ | **実テキスト**からの **w_ij(t)** 推定、**遅延 τ**、**アノテ UI または外部ツール**、**Krippendorff α** |
 
 ---

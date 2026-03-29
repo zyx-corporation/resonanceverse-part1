@@ -1,0 +1,9 @@
+{
+  "schema_version": "v7_phase1a_autoproxy.v1",
+  "mode": "demo_fro",
+  "model": null,
+  "proxy_name": "char_length",
+  "disclaimer": "人手の 6 軸ではない。長さ代理と S_asym の相関のみ。",
+  "n_rows": 20,
+  "pearson_proxy_vs_frobenius_S_asym": 0.4213809695070588
+}

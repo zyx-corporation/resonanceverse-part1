@@ -36,6 +36,7 @@ def main() -> None:
     args = p.parse_args()
 
     p1a = _load_mod("v7_phase1a_phi_correlation.py", "v7_p1a")
+    p1a_ap = _load_mod("v7_phase1a_autoproxy.py", "v7_p1a_ap")
     p1b = _load_mod("v7_phase1b_directed_tensor.py", "v7_p1b")
     p2a = _load_mod("v7_phase2a_delay_sweep.py", "v7_p2a")
     p3a = _load_mod("v7_phase3a_awai_metrics.py", "v7_p3a")
@@ -52,6 +53,13 @@ def main() -> None:
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "seed": args.seed,
         "phase1a": p1a.run_synthetic_demo(seed=args.seed, n_samples=n_s),
+        "phase1a_autoproxy": p1a_ap.run_autoproxy(
+            texts=list(p1a_ap._BUILTIN_TEXTS),
+            demo=args.demo,
+            model_name="gpt2",
+            cpu=args.demo,
+            seed=args.seed,
+        ),
         "phase1b": p1b.run_demo(seed=args.seed, steps=steps_1b, N=16, d=6, lr=0.05),
         "phase2a": p2a.run_sweep(
             tau_max=tau_max,
