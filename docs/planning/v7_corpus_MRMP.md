@@ -25,9 +25,21 @@ document_type: planning
 
 ## 取得方法
 
-### Hugging Face（推奨）
+### 全文取得（推奨・リポジトリ同梱スクリプト）
 
-`datasets` で **2 つのサブセット**を読み込む（`trust_remote_code=True` が必要な旨がカードに記載）。
+公式 GitHub を**浅い clone** し、`dialogues/**/*.json` と `interlocutors.json` をローカルに揃える。保存先は既定で `experiments/logs/mrmp_repo/`（**git 管理外**）。
+
+```bash
+python experiments/fetch_mrmp_corpus.py
+# 取り直す場合
+python experiments/fetch_mrmp_corpus.py --force
+```
+
+完了後、`experiments/logs/mrmp_repo/fetch_meta.json` に対話 JSON ファイル数・`git rev` などが入る（**960** 対話ファイル＋話者 JSON が揃えば全文相当）。
+
+### Hugging Face（任意・環境依存）
+
+`datasets` のバージョンによっては、データセット**ローディングスクリプト非対応**で失敗する。成功する環境では次のように 2 サブセットを読める（Dataset Card 参照）。
 
 ```python
 from datasets import load_dataset
@@ -44,7 +56,7 @@ interlocutor_dataset = load_dataset(
 )
 ```
 
-### GitHub
+### GitHub（手動）
 
 リポジトリ内 `multi_relational_multi_party_chat_corpus/dialogues/` に対話 JSON、`interlocutors.json` に話者情報（README のディレクトリ構成に従う）。
 

@@ -29,6 +29,8 @@ python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.
 
 **実証ベースライン一括（Phase I-A v1）**: [`v7_empirical_run.py`](v7_empirical_run.py) — メタデータ＋パイロット JSONL＋autoproxy＋（HF 時）参照文の層別統計。事前登録: `docs/planning/v7_phase1a_empirical_prereg_v1.json`。
 
+**MRMP 全文取得**: [`fetch_mrmp_corpus.py`](fetch_mrmp_corpus.py) — 公式 GitHub の浅い clone → `experiments/logs/mrmp_repo/`（`.gitignore`）。手順: [`docs/planning/v7_corpus_MRMP.md`](../docs/planning/v7_corpus_MRMP.md)。
+
 ## レガシー Phase B/C の記録
 
 - 下流・τ: `slm_downstream.py`、`squad_span.py`
