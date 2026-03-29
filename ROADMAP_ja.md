@@ -9,6 +9,7 @@
 | [Resonanceverse 理論 v7.0](docs/v7/Resonanceverse_Theory_v7.0.md) | DDRF（有向遅延共鳴場）、定理、「あわい」、朧、Transformer 方式 B |
 | [実証実験設計 v7.0](docs/v7/Resonanceverse_v7.0_Experimental_Design.md) | Phase I〜IV、判定基準 |
 | [EXPERIMENT_ROADMAP_v7](docs/planning/EXPERIMENT_ROADMAP_v7.md) | v7 フェーズと本リポジトリのスクリプト対応 |
+| [v7 Phase I-A コーパス — MRMP のみ](docs/planning/v7_corpus_MRMP.md) | 本番コーパスを MRMP に限定したときの取得・対応 |
 
 下記の **Phase 1A〜3** は**実装・レガシー実証**のチェックリストとして維持する（v7 の Phase I〜IV とは番号体系が異なる）。対応の目安は [EXPERIMENT_ROADMAP_v7](docs/planning/EXPERIMENT_ROADMAP_v7.md) を参照。
 

@@ -15,6 +15,8 @@ python experiments/v7_empirical_run.py --cpu --model gpt2 --seed 0 --out experim
 
 ベースライン例（demo）: [`experiments/baselines/v7_empirical_bundle_demo_v1.json`](../../experiments/baselines/v7_empirical_bundle_demo_v1.json)
 
+**本番コーパス（v7）**: **MRMP のみ** — 取得・仕様・6 軸との境界は [v7_corpus_MRMP.md](v7_corpus_MRMP.md)。HF: `nu-dialogue/multi-relational-multi-party-chat-corpus`。
+
 ## 実行コマンド（一括）
 
 ```bash

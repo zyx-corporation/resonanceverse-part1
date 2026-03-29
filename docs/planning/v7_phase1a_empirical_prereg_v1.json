@@ -5,7 +5,9 @@
   "registered_at": "2026-03-29",
   "design_reference": "docs/v7/Resonanceverse_v7.0_Experimental_Design.md §2.1",
   "procedure_reference": "docs/planning/Phase_IA_IIIA_本番手順設計_v7.md",
-  "hypothesis_boundary_ja": "パイロット JSONL の数値ラベルは例示であり、6 軸の人手妥当性の根拠とはしない。autoproxy は長さ代理であり 6 軸の代替ではない。",
+  "corpus_planning_v7": "docs/planning/v7_corpus_MRMP.md",
+  "corpus_primary_hf_id": "nu-dialogue/multi-relational-multi-party-chat-corpus",
+  "hypothesis_boundary_ja": "本番コーパスは MRMP のみを対象とする（取得・ペア規則は v7_corpus_MRMP.md）。リポジトリ内パイロット JSONL の数値ラベルは例示であり、6 軸の人手妥当性の根拠とはしない。autoproxy は長さ代理であり 6 軸の代替ではない。",
   "model_preregistered": "gpt2",
   "attention_backend": "eager (output_attentions)",
   "data_manifest": [

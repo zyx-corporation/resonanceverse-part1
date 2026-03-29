@@ -191,6 +191,7 @@ python experiments/v7_empirical_run.py --cpu --model gpt2 --seed 0 \
 
 ## 関連リンク
 
+- [v7 Phase I-A コーパス — MRMP のみ](v7_corpus_MRMP.md)（取得・フィールド対応・有序ペア規則のメモ）
 - [EXPERIMENT_ROADMAP_v7.md](EXPERIMENT_ROADMAP_v7.md)
 - [v7 実証実験設計書](../v7/Resonanceverse_v7.0_Experimental_Design.md)
 - [phase_b_downstream_protocol.md](../api/modules/phase_b_downstream_protocol.md)（評価・プロトコル記載の慣例）
