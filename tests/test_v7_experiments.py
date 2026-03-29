@@ -73,6 +73,32 @@ def test_v7_phase1a_autoproxy_demo():
     assert "disclaimer" in out
 
 
+def test_v7_empirical_run_demo():
+    from pathlib import Path
+
+    from experiments.v7_empirical_run import run_empirical_bundle
+
+    jsonl = (
+        Path(__file__).resolve().parents[1]
+        / "experiments"
+        / "data"
+        / "v7_phase1a_pilot.jsonl"
+    )
+    b = run_empirical_bundle(
+        demo=True,
+        model_name="gpt2",
+        cpu=True,
+        seed=0,
+        jsonl_path=jsonl,
+        reference_text="test",
+    )
+    assert b["schema_version"] == "v7_empirical_bundle.v1"
+    assert b["phase1a_pilot_jsonl"]["n_rows"] == 8
+    assert b["phase1a_autoproxy"]["schema_version"] == "v7_phase1a_autoproxy.v1"
+    assert b["phase1a_reference_layers"]["mode"] == "omitted_in_demo"
+    assert b["phase1a_synthetic_sanity"]["mode"] == "synthetic_demo"
+
+
 def test_v7_phase1a_pilot_jsonl_demo():
     from pathlib import Path
 
@@ -96,6 +122,26 @@ def test_v7_phase1a_pilot_jsonl_demo():
     assert out["schema_version"] == "v7_phase1a_pilot.v1"
     assert out["n_rows"] == 8
     assert out["correlations_label_vs_fro"]["intent_ab"]["n"] == 8
+
+
+def test_v7_empirical_cli_smoke(tmp_path):
+    out = tmp_path / "empirical.json"
+    r = subprocess.run(
+        [
+            sys.executable,
+            str(_ROOT / "experiments" / "v7_empirical_run.py"),
+            "--demo",
+            "--out",
+            str(out),
+        ],
+        cwd=str(_ROOT),
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert r.returncode == 0, r.stderr
+    assert out.is_file()
+    assert "v7_empirical_bundle" in out.read_text()
 
 
 def test_v7_cli_smoke(tmp_path):

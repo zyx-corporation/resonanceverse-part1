@@ -4,6 +4,17 @@
 
 本文書は **Phase I〜IV** と本リポジトリの **スクリプト** の対応を示す。レガシー（Phase A〜C）は [ROADMAP_ja.md](../../ROADMAP_ja.md)。
 
+## 実証実験（Phase I-A ベースライン v1）
+
+設計書の本番規模（数千ターン・人手アノテ）に先立ち、**パイロット JSONL × HF** で再現可能な実走ログを 1 JSON にまとめる。事前登録スタブ: [`v7_phase1a_empirical_prereg_v1.json`](v7_phase1a_empirical_prereg_v1.json)。手順の位置づけ: [Phase_IA_IIIA_本番手順設計_v7](Phase_IA_IIIA_本番手順設計_v7.md)「リポジトリ内実証ベースライン」。
+
+```bash
+python experiments/v7_empirical_run.py --demo --out experiments/logs/v7_empirical/bundle_demo.json
+python experiments/v7_empirical_run.py --cpu --model gpt2 --seed 0 --out experiments/logs/v7_empirical/bundle_hf.json
+```
+
+ベースライン例（demo）: [`experiments/baselines/v7_empirical_bundle_demo_v1.json`](../../experiments/baselines/v7_empirical_bundle_demo_v1.json)
+
 ## 実行コマンド（一括）
 
 ```bash
