@@ -1,0 +1,7 @@
+{
+  "schema_version": "v7_llm_judge_six_axes.v1",
+  "n_rows": 3,
+  "prompt_template_id": "v7_llm_judge_prompt_v1",
+  "prompt_sha256": "1e142cad3c2b6e0f812c3ba919e20ecf7a44710d2ba2f3391dfb535696d54821",
+  "demo": true
+}

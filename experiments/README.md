@@ -33,6 +33,8 @@ python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.
 
 **MRMP 実証用整形**: [`v7_mrmp_prepare.py`](v7_mrmp_prepare.py) — `windows.jsonl` / `dialogue_eval.jsonl` / `manifest.json` を `experiments/logs/mrmp_prepared/` に生成。サンプル: [`data/v7_mrmp_sample.jsonl`](data/v7_mrmp_sample.jsonl)。Frobenius 相関は [`v7_phase1a_pilot_jsonl.py`](v7_phase1a_pilot_jsonl.py) の `--mrmp-labels`（`--max-rows` で件数制限）。
 
+**6 軸 LLM 審判**: [`v7_phase1a_llm_judge_six_axes.py`](v7_phase1a_llm_judge_six_axes.py) — `trust_ab`…`history_ba` を付与。`--demo`（決定論疑似）または `OPENAI_API_KEY` + `--provider openai`。続けて Frobenius 相関: `v7_phase1a_pilot_jsonl.py --jsonl <出力JSONL>`（`--demo` または HF）。
+
 ## レガシー Phase B/C の記録
 
 - 下流・τ: `slm_downstream.py`、`squad_span.py`

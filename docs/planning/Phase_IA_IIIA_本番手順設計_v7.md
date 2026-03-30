@@ -61,6 +61,8 @@ document_type: planning
 
 フィールドの雛形は [`v7_phase1a_empirical_prereg_v1.json`](v7_phase1a_empirical_prereg_v1.json) の `llm_judge_six_axes`。
 
+実行スクリプト（**`--demo`** で API 無し疑似スコア／`OPENAI_API_KEY` で OpenAI 審判）: [`experiments/v7_phase1a_llm_judge_six_axes.py`](../../experiments/v7_phase1a_llm_judge_six_axes.py)。
+
 ### A.4 計算パイプライン（実装タスク）
 
 | 手順 | 内容 |

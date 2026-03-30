@@ -19,7 +19,7 @@ python experiments/v7_empirical_run.py --cpu --model gpt2 --seed 0 --out experim
 
 **整形**: `python experiments/v7_mrmp_prepare.py` → `experiments/logs/mrmp_prepared/windows.jsonl` 等。サンプル行: [`experiments/data/v7_mrmp_sample.jsonl`](../../experiments/data/v7_mrmp_sample.jsonl)。相関は `v7_phase1a_pilot_jsonl.py --mrmp-labels`。
 
-**6 軸を LLM で付ける場合**: 事前登録フィールド [`v7_phase1a_empirical_prereg_v1.json`](v7_phase1a_empirical_prereg_v1.json) の `llm_judge_six_axes`、手順の位置づけは [Phase_IA_IIIA_本番手順設計_v7](Phase_IA_IIIA_本番手順設計_v7.md)「A.3′」。
+**6 軸を LLM で付ける場合**: 事前登録フィールド [`v7_phase1a_empirical_prereg_v1.json`](v7_phase1a_empirical_prereg_v1.json) の `llm_judge_six_axes`、手順は [Phase_IA_IIIA_本番手順設計_v7](Phase_IA_IIIA_本番手順設計_v7.md)「A.3′」。実行: [`../../experiments/v7_phase1a_llm_judge_six_axes.py`](../../experiments/v7_phase1a_llm_judge_six_axes.py)（`--demo` または `OPENAI_API_KEY`）。
 
 ## 実行コマンド（一括）
 
