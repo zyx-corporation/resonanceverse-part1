@@ -37,6 +37,8 @@ python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.
 
 **API キー（git 管理外）**: リポジトリ直下に [`.env.example`](../.env.example) をコピーして **`.env`** を作成し、`OPENAI_API_KEY=` を記入（`.env` / `.env.local` は `.gitignore`）。スクリプト実行時に [`local_env.py`](local_env.py) が自動で読み込む。
 
+**n=400 実走の要約（相関のみ）**: [`baselines/v7_phase1a_llm_judge_n400_gpt2_correlations_v1.json`](baselines/v7_phase1a_llm_judge_n400_gpt2_correlations_v1.json)（詳細ログは `experiments/logs/`）。
+
 ## レガシー Phase B/C の記録
 
 - 下流・τ: `slm_downstream.py`、`squad_span.py`

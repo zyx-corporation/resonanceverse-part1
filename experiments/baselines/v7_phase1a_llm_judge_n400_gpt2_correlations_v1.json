@@ -1,0 +1,24 @@
+{
+  "schema_version": "v7_phase1a_pilot_summary.v1",
+  "description_ja": "MRMP windows 先頭400行に OpenAI 審判（v7_llm_judge_prompt_v1）→ gpt2 最終層 Frobenius vs 12 軸。ラベルは LLM 疑似6軸（人手金標準ではない）。",
+  "n_rows": 400,
+  "attention_model": "gpt2",
+  "judge": "openai_chat",
+  "prompt_template_id": "v7_llm_judge_prompt_v1",
+  "source_jsonl_ja": "experiments/logs/mrmp_prepared/windows.jsonl（先頭400行）",
+  "full_outputs_ja": "experiments/logs/v7_llm_judge_openai_n400.jsonl / v7_phase1a_pilot_after_llm_judge_n400_hf.json（gitignore）",
+  "correlations_label_vs_fro": {
+    "trust_ab": { "n": 400, "pearson_r": 0.3133803225946848 },
+    "trust_ba": { "n": 400, "pearson_r": 0.3283364864467529 },
+    "authority_ab": { "n": 400, "pearson_r": 0.1925599496716275 },
+    "authority_ba": { "n": 400, "pearson_r": 0.20876302716905723 },
+    "proximity_ab": { "n": 400, "pearson_r": 0.03721055325522528 },
+    "proximity_ba": { "n": 400, "pearson_r": 0.02505748494690602 },
+    "intent_ab": { "n": 400, "pearson_r": 0.14418070133797728 },
+    "intent_ba": { "n": 400, "pearson_r": 0.025736761520646446 },
+    "affect_ab": { "n": 400, "pearson_r": 0.040112376366143856 },
+    "affect_ba": { "n": 400, "pearson_r": -0.13264441126126972 },
+    "history_ab": { "n": 400, "pearson_r": 0.23408874973710903 },
+    "history_ba": { "n": 400, "pearson_r": 0.2387496564614934 }
+  }
+}
