@@ -149,6 +149,9 @@ def run_judge(
     temperature: float,
     seed: int,
 ) -> dict[str, Any]:
+    from experiments.local_env import load_repo_dotenv
+
+    load_repo_dotenv()
     api_key = os.environ.get("OPENAI_API_KEY", "").strip()
     out_rows: list[dict[str, Any]] = []
     sha = _prompt_sha256(

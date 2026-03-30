@@ -75,6 +75,10 @@ pip install -r requirements.txt
 
 `pip install -e .` や M3 Max 専用オプションは、パッケージメタデータ整備後に追記予定です。
 
+### 環境変数（API キー）
+
+`OPENAI_API_KEY` などは **git 管理しない** リポジトリ直下の **`.env`** に保存する。`.env.example` を `.env` にコピーして値を埋める（`.env` / `.env.local` は `.gitignore` 済み）。`experiments/v7_phase1a_llm_judge_six_axes.py` 実行時に `experiments/local_env.py` が未設定の変数だけ読み込む。
+
 ## クイックスタート（現在のリポジトリに即した例）
 
 ```python

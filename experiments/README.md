@@ -35,6 +35,8 @@ python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.
 
 **6 軸 LLM 審判**: [`v7_phase1a_llm_judge_six_axes.py`](v7_phase1a_llm_judge_six_axes.py) — `trust_ab`…`history_ba` を付与。`--demo`（決定論疑似）または `OPENAI_API_KEY` + `--provider openai`。続けて Frobenius 相関: `v7_phase1a_pilot_jsonl.py --jsonl <出力JSONL>`（`--demo` または HF）。
 
+**API キー（git 管理外）**: リポジトリ直下に [`.env.example`](../.env.example) をコピーして **`.env`** を作成し、`OPENAI_API_KEY=` を記入（`.env` / `.env.local` は `.gitignore`）。スクリプト実行時に [`local_env.py`](local_env.py) が自動で読み込む。
+
 ## レガシー Phase B/C の記録
 
 - 下流・τ: `slm_downstream.py`、`squad_span.py`
