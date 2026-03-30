@@ -4,6 +4,9 @@ v7 Phase I-A: 6 軸（方向付き）を JSONL 行に付与する「LLM 審判�
 - --demo: API なし。text と id から決定論的な 0–1 疑似スコア（CI・オフライン）。
 - --provider openai: OPENAI_API_KEY が必要。注意モデル（gpt2 等）とは別系統を推奨。
 
+大規模向け: ``--offset`` / ``--max-rows`` で入力スライス、``--resume`` で出力行数から
+オフセットを合わせて追記（中断再開）。429/5xx は指数バックオフでリトライ。
+
 入力 JSONL は少なくとも ``text`` を含む。MRMP 整形行（``speaker_src``, ``speaker_tgt``）を推奨。
 
 出力: 入力行に trust_ab … history_ba（12 列）と llm_judge_meta を付与した JSONL。
@@ -16,6 +19,7 @@ import hashlib
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -27,6 +31,10 @@ _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+from experiments.jsonl_slice import (  # noqa: E402
+    count_nonempty_lines,
+    iter_jsonl_slice,
+)
 from experiments.v7_phase1a_pilot_jsonl import PILOT_KEYS  # noqa: E402
 
 PROMPT_TEMPLATE_ID = "v7_llm_judge_prompt_v1"
@@ -89,7 +97,7 @@ def demo_scores_for_row(row_id: str, text: str) -> dict[str, float]:
     return {k: float(rng.uniform(0.0, 1.0)) for k in PILOT_KEYS}
 
 
-def openai_scores_for_row(
+def _openai_scores_once(
     *,
     text: str,
     speaker_a: str,
@@ -120,14 +128,8 @@ def openai_scores_for_row(
         },
         method="POST",
     )
-    try:
-        with urllib.request.urlopen(req, timeout=120) as resp:
-            payload = json.loads(resp.read().decode("utf-8"))
-    except urllib.error.HTTPError as e:
-        err_body = e.read().decode("utf-8", errors="replace")
-        raise RuntimeError(
-            f"OpenAI HTTP {e.code}: {err_body[:500]}"
-        ) from e
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        payload = json.loads(resp.read().decode("utf-8"))
     content = payload["choices"][0]["message"]["content"]
     parsed = json.loads(content)
     out: dict[str, float] = {}
@@ -140,6 +142,109 @@ def openai_scores_for_row(
     return out
 
 
+def openai_scores_for_row(
+    *,
+    text: str,
+    speaker_a: str,
+    speaker_b: str,
+    model: str,
+    api_key: str,
+    temperature: float,
+    seed: int,
+    max_retries: int = 8,
+    base_sleep_s: float = 1.0,
+) -> dict[str, float]:
+    last_err: BaseException | None = None
+    for attempt in range(max_retries):
+        try:
+            return _openai_scores_once(
+                text=text,
+                speaker_a=speaker_a,
+                speaker_b=speaker_b,
+                model=model,
+                api_key=api_key,
+                temperature=temperature,
+                seed=seed,
+            )
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8", errors="replace")
+            if e.code in (429, 500, 502, 503, 504) and attempt < max_retries - 1:
+                wait = min(120.0, base_sleep_s * (2**attempt))
+                time.sleep(wait)
+                last_err = e
+                continue
+            raise RuntimeError(
+                f"OpenAI HTTP {e.code}: {err_body[:500]}"
+            ) from e
+        except (json.JSONDecodeError, ValueError, KeyError, OSError) as e:
+            if attempt < max_retries - 1:
+                wait = min(90.0, base_sleep_s * (2**attempt))
+                time.sleep(wait)
+                last_err = e
+                continue
+            raise
+    raise RuntimeError(f"OpenAI failed after {max_retries} tries") from last_err
+
+
+def append_llm_judge_to_row(
+    row: dict[str, Any],
+    *,
+    demo: bool,
+    provider: str,
+    openai_model: str,
+    temperature: float,
+    seed: int,
+    max_retries: int,
+    base_sleep_s: float,
+) -> dict[str, Any] | None:
+    """1 行分。text が空なら None。環境は呼び出し側で load_repo_dotenv 済み想定。"""
+    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
+    sha = _prompt_sha256(
+        SYSTEM_PROMPT_JA,
+        _user_prompt("{text}", "{a}", "{b}"),
+    )
+
+    text = str(row.get("text", "")).strip()
+    rid = str(row.get("id", ""))
+    if not text:
+        return None
+    sp_a, sp_b = _speakers_from_row(row)
+
+    if demo:
+        scores = demo_scores_for_row(rid or text[:80], text)
+        mode = "demo_deterministic_hash"
+        model_used = None
+    elif provider == "openai":
+        if not api_key:
+            raise RuntimeError("OPENAI_API_KEY missing")
+        scores = openai_scores_for_row(
+            text=text,
+            speaker_a=sp_a,
+            speaker_b=sp_b,
+            model=openai_model,
+            api_key=api_key,
+            temperature=temperature,
+            seed=seed,
+            max_retries=max_retries,
+            base_sleep_s=base_sleep_s,
+        )
+        mode = "openai_chat"
+        model_used = openai_model
+    else:
+        raise ValueError(f"unknown provider: {provider}")
+
+    merged = {**row, **scores}
+    merged["llm_judge_meta"] = {
+        "mode": mode,
+        "prompt_template_id": PROMPT_TEMPLATE_ID,
+        "prompt_sha256": sha,
+        "model": model_used,
+        "provider": provider if not demo else "none",
+        "role_ja": "疑似6軸。demo は決定論乱数。人手金標準ではない。",
+    }
+    return merged
+
+
 def run_judge(
     *,
     rows: list[dict[str, Any]],
@@ -148,65 +253,39 @@ def run_judge(
     openai_model: str,
     temperature: float,
     seed: int,
+    max_retries: int = 8,
+    base_sleep_s: float = 1.0,
 ) -> dict[str, Any]:
     from experiments.local_env import load_repo_dotenv
 
     load_repo_dotenv()
-    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
     out_rows: list[dict[str, Any]] = []
     sha = _prompt_sha256(
         SYSTEM_PROMPT_JA,
         _user_prompt("{text}", "{a}", "{b}"),
     )
-
     for row in rows:
-        text = str(row.get("text", "")).strip()
-        rid = str(row.get("id", ""))
-        if not text:
-            continue
-        sp_a, sp_b = _speakers_from_row(row)
-
-        if demo:
-            scores = demo_scores_for_row(rid or text[:80], text)
-            mode = "demo_deterministic_hash"
-            model_used = None
-        elif provider == "openai":
-            if not api_key:
-                return {
-                    "schema_version": "v7_llm_judge_six_axes.v1",
-                    "error": "OPENAI_API_KEY missing",
-                    "skipped": True,
-                }
-            scores = openai_scores_for_row(
-                text=text,
-                speaker_a=sp_a,
-                speaker_b=sp_b,
-                model=openai_model,
-                api_key=api_key,
+        try:
+            m = append_llm_judge_to_row(
+                row,
+                demo=demo,
+                provider=provider,
+                openai_model=openai_model,
                 temperature=temperature,
                 seed=seed,
+                max_retries=max_retries,
+                base_sleep_s=base_sleep_s,
             )
-            mode = "openai_chat"
-            model_used = openai_model
-        else:
-            return {
-                "schema_version": "v7_llm_judge_six_axes.v1",
-                "error": f"unknown provider: {provider}",
-                "skipped": True,
-            }
-
-        merged = {**row, **scores}
-        merged["llm_judge_meta"] = {
-            "mode": mode,
-            "prompt_template_id": PROMPT_TEMPLATE_ID,
-            "prompt_sha256": sha,
-            "model": model_used,
-            "provider": provider if not demo else "none",
-            "role_ja": (
-                "疑似6軸。demo は決定論乱数。人手金標準ではない。"
-            ),
-        }
-        out_rows.append(merged)
+        except RuntimeError as e:
+            if "OPENAI_API_KEY" in str(e):
+                return {
+                    "schema_version": "v7_llm_judge_six_axes.v1",
+                    "error": str(e),
+                    "skipped": True,
+                }
+            raise
+        if m is not None:
+            out_rows.append(m)
 
     return {
         "schema_version": "v7_llm_judge_six_axes.v1",
@@ -231,42 +310,126 @@ def main() -> None:
     p.add_argument("--openai-model", default="gpt-4o-mini")
     p.add_argument("--temperature", type=float, default=0.2)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument(
+        "--offset",
+        type=int,
+        default=0,
+        help="入力 JSONL の先頭からスキップする行数（--resume 時は上書き）",
+    )
     p.add_argument("--max-rows", type=int, default=None)
+    p.add_argument(
+        "--resume",
+        action="store_true",
+        help="--out-jsonl の既存行数を offset にし、追記モード",
+    )
+    p.add_argument(
+        "--sleep-after-request",
+        type=float,
+        default=0.0,
+        help="各リクエスト成功後の追加待機秒（レート緩和）",
+    )
+    p.add_argument(
+        "--max-retries",
+        type=int,
+        default=8,
+        help="429/5xx/JSON 失敗時の最大リトライ回数",
+    )
+    p.add_argument(
+        "--base-sleep",
+        type=float,
+        default=1.0,
+        help="リトライ待機の初期秒（指数バックオフ）",
+    )
     args = p.parse_args()
 
-    lines = [
-        json.loads(x)
-        for x in args.jsonl.read_text(encoding="utf-8").splitlines()
-        if x.strip()
-    ]
-    if args.max_rows is not None:
-        lines = lines[: max(0, args.max_rows)]
+    from experiments.local_env import load_repo_dotenv
 
-    payload = run_judge(
-        rows=lines,
-        demo=args.demo,
-        provider=args.provider,
-        openai_model=args.openai_model,
-        temperature=args.temperature,
-        seed=args.seed,
-    )
-    if payload.get("error"):
-        print(json.dumps(payload, ensure_ascii=False), file=sys.stderr)
+    load_repo_dotenv()
+
+    jsonl_path = args.jsonl.resolve()
+    if not jsonl_path.is_file():
+        print(
+            json.dumps({"error": "jsonl_not_found", "path": str(jsonl_path)}),
+            file=sys.stderr,
+        )
         sys.exit(1)
 
-    rows = payload["rows"]
-    if args.out_jsonl:
-        args.out_jsonl.parent.mkdir(parents=True, exist_ok=True)
-        with args.out_jsonl.open("w", encoding="utf-8") as f:
-            for r in rows:
-                f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    offset = max(0, args.offset)
+    if args.resume:
+        if not args.out_jsonl:
+            print(
+                json.dumps({"error": "resume_requires_out_jsonl"}),
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        outp = args.out_jsonl.resolve()
+        if outp.is_file():
+            offset = count_nonempty_lines(outp)
+
+    sha = _prompt_sha256(
+        SYSTEM_PROMPT_JA,
+        _user_prompt("{text}", "{a}", "{b}"),
+    )
+
+    n_written = 0
+    out_handle = None
+    try:
+        if args.out_jsonl:
+            args.out_jsonl.parent.mkdir(parents=True, exist_ok=True)
+            mode = "a" if (args.resume and args.out_jsonl.resolve().is_file()) else "w"
+            out_handle = args.out_jsonl.open(mode, encoding="utf-8")
+
+        for row in iter_jsonl_slice(
+            jsonl_path,
+            offset=offset,
+            max_rows=args.max_rows,
+        ):
+            merged = append_llm_judge_to_row(
+                row,
+                demo=args.demo,
+                provider=args.provider,
+                openai_model=args.openai_model,
+                temperature=args.temperature,
+                seed=args.seed,
+                max_retries=args.max_retries,
+                base_sleep_s=args.base_sleep,
+            )
+            if merged is None:
+                continue
+            if out_handle:
+                out_handle.write(json.dumps(merged, ensure_ascii=False) + "\n")
+                out_handle.flush()
+                n_written += 1
+            if args.sleep_after_request > 0 and not args.demo:
+                time.sleep(args.sleep_after_request)
+    except RuntimeError as e:
+        if "OPENAI_API_KEY" in str(e):
+            print(
+                json.dumps(
+                    {
+                        "schema_version": "v7_llm_judge_six_axes.v1",
+                        "error": str(e),
+                        "skipped": True,
+                    },
+                    ensure_ascii=False,
+                ),
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        raise
+    finally:
+        if out_handle is not None:
+            out_handle.close()
 
     summary = {
-        "schema_version": payload["schema_version"],
-        "n_rows": len(rows),
-        "prompt_template_id": payload["prompt_template_id"],
-        "prompt_sha256": payload["prompt_sha256"],
+        "schema_version": "v7_llm_judge_six_axes.v1",
+        "n_rows_written": n_written,
+        "input_offset": offset,
+        "max_rows": args.max_rows,
+        "prompt_template_id": PROMPT_TEMPLATE_ID,
+        "prompt_sha256": sha,
         "demo": args.demo,
+        "resume": args.resume,
     }
     if args.out_summary:
         args.out_summary.parent.mkdir(parents=True, exist_ok=True)
@@ -278,7 +441,11 @@ def main() -> None:
     print(
         "v7_llm_judge_ok",
         json.dumps(
-            {"n_rows": len(rows), "demo": args.demo},
+            {
+                "n_rows_written": n_written,
+                "input_offset": offset,
+                "demo": args.demo,
+            },
             ensure_ascii=False,
         ),
     )

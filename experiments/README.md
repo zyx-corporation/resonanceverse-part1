@@ -35,6 +35,12 @@ python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.
 
 **6 軸 LLM 審判**: [`v7_phase1a_llm_judge_six_axes.py`](v7_phase1a_llm_judge_six_axes.py) — `trust_ab`…`history_ba` を付与。`--demo`（決定論疑似）または `OPENAI_API_KEY` + `--provider openai`。続けて Frobenius 相関: `v7_phase1a_pilot_jsonl.py --jsonl <出力JSONL>`（`--demo` または HF）。
 
+**大規模・チャンク**: `--offset` + `--max-rows` で入力スライス。`--resume --out-jsonl <同一ファイル>` で出力行数＝次の offset として**追記再開**。429/5xx は指数バックオフで `--max-retries`（既定 8）。レート緩和に `--sleep-after-request 秒`。
+
+例（1 万件を 1000 行×10 回、同じ出力に追記）: 毎回 `--max-rows 1000`。1 回目 `--offset 0`、2 回目以降 **`--resume`**（出力行数から offset を自動計算）＋ `--max-rows 1000`。
+
+**JSONL 相関のスライス**: `v7_phase1a_pilot_jsonl.py` にも `--offset` / `--max-rows`（ストリーミング読み）。
+
 **API キー（git 管理外）**: リポジトリ直下に [`.env.example`](../.env.example) をコピーして **`.env`** を作成し、`OPENAI_API_KEY=` を記入（`.env` / `.env.local` は `.gitignore`）。スクリプト実行時に [`local_env.py`](local_env.py) が自動で読み込む。
 
 **n=400 実走の要約（相関のみ）**: [`baselines/v7_phase1a_llm_judge_n400_gpt2_correlations_v1.json`](baselines/v7_phase1a_llm_judge_n400_gpt2_correlations_v1.json)（詳細ログは `experiments/logs/`）。

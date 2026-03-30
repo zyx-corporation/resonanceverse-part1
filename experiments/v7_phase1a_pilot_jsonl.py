@@ -66,6 +66,16 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def load_jsonl_slice(
+    path: Path,
+    offset: int,
+    max_rows: int | None,
+) -> list[dict[str, Any]]:
+    from experiments.jsonl_slice import iter_jsonl_slice
+
+    return list(iter_jsonl_slice(path, offset, max_rows))
+
+
 def run_pilot(
     *,
     rows: list[dict[str, Any]],
@@ -159,10 +169,16 @@ def main() -> None:
     )
     p.add_argument("--out", type=Path, default=None)
     p.add_argument(
+        "--offset",
+        type=int,
+        default=0,
+        help="先頭からスキップする行数（大規模 JSONL のチャンク用）",
+    )
+    p.add_argument(
         "--max-rows",
         type=int,
         default=None,
-        help="先頭 N 行だけ（大規模 MRMP windows.jsonl 用）",
+        help="最大 N 行（offset 適用後）",
     )
     p.add_argument(
         "--mrmp-labels",
@@ -171,9 +187,14 @@ def main() -> None:
     )
     args = p.parse_args()
 
-    rows = load_jsonl(args.jsonl)
-    if args.max_rows is not None:
-        rows = rows[: max(0, args.max_rows)]
+    if args.offset > 0 or args.max_rows is not None:
+        rows = load_jsonl_slice(
+            args.jsonl,
+            offset=max(0, args.offset),
+            max_rows=args.max_rows,
+        )
+    else:
+        rows = load_jsonl(args.jsonl)
     lk = MRMP_LABEL_KEYS if args.mrmp_labels else None
     payload = run_pilot(
         rows=rows,
