@@ -22,6 +22,7 @@ python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.
 | `v7_phase2a_delay_sweep.py` | Phase II-A: τ 掃引 |
 | `v7_phase3a_awai_metrics.py` | あわい Ω（合成軌跡） |
 | `v7_phase1a_pilot_jsonl.py` | Phase I-A: **JSONL + ラベル**と最終層 `S_asym` の相関（`--demo` で合成特徴） |
+| `run_mrmp_llm_judge_chunks.sh` | MRMP `windows.jsonl` に対し LLM 審判を **CHUNK×N_CHUNKS** で追記実行 |
 
 データ例: [`data/v7_phase1a_pilot.jsonl`](data/v7_phase1a_pilot.jsonl)
 
@@ -37,7 +38,7 @@ python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.
 
 **大規模・チャンク**: `--offset` + `--max-rows` で入力スライス。`--resume --out-jsonl <同一ファイル>` で出力行数＝次の offset として**追記再開**。429/5xx は指数バックオフで `--max-retries`（既定 8）。レート緩和に `--sleep-after-request 秒`。
 
-例（1 万件を 1000 行×10 回、同じ出力に追記）: 毎回 `--max-rows 1000`。1 回目 `--offset 0`、2 回目以降 **`--resume`**（出力行数から offset を自動計算）＋ `--max-rows 1000`。
+**一括（推奨）**: [`run_mrmp_llm_judge_chunks.sh`](run_mrmp_llm_judge_chunks.sh) — 既定で `CHUNK=1000`・`N_CHUNKS=10`（計 1 万行）。`bash experiments/run_mrmp_llm_judge_chunks.sh` または `CHUNK=500 N_CHUNKS=20 bash ...`。`--demo` で API なしスモーク。環境変数 `SRC` / `OUT` で入出力パスを変更可。
 
 **JSONL 相関のスライス**: `v7_phase1a_pilot_jsonl.py` にも `--offset` / `--max-rows`（ストリーミング読み）。
 
