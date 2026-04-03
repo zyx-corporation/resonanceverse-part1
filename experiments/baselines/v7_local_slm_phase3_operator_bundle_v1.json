@@ -8,5 +8,5 @@
     "tau_summary_json": "experiments/logs/v7_local_slm_chunk_o0_n500_summary.json",
     "bootstrap_json": "experiments/logs/v7_local_slm_chunk_o0_n500_bootstrap.json"
   },
-  "note_ja": "パスは例。実チャンクごとに OUT_PREFIX を変え、必要なら WRITE_REPRO_MANIFEST=1 BUNDLE_JSON=experiments/baselines/v7_phase2a_mrmp_tau_n3146_bundle_v1.json でマニフェスト生成。審判チャンクは run_mrmp_llm_judge_chunks_hf_local.sh（hf_local）。"
+  "note_ja": "パスは例。実チャンクごとに OUT_PREFIX を変え、成果物凍結時は run_phase2a_mrmp_tau.sh 終了後に WRITE_REPRO_MANIFEST=1 BUNDLE_JSON=experiments/baselines/v7_phase2a_mrmp_tau_n3146_bundle_v1.json（成果物が揃う bundle）で ${OUT_PREFIX}_repro_manifest.json を生成。図・PNG までハッシュ必須なら REPRO_MANIFEST_STRICT=1。検証: python experiments/v7_phase2a_repro_manifest.py --verify <manifest>。審判チャンクは run_mrmp_llm_judge_chunks_hf_local.sh。"
 }

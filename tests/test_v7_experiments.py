@@ -531,10 +531,19 @@ def test_v7_phase2a_repro_manifest_pin_code_cli(tmp_path):
     assert r2.returncode == 0, r2.stderr
     assert "experiments/run_local_slm_phase2_smoke.sh" in data["files"]
     assert "experiments/run_local_slm_smoke_all.sh" in data["files"]
+    assert "docs/planning/v7_local_slm_llm_judge_prereg_stub_v1.json" in data["files"]
     assert "experiments/prompts/v7_llm_judge_prompt_v1.json" in data["files"]
     assert "experiments/v7_llm_judge_slm_pair_agreement.py" in data["files"]
     assert "experiments/run_local_slm_judge_pair_agreement.sh" in data["files"]
     assert "experiments/run_local_slm_phase4_judge_pair.sh" in data["files"]
+    assert "experiments/run_local_slm_phase4_swallow_7b_13b.sh" in data["files"]
+
+
+def test_v7_local_slm_prereg_stub_has_revision():
+    p = _ROOT / "docs" / "planning" / "v7_local_slm_llm_judge_prereg_stub_v1.json"
+    data = json.loads(p.read_text(encoding="utf-8"))
+    rev = data.get("prereg_revision")
+    assert isinstance(rev, int) and rev >= 1
 
 
 def test_v7_local_slm_phase1_smoke_bundle_baseline():

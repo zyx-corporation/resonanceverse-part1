@@ -40,6 +40,7 @@ _SCHEMA = "v7_phase2a_repro_manifest.v1"
 
 # パイプラインの「コード正本」パス（git 管理下想定）
 _PINNED_CODE_RELPATHS = (
+    "docs/planning/v7_local_slm_llm_judge_prereg_stub_v1.json",
     "experiments/v7_phase2a_empirical_run.py",
     "experiments/v7_phase2a_empirical.py",
     "experiments/v7_phase2a_tau_summary.py",
@@ -59,6 +60,7 @@ _PINNED_CODE_RELPATHS = (
     "experiments/run_mrmp_llm_judge_chunks_hf_local.sh",
     "experiments/run_local_slm_judge_pair_agreement.sh",
     "experiments/run_local_slm_phase4_judge_pair.sh",
+    "experiments/run_local_slm_phase4_swallow_7b_13b.sh",
     "experiments/prompts/v7_llm_judge_prompt_v1.json",
 )
 

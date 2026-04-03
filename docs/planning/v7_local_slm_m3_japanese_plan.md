@@ -75,16 +75,16 @@ document_type: planning
 ### Phase 3 — 本番スケールのバッチ（データ次第）
 
 - [x] MRMP 窓に **OFFSET・MAX_ROWS・MODEL**（[`run_phase2a_mrmp_tau.sh`](../../experiments/run_phase2a_mrmp_tau.sh) 拡張）および [`run_local_slm_phase3_mrmp_chunk.sh`](../../experiments/run_local_slm_phase3_mrmp_chunk.sh）でチャンク実行。
-- [ ] 成果物ごとに **`v7_phase2a_repro_manifest.py`**（`--strict` は図まで含む場合のみ）でハッシュ運用を検討（`WRITE_REPRO_MANIFEST=1` は既存シェルと同じ）。
+- [x] 成果物ごとの **`v7_phase2a_repro_manifest.py`** 運用を **§11** に確定（`WRITE_REPRO_MANIFEST=1`・`BUNDLE_JSON`・任意 `REPRO_MANIFEST_STRICT=1`）。
 - [x] オペレータ向け草案: [`baselines/v7_local_slm_phase3_operator_bundle_v1.json`](../../experiments/baselines/v7_local_slm_phase3_operator_bundle_v1.json)（`note_ja` に審判チャンク [`run_mrmp_llm_judge_chunks_hf_local.sh`](../../experiments/run_mrmp_llm_judge_chunks_hf_local.sh)）。
 
 **完了基準**: 論文・補遺に載せられる **再現コマンド＋環境メタ**が揃う。
 
 ### Phase 4 — 拡張・任意
 
-- [ ] **Swallow 13B** 審判の A/B（品質 vs 時間）。
-- [ ] **Qwen2.5-7B-Instruct** 等との審判ブレ（実走は任意）: [`run_local_slm_phase4_judge_pair.sh`](../../experiments/run_local_slm_phase4_judge_pair.sh) で同一スライスを A/B 審判 → **§10** の集計（JSON+MD）。探索のみ・主結果にしない。
-- [ ] **MLX** への移行評価（スループットが 2 倍以上なら「高速経路」として文書化）。
+- [x] **Swallow 7B vs 13B** 審判 A/B（実走は任意）: [`run_local_slm_phase4_swallow_7b_13b.sh`](../../experiments/run_local_slm_phase4_swallow_7b_13b.sh) → **§10** 集計。品質と時間はログに記録し主結果にしない。
+- [ ] **Qwen2.5-7B-Instruct** 等との審判ブレ（実走は任意）: [`run_local_slm_phase4_judge_pair.sh`](../../experiments/run_local_slm_phase4_judge_pair.sh)（既定 A=Swallow7B・B=Qwen）。探索のみ・主結果にしない。
+- [ ] **MLX** への移行評価: **§13** の手順・合格基準。リポジトリに MLX 推論コードは未同梱（別環境・別マニフェスト）。
 
 ---
 
@@ -117,7 +117,7 @@ document_type: planning
 - [x] 英語 gpt2 との並列表（[`run_local_slm_phase1_compare_en_ja.sh`](../../experiments/run_local_slm_phase1_compare_en_ja.sh)、ログは `experiments/logs/`）
 - [x] Phase 2: [`experiments/README.md`](../../experiments/README.md)・本書 §9 にコマンド記載（`hf_local`・`run_local_slm_phase2_smoke.sh`）
 - [x] Phase 3: オペレータ草案 [`v7_local_slm_phase3_operator_bundle_v1.json`](../../experiments/baselines/v7_local_slm_phase3_operator_bundle_v1.json)（本番凍結時は `*_v2` へ複製・パス確定）
-- [ ] 事前登録の更新版（モデル・プロンプト版が変わる場合は**改訂番号**）
+- [x] 事前登録スタブの改訂欄: [`v7_local_slm_llm_judge_prereg_stub_v1.json`](v7_local_slm_llm_judge_prereg_stub_v1.json) の **`prereg_revision`**（運用 **§12**）
 - [ ] SLM 同士一致の補遺ログ（任意・§10・主結果に含めない）
 
 ---
@@ -145,6 +145,8 @@ document_type: planning
 | 審判プロンプト正本 | `experiments/prompts/v7_llm_judge_prompt_v1.json` |
 | SLM 同士の審判一致（探索） | `python experiments/v7_llm_judge_slm_pair_agreement.py`（`--out-json` / `--out-md`）または `bash experiments/run_local_slm_judge_pair_agreement.sh`（任意 `OUT_MD`） |
 | Phase 4 審判 A/B + 一致（探索・重い） | `bash experiments/run_local_slm_phase4_judge_pair.sh`（`HF_MODEL_A` / `HF_MODEL_B`・`MAX_ROWS` 等） |
+| Phase 4 Swallow 7B vs 13B（探索・重い） | `bash experiments/run_local_slm_phase4_swallow_7b_13b.sh` |
+| チャンク後の再現マニフェスト | **§11**（`WRITE_REPRO_MANIFEST=1`・`BUNDLE_JSON`） |
 
 *改訂時は採用モデルの revision と本書の版日を更新すること。*
 
@@ -173,5 +175,45 @@ document_type: planning
 
 - 集計 CLI: [`experiments/v7_llm_judge_slm_pair_agreement.py`](../../experiments/v7_llm_judge_slm_pair_agreement.py)（`schema_version: v7_llm_judge_slm_pair_agreement.v1`）。
 - 薄いラッパ: [`experiments/run_local_slm_judge_pair_agreement.sh`](../../experiments/run_local_slm_judge_pair_agreement.sh)（`JSONL_A` / `JSONL_B` / `OUT_JSON`、任意 `OUT_MD`）。
-- Phase 4 一括（重い）: [`experiments/run_local_slm_phase4_judge_pair.sh`](../../experiments/run_local_slm_phase4_judge_pair.sh)。
+- Phase 4 一括（重い）: [`experiments/run_local_slm_phase4_judge_pair.sh`](../../experiments/run_local_slm_phase4_judge_pair.sh)、Swallow 7B/13B 専用: [`experiments/run_local_slm_phase4_swallow_7b_13b.sh`](../../experiments/run_local_slm_phase4_swallow_7b_13b.sh)。
 - 審判 JSONL の生成自体の一括シェルは必須としない（モデル 2 回ロードは環境依存が大きい）。必要なら `HF_MODEL` を切り替えて `run_mrmp_llm_judge_chunks_hf_local.sh` を 2 回、同一 `SRC`・同一オフセットで別 `OUT` に出力する。
+
+---
+
+## 11. Phase 3 — 再現マニフェスト運用（確定手順）
+
+`run_phase2a_mrmp_tau.sh` または `run_local_slm_phase3_mrmp_chunk.sh` で **`OUT_PREFIX`** を決めたチャンク（または本番一括）のあと、次を推奨する。
+
+1. **bundle の選び方**: 成果物のキーが揃うポインタを使う。Phase II-A 本番相当なら [`v7_phase2a_mrmp_tau_n3146_bundle_v1.json`](../../experiments/baselines/v7_phase2a_mrmp_tau_n3146_bundle_v1.json) を `BUNDLE_JSON` にし、`--out-prefix` で **`OUT_PREFIX` と一致**させる（[`experiments/README.md`](../../experiments/README.md) の再現チェックリスト参照）。
+2. **生成**:  
+   `WRITE_REPRO_MANIFEST=1 BUNDLE_JSON=experiments/baselines/v7_phase2a_mrmp_tau_n3146_bundle_v1.json OUT_PREFIX=<あなたのプレフィックス> bash experiments/run_phase2a_mrmp_tau.sh`  
+   のように、**既に JSON/MD が存在する状態**でマニフェスト段に入るか、または `python experiments/v7_phase2a_repro_manifest.py --bundle … --out-prefix … --out …` を単独実行する。
+3. **図まで必須**: 論文用 PNG/PDF を成果物に含める凍結では `REPRO_MANIFEST_STRICT=1`（`run_phase2a_mrmp_tau.sh`）または `v7_phase2a_repro_manifest.py --strict`。
+4. **検証**: `python experiments/v7_phase2a_repro_manifest.py --verify ${OUT_PREFIX}_repro_manifest.json`、または `v7_phase2a_bundle_validate.py --strict --out-prefix "$OUT_PREFIX" --verify-manifest …`。
+5. **コードのみの継続記録（CI 相当）**: `v7_phase2a_repro_manifest.py --pin-code-only`（ログ不要）。
+
+---
+
+## 12. 事前登録スタブの revision 運用
+
+対象: [`v7_local_slm_llm_judge_prereg_stub_v1.json`](v7_local_slm_llm_judge_prereg_stub_v1.json) の **`prereg_revision`**（整数）。
+
+次のときに **1 ずつ増やす**（補遺に差分の要約を書く）:
+
+- [`v7_llm_judge_prompt_v1.json`](../../experiments/prompts/v7_llm_judge_prompt_v1.json) の本文変更（`prompt_template_id` を変える場合は別系として扱う）。
+- スタブに書いた **既定審判モデル**や手続き（シェルパス・Phase 構成）の変更。
+- Phase II-A 本体の事前登録（[`v7_phase2a_prereg_v1.json`](v7_phase2a_prereg_v1.json)）を改訂したうえで、ローカル SLM 手順との整合説明を変えたとき。
+
+増やさずに済む例: 単一実行の HF `revision` 固定（`--hf-revision` / `REVISION`）のみで、プロンプトとスタブの役割定義が変わらない場合。
+
+---
+
+## 13. Phase 4 拡張 — MLX 評価（計画のみ）
+
+**現状**: 本リポジトリは **PyTorch + transformers + MPS/CUDA** 経路を正とする。**MLX / mlx-lm** は未同梱。採用する場合は **別マニフェスト**（モデル変換・バージョン・プロンプト適用差）で管理する。
+
+**評価のすすめ方（探索）**:
+
+1. 同一プロンプト・同一スライスで、**tokens/s または 1 窓あたり秒**を PyTorch 推論と比較（審判 1 行またはごく小さな `max_new_tokens` から）。
+2. **合格の目安**: スループットが **2 倍以上**かつ、**12 軸の数値**が §10 の手続きで PyTorch 側と実務上無視できない差にならないこと（厳密一致は期待しない）。
+3. 主結果パイプラインに載せる前に、**別節「高速経路」**として文書化し、本プランの Phase 0–3 の正本とは切り分ける。

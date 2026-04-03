@@ -1,5 +1,7 @@
 {
   "schema_version": "v7_local_slm_llm_judge_prereg_stub.v1",
+  "prereg_revision": 1,
+  "prereg_revision_note_ja": "審判プロンプト bundle 改訂・既定審判モデル変更・本スタブの手続き変更のたびに整数を増やす。補遺には llm_judge_meta.prompt_sha256 と採用 HF revision を記載。",
   "title_ja": "ローカル SLM: 6軸審判プロンプト・モデル版の追跡（スタブ）",
   "prompt_bundle_relpath": "experiments/prompts/v7_llm_judge_prompt_v1.json",
   "prompt_template_id": "v7_llm_judge_prompt_v1",
@@ -7,7 +9,8 @@
   "slm_pair_agreement_script": "experiments/v7_llm_judge_slm_pair_agreement.py",
   "slm_pair_agreement_shell": "experiments/run_local_slm_judge_pair_agreement.sh",
   "phase4_two_model_judge_shell": "experiments/run_local_slm_phase4_judge_pair.sh",
+  "phase4_swallow_7b_13b_shell": "experiments/run_local_slm_phase4_swallow_7b_13b.sh",
   "related_prereg": "docs/planning/v7_phase1a_empirical_prereg_v1.json",
   "local_slm_plan": "docs/planning/v7_local_slm_m3_japanese_plan.md",
-  "note_ja": "プロンプト本文は prompt_bundle に集約。改版時は bundle の内容ハッシュ（審判出力の llm_judge_meta.prompt_sha256）を補遺に記載し、本スタブに revision フィールドを追加する運用を推奨。異なる SLM 同士のブレは slm_pair_agreement_* で集計（探索用・主結果にしない）。"
+  "note_ja": "プロンプト本文は prompt_bundle に集約。改版時は prereg_revision を増やし、bundle の内容ハッシュ（審判出力の llm_judge_meta.prompt_sha256）を補遺に記載。異なる SLM 同士のブレは slm_pair_agreement_* で集計（探索用・主結果にしない）。再現マニフェスト手順は v7_local_slm_m3_japanese_plan.md §11。"
 }
