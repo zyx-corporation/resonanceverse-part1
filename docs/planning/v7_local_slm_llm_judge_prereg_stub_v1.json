@@ -1,0 +1,12 @@
+{
+  "schema_version": "v7_local_slm_llm_judge_prereg_stub.v1",
+  "title_ja": "ローカル SLM: 6軸審判プロンプト・モデル版の追跡（スタブ）",
+  "prompt_bundle_relpath": "experiments/prompts/v7_llm_judge_prompt_v1.json",
+  "prompt_template_id": "v7_llm_judge_prompt_v1",
+  "default_judge_hf_model": "tokyotech-llm/Swallow-7b-instruct-hf",
+  "slm_pair_agreement_script": "experiments/v7_llm_judge_slm_pair_agreement.py",
+  "slm_pair_agreement_shell": "experiments/run_local_slm_judge_pair_agreement.sh",
+  "related_prereg": "docs/planning/v7_phase1a_empirical_prereg_v1.json",
+  "local_slm_plan": "docs/planning/v7_local_slm_m3_japanese_plan.md",
+  "note_ja": "プロンプト本文は prompt_bundle に集約。改版時は bundle の内容ハッシュ（審判出力の llm_judge_meta.prompt_sha256）を補遺に記載し、本スタブに revision フィールドを追加する運用を推奨。異なる SLM 同士のブレは slm_pair_agreement_* で集計（探索用・主結果にしない）。"
+}

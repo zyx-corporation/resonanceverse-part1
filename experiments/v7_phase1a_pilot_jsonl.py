@@ -85,6 +85,7 @@ def run_pilot(
     seed: int,
     layer_index: int,
     label_keys: tuple[str, ...] | None = None,
+    progress_every: int = 0,
 ) -> dict[str, Any]:
     from experiments.v7_phase1a_phi_correlation import (
         extract_hf_attention_layer_stats,
@@ -94,6 +95,14 @@ def run_pilot(
     fros: list[float] = []
     kept_ids: list[str] = []
     kept_rows: list[dict[str, Any]] = []
+    input_lines = len(rows)
+    n_kept = 0
+    if progress_every > 0:
+        print(
+            f"v7_phase1a_pilot_progress start input_lines={input_lines} every={progress_every}",
+            file=sys.stderr,
+            flush=True,
+        )
     for row in rows:
         text = str(row.get("text", "")).strip()
         if not text:
@@ -115,6 +124,19 @@ def run_pilot(
             fros.append(float(stats[li]["frobenius_S_asym"]))
         kept_ids.append(str(row.get("id", "")))
         kept_rows.append(row)
+        n_kept += 1
+        if progress_every > 0 and n_kept % progress_every == 0:
+            print(
+                f"v7_phase1a_pilot_progress completed_rows={n_kept} input_lines={input_lines}",
+                file=sys.stderr,
+                flush=True,
+            )
+    if progress_every > 0:
+        print(
+            f"v7_phase1a_pilot_progress done completed_rows={n_kept} input_lines={input_lines}",
+            file=sys.stderr,
+            flush=True,
+        )
 
     keys = label_keys if label_keys is not None else PILOT_KEYS
     correlations: dict[str, dict[str, Any]] = {}
@@ -185,6 +207,13 @@ def main() -> None:
         action="store_true",
         help="MRMP 正規化ラベル（mrmp_*_01）と Frobenius の相関",
     )
+    p.add_argument(
+        "--progress-every",
+        type=int,
+        default=0,
+        metavar="N",
+        help="N 件ごとに stderr に進捗を表示（0 で無効）",
+    )
     args = p.parse_args()
 
     if args.offset > 0 or args.max_rows is not None:
@@ -204,6 +233,7 @@ def main() -> None:
         seed=args.seed,
         layer_index=args.layer,
         label_keys=lk,
+        progress_every=max(0, args.progress_every),
     )
     js = json.dumps(payload, indent=2, ensure_ascii=False)
     if args.out:

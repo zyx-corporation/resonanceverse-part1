@@ -123,7 +123,61 @@ def run_sweep(
         "note": "離散近似。oscillation_score は遅延導入後のエネルギー変動の目安。",
         "by_tau": rows,
         "tau_largest_jump": k,
+        "tau_exp_proxy_oscillation_jump": k,
         "oscillation_scores": oscs,
+        "design_bridge_ja": (
+            "tau_largest_jump / tau_exp_proxy_oscillation_jump は設計書 II-A の τ*_exp ではなく、"
+            "本離散テンソル系における振動スコア急増の τ の探索的代理。理論 τ* との接続は "
+            "docs/planning/v7_phase2a_numeric_tau_exp.md を参照。"
+        ),
+    }
+
+
+def run_alpha_sweep(
+    *,
+    alphas: list[float],
+    tau_max: int,
+    seed: int,
+    N: int,
+    d: int,
+    steps: int,
+    dt: float,
+    beta: float,
+    noise: float,
+) -> dict[str, Any]:
+    """強凸性代理として alpha をスイープ（各値で独立 run_sweep）。"""
+    rows_out: list[dict[str, Any]] = []
+    for ai, alpha in enumerate(alphas):
+        sw = run_sweep(
+            tau_max=tau_max,
+            seed=seed + ai * 97,
+            N=N,
+            d=d,
+            steps=steps,
+            dt=dt,
+            alpha=float(alpha),
+            beta=beta,
+            noise=noise,
+        )
+        rows_out.append(
+            {
+                "alpha": float(alpha),
+                "tau_exp_proxy_oscillation_jump": sw["tau_largest_jump"],
+                "oscillation_scores_tail": sw["oscillation_scores"][-3:],
+            }
+        )
+    return {
+        "schema_version": "v7_phase2a_alpha_sweep.v1",
+        "note_ja": "各要素は v7_phase2a.v1 の単発掃引と同型。alpha を μ の離散代理として見た感度表。",
+        "N": N,
+        "d": d,
+        "tau_max": tau_max,
+        "steps": steps,
+        "dt": dt,
+        "beta": beta,
+        "noise": noise,
+        "seed_base": seed,
+        "by_alpha": rows_out,
     }
 
 
@@ -138,25 +192,52 @@ def main() -> None:
     p.add_argument("--alpha", type=float, default=0.15)
     p.add_argument("--beta", type=float, default=0.85)
     p.add_argument("--noise", type=float, default=0.02)
+    p.add_argument(
+        "--alpha-list",
+        type=str,
+        default=None,
+        help="カンマ区切りの alpha 一覧（指定時は各値で掃引し by_alpha を出力；単発の by_tau は出さない）",
+    )
     p.add_argument("--out", type=Path, default=None)
     args = p.parse_args()
 
-    payload = run_sweep(
-        tau_max=args.tau_max,
-        seed=args.seed,
-        N=args.N,
-        d=args.d,
-        steps=args.steps,
-        dt=args.dt,
-        alpha=args.alpha,
-        beta=args.beta,
-        noise=args.noise,
-    )
+    if args.alpha_list:
+        alphas = [float(x.strip()) for x in args.alpha_list.split(",") if x.strip()]
+        if len(alphas) < 2:
+            print(json.dumps({"error": "alpha_list_need_at_least_2"}), file=sys.stderr)
+            raise SystemExit(2)
+        payload = run_alpha_sweep(
+            alphas=alphas,
+            tau_max=args.tau_max,
+            seed=args.seed,
+            N=args.N,
+            d=args.d,
+            steps=args.steps,
+            dt=args.dt,
+            beta=args.beta,
+            noise=args.noise,
+        )
+    else:
+        payload = run_sweep(
+            tau_max=args.tau_max,
+            seed=args.seed,
+            N=args.N,
+            d=args.d,
+            steps=args.steps,
+            dt=args.dt,
+            alpha=args.alpha,
+            beta=args.beta,
+            noise=args.noise,
+        )
     js = json.dumps(payload, indent=2, ensure_ascii=False)
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(js, encoding="utf-8")
-    print("v7_phase2a_ok", json.dumps({"taus": len(payload["by_tau"])}, ensure_ascii=False))
+    if "by_tau" in payload:
+        meta = {"taus": len(payload["by_tau"])}
+    else:
+        meta = {"alphas": len(payload.get("by_alpha") or [])}
+    print("v7_phase2a_ok", json.dumps(meta, ensure_ascii=False))
 
 
 if __name__ == "__main__":

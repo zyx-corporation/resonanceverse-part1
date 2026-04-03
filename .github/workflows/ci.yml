@@ -27,6 +27,26 @@ jobs:
       - name: Run tests
         run: pytest tests/ -v
 
+      - name: Phase II-A bundle pointer sanity (logs 未生成時は警告のみ)
+        run: python experiments/v7_phase2a_bundle_validate.py
+
+      - name: Phase II-A pipeline code fingerprint (pin-code-only manifest)
+        run: |
+          python experiments/v7_phase2a_repro_manifest.py \
+            --bundle experiments/baselines/v7_phase2a_mrmp_tau_n3146_bundle_v1.json \
+            --pin-code-only \
+            --out experiments/logs/ci_phase2a_repro_manifest.json
+          python experiments/v7_phase2a_repro_manifest.py \
+            --verify experiments/logs/ci_phase2a_repro_manifest.json
+
+      - name: Phase IV minimal repro bundle (demo, CPU)
+        run: |
+          python experiments/v7_phase4_minimal_repro.py --demo --cpu \
+            --out experiments/logs/ci_v7_phase4_minimal.json
+
+      - name: v7 local SLM env check (torch / transformers meta)
+        run: python experiments/v7_local_env_check.py
+
       - name: Phase 3 decode benchmark + two_tier sweep (demo, CPU)
         run: |
           python experiments/decode_benchmark.py --demo --cpu \

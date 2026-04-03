@@ -1,0 +1,16 @@
+{
+  "schema_version": "v7_phase2a_bundle_pointer.v1",
+  "title_ja": "Phase II-A MRMP τ 掃引（先頭 3146 窓）成果物への参照",
+  "prereg": "docs/planning/v7_phase2a_prereg_v1.json",
+  "reproduce_shell": "experiments/run_phase2a_mrmp_tau.sh",
+  "default_env_ja": "MAX_ROWS=3146, OUT_PREFIX=experiments/logs/v7_phase2a_mrmp_tau_n3146, GPU（--cpu なし）",
+  "artifacts": {
+    "with_contributions_jsonl": "experiments/logs/v7_phase2a_mrmp_tau_n3146_with_contrib.json",
+    "tau_summary_md": "experiments/logs/v7_phase2a_mrmp_tau_n3146_summary.md",
+    "tau_summary_json": "experiments/logs/v7_phase2a_mrmp_tau_n3146_summary.json",
+    "bootstrap_json": "experiments/logs/v7_phase2a_mrmp_tau_n3146_bootstrap.json",
+    "bootstrap_md": "experiments/logs/v7_phase2a_mrmp_tau_n3146_bootstrap.md",
+    "pipeline_log": "experiments/logs/run_phase2a_mrmp_tau_gpu.log"
+  },
+  "note_ja": "experiments/logs/ は多くが .gitignore のため、再現時は run_phase2a_mrmp_tau.sh を実行して生成する。with_contrib の JSON に inference_device が含まれる。6 軸数値付き JSONL を WINDOWS で渡すと auxiliary が同梱される。理論境界: docs/planning/v7_phase2a_theory_bridge.md。再現マニフェスト・手順: experiments/README（Phase II-A：理論との橋・再現）。検証: v7_phase2a_bundle_validate.py --strict [--verify-manifest …_repro_manifest.json]"
+}

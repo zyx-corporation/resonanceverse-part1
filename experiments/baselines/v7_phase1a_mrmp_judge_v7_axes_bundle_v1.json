@@ -1,0 +1,8 @@
+{
+  "schema_version": "v7_phase1a_bundle_pointer.v1",
+  "title_ja": "Phase I-A: MRMP 審判 6 軸窓 × Frobenius S_asym（先頭 N 行）",
+  "reproduce_shell": "experiments/run_phase1a_mrmp_v7_axes.sh",
+  "default_env_ja": "WINDOWS=experiments/logs/v7_judge_10k.jsonl, MAX_ROWS=3146, OUT=experiments/logs/v7_phase1a_mrmp_judge_v7_axes_corr.json, GPU 推奨（CPU=1 で --cpu）",
+  "artifact_json": "experiments/logs/v7_phase1a_mrmp_judge_v7_axes_corr.json",
+  "note_ja": "v7_phase1a_pilot_jsonl.py は --mrmp-labels なし（PILOT_KEYS＝6 軸 ab/ba）。MRMP 素の mrmp_* スコアは別キー。Phase II-A judge10k バンドルと同じ JSONL を流用可能。"
+}

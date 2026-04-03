@@ -24,7 +24,7 @@
 - **`ResonantCore`**: 場ドリフトの `Generator`・`field_drift_seed`、`eval` で場固定、`attention_mask` による除外平均。
 - **共鳴コンポーネント**: [API・モジュール索引の「共鳴コンポーネントの対応」](api/modules/README.md) を実装上の正とする。
 - **品質ゲート**: `tests/` の `pytest`。分散同期スモークのテンソル経路は numpy ペイロード。
-- **v7 実験ハーネス**: `experiments/v7_run_suite.py`（`--demo` で Phase I-A/I-B/II-A/III 合成を一括）、[EXPERIMENT_ROADMAP_v7](planning/EXPERIMENT_ROADMAP_v7.md) を参照。JSONL パイロットは `experiments/v7_phase1a_pilot_jsonl.py` と [`data/v7_phase1a_pilot.jsonl`](data/v7_phase1a_pilot.jsonl)。**実証ベースライン一括**は `experiments/v7_empirical_run.py` と [事前登録スタブ v1](planning/v7_phase1a_empirical_prereg_v1.json)。**本番コーパス（Phase I-A）は MRMP のみ** — [v7_corpus_MRMP.md](planning/v7_corpus_MRMP.md)。整形 [`v7_mrmp_prepare.py`](../experiments/v7_mrmp_prepare.py)、サンプル [`v7_mrmp_sample.jsonl`](../experiments/data/v7_mrmp_sample.jsonl)。**6 軸 LLM 審判** [`v7_phase1a_llm_judge_six_axes.py`](../experiments/v7_phase1a_llm_judge_six_axes.py)（`--demo` 可）。
+- **v7 実験ハーネス**: `experiments/v7_run_suite.py`（`--demo` で Phase I-A/I-B/II-A/III 合成を一括）、[EXPERIMENT_ROADMAP_v7](planning/EXPERIMENT_ROADMAP_v7.md) を参照。JSONL パイロットは `experiments/v7_phase1a_pilot_jsonl.py` と [`data/v7_phase1a_pilot.jsonl`](data/v7_phase1a_pilot.jsonl)。**実証ベースライン一括**は `experiments/v7_empirical_run.py` と [事前登録スタブ v1](planning/v7_phase1a_empirical_prereg_v1.json)。**本番コーパス（Phase I-A）は MRMP のみ** — [v7_corpus_MRMP.md](planning/v7_corpus_MRMP.md)。整形 [`v7_mrmp_prepare.py`](../experiments/v7_mrmp_prepare.py)、サンプル [`v7_mrmp_sample.jsonl`](../experiments/data/v7_mrmp_sample.jsonl)。**6 軸 LLM 審判** [`v7_phase1a_llm_judge_six_axes.py`](../experiments/v7_phase1a_llm_judge_six_axes.py)（`--demo` 可）。**Phase II-A 成果物の検証**は [`v7_phase2a_bundle_validate.py`](../experiments/v7_phase2a_bundle_validate.py)（`--strict` は再現ログ生成後向け；CI では非 strict）。**コード指紋**は [`v7_phase2a_repro_manifest.py`](../experiments/v7_phase2a_repro_manifest.py) の `--pin-code-only`。**理論との橋**（R(τ) と τ*）は [v7_phase2a_theory_bridge.md](planning/v7_phase2a_theory_bridge.md)。
 
 ## ディレクトリ構成
 
@@ -51,6 +51,10 @@
 | [Phase3 計画（二階建てと実証）](planning/Phase3_計画_二階建てと実証.md) | Phase 3 マイルストーン |
 | [Phase3 実測と主張完成計画（採用済み）](planning/Phase3_実測と主張完成計画_ja.md) | P0〜P3 |
 | [Resonanceverse 主張表（論文・対外向け）](planning/Resonanceverse_主張表_論文用_ja.md) | 主張一覧 |
+| [Phase II-A と理論の「橋」](planning/v7_phase2a_theory_bridge.md) | コーパス R(τ) と τ*／τ*_exp の区別・追加実験 |
+| [Phase II-A 数値 τ 掃引（合成）](planning/v7_phase2a_numeric_tau_exp.md) | delay_sweep・alpha スイープと設計書 II-A の位置づけ |
+| [Phase IV 最小再現（方式 B 周辺）](planning/v7_phase4_integration_repro.md) | decode / two-tier スタブと本番 Phase IV の差 |
+| [日本語ローカル SLM 運用プラン（M3 Max / 128GB）](planning/v7_local_slm_m3_japanese_plan.md) | Swallow / rinna・`hf_local`・チャンク・**SLM 同士審判一致**（§10） |
 
 ## 理論（`theory/`）
 

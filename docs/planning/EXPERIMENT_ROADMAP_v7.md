@@ -79,7 +79,11 @@ python experiments/v7_phase1a_autoproxy.py --cpu --model gpt2 --seed 0 --out exp
 | **Phase II-A** | τ 掃引・安定性プロキシ | [`experiments/v7_phase2a_delay_sweep.py`](../../experiments/v7_phase2a_delay_sweep.py) |
 | **Phase III（合成）** | あわい Ω の数値出力 | [`experiments/v7_phase3a_awai_metrics.py`](../../experiments/v7_phase3a_awai_metrics.py) |
 | **Phase III-A（本番）** | 人間「間合い」アノテとの相関 | **未着手**（コーパス・アノテが必要） |
-| **Phase IV** | 方式 B 統合 | 既存: `AwaiIntegratedSLM`・`decode_benchmark`・`two_tier_sweep` 等 |
+| **Phase IV** | 方式 B 統合 | 既存: `AwaiIntegratedSLM`・`decode_benchmark`・`two_tier_sweep` 等。**最小バンドル**: [`v7_phase4_minimal_repro.py`](../../experiments/v7_phase4_minimal_repro.py)（[`v7_phase4_integration_repro.md`](v7_phase4_integration_repro.md)） |
+| **Phase II-A 実データ（感度）** | 複数 run 比較・主–補助 τ 系列 | [`v7_phase2a_compare_runs.py`](../../experiments/v7_phase2a_compare_runs.py)、[`v7_phase2a_primary_aux_tau_association.py`](../../experiments/v7_phase2a_primary_aux_tau_association.py) |
+| **Phase II-A 合成（μ 感度）** | alpha スイープ | [`v7_phase2a_delay_sweep.py`](../../experiments/v7_phase2a_delay_sweep.py) `--alpha-list`（[数値 τ 説明](v7_phase2a_numeric_tau_exp.md)） |
+| **Phase I-A（MRMP 6 軸）** | 審判 JSONL × Frobenius | [`run_phase1a_mrmp_v7_axes.sh`](../../experiments/run_phase1a_mrmp_v7_axes.sh)、バンドル [`v7_phase1a_mrmp_judge_v7_axes_bundle_v1.json`](../../experiments/baselines/v7_phase1a_mrmp_judge_v7_axes_bundle_v1.json) |
+| **ローカル SLM（日本語）** | M3 想定の注意・審判・チャンク・SLM 同士一致 | [v7_local_slm_m3_japanese_plan.md](v7_local_slm_m3_japanese_plan.md)、[`v7_llm_judge_slm_pair_agreement.py`](../../experiments/v7_llm_judge_slm_pair_agreement.py) |
 
 ## レガシー実証との関係
 

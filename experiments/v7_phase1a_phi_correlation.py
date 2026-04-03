@@ -146,6 +146,38 @@ def extract_hf_attention_layer_stats(
     return layer_stats, None, int(ids.shape[1])
 
 
+def hf_forward_attention_layer_matrix(
+    *,
+    model: Any,
+    tokenizer: Any,
+    device: Any,
+    text: str,
+    layer_index: int,
+) -> tuple[np.ndarray | None, dict[str, Any] | None, int]:
+    """
+    ロード済み Causal LM で 1 回前向きし、指定層のヘッド平均・行ソフトマックス注意行列
+    (L, L) を返す（output_attentions の通常解釈）。
+    """
+    import torch
+
+    batch = tokenizer(text, return_tensors="pt", add_special_tokens=False)
+    ids = batch["input_ids"].to(device)
+    with torch.no_grad():
+        out = model(ids, output_attentions=True)
+    attns = out.attentions
+    ntok = int(ids.shape[1])
+    if not attns:
+        return None, {"schema_version": "v7_phase1a.v1", "error": "no attentions"}, ntok
+    n_layers = len(attns)
+    li = layer_index if layer_index >= 0 else n_layers - 1
+    li = max(0, min(int(li), n_layers - 1))
+    layer_attn = attns[li]
+    if layer_attn is None:
+        return None, {"schema_version": "v7_phase1a.v1", "error": "layer_attn_none"}, ntok
+    a = layer_attn[0].mean(dim=0).cpu().numpy().astype(np.float64)
+    return a, None, ntok
+
+
 def run_hf_no_labels(
     *,
     model_name: str,

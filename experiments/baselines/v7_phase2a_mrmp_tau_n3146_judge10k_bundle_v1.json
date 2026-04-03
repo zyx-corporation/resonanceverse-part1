@@ -1,0 +1,26 @@
+{
+  "schema_version": "v7_phase2a_bundle_pointer.v1",
+  "title_ja": "Phase II-A MRMP τ 掃引（審判済み 10k 窓先頭 3146・補助 6 軸同梱）",
+  "prereg": "docs/planning/v7_phase2a_prereg_v1.json",
+  "reproduce_shell": "experiments/run_phase2a_mrmp_tau.sh",
+  "input_windows_ja": "experiments/logs/v7_judge_10k.jsonl（6 軸 LLM 審判済み）",
+  "default_env_ja": "WINDOWS=experiments/logs/v7_judge_10k.jsonl, MAX_ROWS=3146, OUT_PREFIX=experiments/logs/v7_phase2a_mrmp_tau_n3146_judge10k, GPU（--cpu なし）",
+  "artifacts": {
+    "with_contributions_jsonl": "experiments/logs/v7_phase2a_mrmp_tau_n3146_judge10k_with_contrib.json",
+    "tau_summary_md": "experiments/logs/v7_phase2a_mrmp_tau_n3146_judge10k_summary.md",
+    "tau_summary_json": "experiments/logs/v7_phase2a_mrmp_tau_n3146_judge10k_summary.json",
+    "bootstrap_json": "experiments/logs/v7_phase2a_mrmp_tau_n3146_judge10k_bootstrap.json",
+    "bootstrap_md": "experiments/logs/v7_phase2a_mrmp_tau_n3146_judge10k_bootstrap.md"
+  },
+  "figures": {
+    "tau_primary_png": "experiments/logs/v7_phase2a_mrmp_tau_n3146_judge10k_with_contrib_tau_primary.png",
+    "tau_auxiliary_rvar_png": "experiments/logs/v7_phase2a_mrmp_tau_n3146_judge10k_with_contrib_tau_auxiliary_rvar.png"
+  },
+  "figures_paper": {
+    "tau_primary_png": "experiments/logs/v7_phase2a_mrmp_tau_n3146_judge10k_with_contrib_tau_paper_primary.png",
+    "tau_primary_pdf": "experiments/logs/v7_phase2a_mrmp_tau_n3146_judge10k_with_contrib_tau_paper_primary.pdf",
+    "tau_auxiliary_png": "experiments/logs/v7_phase2a_mrmp_tau_n3146_judge10k_with_contrib_tau_paper_auxiliary_rvar.png",
+    "tau_auxiliary_pdf": "experiments/logs/v7_phase2a_mrmp_tau_n3146_judge10k_with_contrib_tau_paper_auxiliary_rvar.pdf"
+  },
+  "note_ja": "with_contrib に auxiliary_label_delay_coherence（6 軸）が含まれる。対話数・τ 範囲は入力先頭 MAX_ROWS 行に依存（本ログは対話 24・τ=0…223）。図: figures／figures_paper。理論境界: docs/planning/v7_phase2a_theory_bridge.md。再現マニフェスト: v7_phase2a_repro_manifest.py（experiments/README「Phase II-A：理論との橋・再現」）。検証: v7_phase2a_bundle_validate.py --strict --out-prefix …；任意で --verify-manifest …_repro_manifest.json"
+}

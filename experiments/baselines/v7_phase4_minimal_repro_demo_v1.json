@@ -1,0 +1,43 @@
+{
+  "schema_version": "v7_phase4_minimal_repro.v1",
+  "generated_at_utc": "2026-04-02T07:28:06.170345+00:00",
+  "note_ja": "Phase IV（方式 B 統合・下流タスク）の代替ではない。decode / two-tier スタブの最小スモーク。 本番は設計書 Phase IV と core の統合経路を参照。",
+  "two_tier_sweep": {
+    "schema_version": "two_tier_sweep.v1",
+    "baseline": {
+      "schema_version": "decode_benchmark.v1",
+      "variant": "baseline",
+      "demo": true,
+      "model": "_demo_linear",
+      "device": "cpu",
+      "max_new_tokens": 4,
+      "warmup_rounds": 1,
+      "repeats": 2,
+      "total_decode_steps": 12,
+      "latency_ms_p50": 0.0069375018938444555,
+      "latency_ms_p95": 0.1971877987671175,
+      "per_step_time_mean_s": 4.1753501136554405e-05,
+      "hbm_proxy_cuda_peak_bytes": null
+    },
+    "two_tier_stub": {
+      "schema_version": "decode_benchmark.v1",
+      "variant": "two_tier_stub",
+      "demo": true,
+      "model": "_demo_linear",
+      "device": "cpu",
+      "max_new_tokens": 4,
+      "warmup_rounds": 1,
+      "repeats": 2,
+      "total_decode_steps": 12,
+      "latency_ms_p50": 0.02641649916768074,
+      "latency_ms_p95": 0.4047606038511725,
+      "per_step_time_mean_s": 9.662141868223746e-05,
+      "hbm_proxy_cuda_peak_bytes": null,
+      "router_keep_fraction_mean": 0.0,
+      "router_stub_mode": "priority_threshold"
+    },
+    "comparison": {
+      "latency_ms_p50_ratio_baseline_over_two_tier": 0.2626200334044316
+    }
+  }
+}

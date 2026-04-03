@@ -1,0 +1,12 @@
+{
+  "schema_version": "v7_phase3a_bundle_pointer.v1",
+  "title_ja": "Phase III（合成）あわい Ω 軌跡デモへの参照",
+  "design_reference": "docs/v7/Resonanceverse_v7.0_Experimental_Design.md §4",
+  "roadmap": "docs/planning/EXPERIMENT_ROADMAP_v7.md",
+  "reproduce_shell": "experiments/run_phase3a_synthetic.sh",
+  "default_env_ja": "SEED=0, T=200, D=6, OUT=experiments/logs/v7_phase3a_synthetic_default.json",
+  "artifacts": {
+    "omega_synthetic_json": "experiments/logs/v7_phase3a_synthetic_default.json"
+  },
+  "note_ja": "experiments/logs/ は .gitignore のため、再現時は run_phase3a_synthetic.sh を実行する。人手の間合いとの相関（Phase III-A）は別途コーパスが必要で未着手。"
+}

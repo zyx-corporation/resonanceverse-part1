@@ -14,6 +14,7 @@ protobuf
 numpy>=1.24.0           # 共鳴テンソル演算の補助
 scipy                   # 統計的評価とKLダイバージェンス計算
 scikit-learn            # 次元選択時の相互情報量スコアリング
+matplotlib>=3.7.0       # Phase II-A 等の実験グラフ（tau 掃引）
 
 # --- Configuration & Utilities ---
 pyyaml                  # configs/ フォルダの設定ファイル読み込み用

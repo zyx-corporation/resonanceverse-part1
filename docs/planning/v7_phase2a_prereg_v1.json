@@ -1,0 +1,95 @@
+{
+  "schema_version": "v7_phase2a_prereg.v1",
+  "revision": "v1.2",
+  "title_ja": "Phase II-A（MRMP 実データ）τ 掃引・R(τ) 事前登録",
+  "registered_at": null,
+  "design_reference": "docs/v7/Resonanceverse_v7.0_Experimental_Design.md §3.1",
+  "theory_note_ja": "本事前登録の τ* 候補は、定理3.3の Lyapunov–Krasovskii 経路の τ*_exp とは別物の**コーパス代理**である。主張ラベルは tau_star_corpus_proxy 等で区別する。",
+  "simulation_script_reference": "experiments/v7_phase2a_delay_sweep.py",
+  "empirical_module_reference": "experiments/v7_phase2a_empirical.py",
+  "empirical_cli_reference": "experiments/v7_phase2a_empirical_run.py",
+  "simulation_note_ja": "既存 v7_phase2a_delay_sweep.py は小規模テンソル離散シミュレーション。実データは v7_phase2a_empirical_run.py（内部で v7_phase2a_empirical.py と hf_forward_attention_layer_matrix）。",
+  "corpus": {
+    "primary_windows_jsonl": "experiments/logs/mrmp_prepared/windows.jsonl",
+    "windows_sha256_at_register": null,
+    "v7_mrmp_prepare_manifest_note_ja": "実行時に manifest.json の window 幅・版をログに同梱する。"
+  },
+  "s_asym_definition_revision": 1,
+  "span_spec": {
+    "span_unit": "speaker_id",
+    "block_a": "utterer_all_tokens_in_window",
+    "block_b": "responder_all_tokens_in_window",
+    "weighting": "equal_per_dialogue",
+    "tau_star_criterion": "dVar_sign_reversal",
+    "data_source": "mrmp_windows.jsonl",
+    "layer_index": -1
+  },
+  "s_asym_formula_ja": "層 l の行ソフトマックス済み注意行列 A について、窓内で話者IDを発話者 a・応答者 b に分け、各話者の全トークンをまとめてブロックとする。S_asym_ab(t) = || A^(l)[block_a→block_b] - A^(l)[block_b→block_a]^T ||_F（部分行列の形状は |a|×|b|、減算は A[ia,ib]-A[ib,ia].T）。S_asym_ba(t) は block_a と block_b を入れ替えた同型定義。窓ごとに1スカラー。dialogue_id でグループ化し、窓 index 昇順で時系列化。",
+  "tau_sweep": {
+    "tau_unit_ja": "1 ステップは対話内の窓順序の整数インデックス差。τ=0 は同時刻の積 S_asym_ab(t)·S_asym_ba(t)。",
+    "tau_min": 0,
+    "tau_max_rule_ja": "T_max は dialogue_id ごとの最大窓数に合わせるか、事前に固定した T_max_cap の小さい方。",
+    "tau_max_cap": null,
+    "step": 1
+  },
+  "primary_analysis": {
+    "name": "R_tau_corpus",
+    "group_by": "dialogue_id",
+    "time_order_rule_ja": "同一 dialogue_id 内で utterance_id 昇順（または id 辞書順）に窓を並べる。",
+    "R_tau_formula_ja": "R(τ) = (1/D) Σ_d (1/N_{d,τ}) Σ_{t∈T_{d,τ}} S_asym_ab_d(t) · S_asym_ba_d(t-τ)。T_{d,τ} は t≥τ かつ両スカラーが有限な窓。N_{d,τ} = |T_{d,τ}|。対話間は等価重み (1/D)。",
+    "model_name_preregistered": "gpt2",
+    "layer_index": -1
+  },
+  "auxiliary_analysis": {
+    "name": "label_trajectory_delay_coherence",
+    "use_in_primary": false,
+    "description_ja": "6 軸スコア（trust_ab … history_ba）は主解析に用いない。同一 τ グリッドで別列として、各軸・各方向について同型の遅延整合スカラーを出力する。",
+    "axes": [
+      "trust",
+      "authority",
+      "proximity",
+      "intent",
+      "affect",
+      "history"
+    ],
+    "directions": ["ab", "ba"]
+  },
+  "tau_star_candidate_rule": {
+    "description_ja": "各 τ について、対話間で R_d(τ) の分散 Var(R,τ) を計算。隣接 τ における Var の差分が正から負に転じる点を tau_star_candidate とする（実装: v7_phase2a_empirical._mark_tau_star_candidates）。",
+    "disclaimer_ja": "Hopf 分岐の十分条件ではない。コーパス代理の探索的閾値として報告する。"
+  },
+  "required_log_fields_per_tau": {
+    "tau": "number",
+    "R_mean": "number",
+    "R_var": "number",
+    "n": "integer",
+    "data_source": "string",
+    "mode": "empirical",
+    "tau_star_candidate": "boolean"
+  },
+  "execution_log_fields": {
+    "run_at_iso8601": null,
+    "windows_jsonl_sha256": null,
+    "script_entry": null,
+    "git_commit": null
+  },
+  "bootstrap_postprocessing": {
+    "bootstrap_script": "experiments/v7_phase2a_tau_bootstrap.py",
+    "summary_script": "experiments/v7_phase2a_tau_summary.py",
+    "requires_contributions_ja": "empirical_run に --export-contributions を付けた JSON が必要",
+    "paired_comparisons_preregistered": [
+      {
+        "tau_a": 0,
+        "tau_b": 1,
+        "note_ja": "同時刻積 vs 1 ステップ遅延積の対話平均差 Δ（同一 dialogue_id）"
+      },
+      {
+        "tau_a": 0,
+        "tau_b": 103,
+        "note_ja": "Var(τ) ピーク帯との探索的比較（高 τ で対話交差 n が減る）"
+      }
+    ],
+    "multiple_comparison_note_ja": "τ グリッド全体の同時推定は未調整。主に Δ(0,1) を主たる補助とする。"
+  },
+  "reproduce_shell": "experiments/run_phase2a_mrmp_tau.sh"
+}

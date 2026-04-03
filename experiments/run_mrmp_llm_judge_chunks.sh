@@ -3,6 +3,9 @@
 # CHUNK 行 × N_CHUNKS 回で連続実行し、同一 OUT に追記する。
 #
 # 前提: OPENAI_API_KEY（リポジトリ直下 .env）。--demo なら API 不要。
+# OpenAI が insufficient_quota を返した場合は課金・残高の問題で、リトライでは解消しません。
+# 途中停止後は同じ OUT でチャンク 2 以降だけ手動で --resume を付けて再実行するか、
+# このスクリプトを再実行する前に OUT の行数と入力の対応を確認してください。
 #
 # 環境変数で上書き可能:
 #   SRC   既定: experiments/logs/mrmp_prepared/windows.jsonl

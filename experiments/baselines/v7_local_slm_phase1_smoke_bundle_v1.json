@@ -1,0 +1,10 @@
+{
+  "schema_version": "v7_phase2a_bundle_pointer.v1",
+  "title_ja": "ローカル SLM Phase 1 スモーク（rinna・極小 τ）成果物のみ",
+  "reproduce_shell": "experiments/run_local_slm_phase1_smoke.sh",
+  "default_env_ja": "OUT=experiments/logs/local_slm_phase1_smoke_with_contrib.json（run_local_slm_phase1_smoke.sh 既定）。tau_summary / bootstrap は含まない。",
+  "artifacts": {
+    "with_contributions_jsonl": "experiments/logs/local_slm_phase1_smoke_with_contrib.json"
+  },
+  "note_ja": "Phase II-A 本番バンドルより成果物が少ない。検証は v7_phase2a_bundle_validate.py（非 strict で欠落警告なし）。strict は使わないこと。"
+}

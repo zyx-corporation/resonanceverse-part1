@@ -1,0 +1,12 @@
+{
+  "schema_version": "v7_phase2a_bundle_pointer.v1",
+  "title_ja": "ローカル SLM Phase 3: MRMP チャンク運用（オペレータ向けテンプレ）",
+  "reproduce_shell": "experiments/run_local_slm_phase3_mrmp_chunk.sh",
+  "default_env_ja": "OFFSET=0 MAX_ROWS=500 MODEL=rinna/japanese-gpt2-medium OUT_PREFIX=experiments/logs/v7_local_slm_chunk_o0_n500 WINDOWS=experiments/logs/mrmp_prepared/windows.jsonl。本番は run_phase2a_mrmp_tau.sh に OFFSET/MODEL を渡すのと同等。",
+  "artifacts": {
+    "with_contributions_jsonl": "experiments/logs/v7_local_slm_chunk_o0_n500_with_contrib.json",
+    "tau_summary_json": "experiments/logs/v7_local_slm_chunk_o0_n500_summary.json",
+    "bootstrap_json": "experiments/logs/v7_local_slm_chunk_o0_n500_bootstrap.json"
+  },
+  "note_ja": "パスは例。実チャンクごとに OUT_PREFIX を変え、必要なら WRITE_REPRO_MANIFEST=1 BUNDLE_JSON=experiments/baselines/v7_phase2a_mrmp_tau_n3146_bundle_v1.json でマニフェスト生成。審判チャンクは run_mrmp_llm_judge_chunks_hf_local.sh（hf_local）。"
+}
