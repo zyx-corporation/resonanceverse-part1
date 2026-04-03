@@ -83,7 +83,7 @@ document_type: planning
 ### Phase 4 — 拡張・任意
 
 - [ ] **Swallow 13B** 審判の A/B（品質 vs 時間）。
-- [ ] **Qwen2.5-7B-Instruct** 等との審判ブレ: 同一スライスで `hf_local` を 2 モデル実行 → **§10** の CLI で JSON 集計（探索的・主結果にしない）。
+- [ ] **Qwen2.5-7B-Instruct** 等との審判ブレ（実走は任意）: [`run_local_slm_phase4_judge_pair.sh`](../../experiments/run_local_slm_phase4_judge_pair.sh) で同一スライスを A/B 審判 → **§10** の集計（JSON+MD）。探索のみ・主結果にしない。
 - [ ] **MLX** への移行評価（スループットが 2 倍以上なら「高速経路」として文書化）。
 
 ---
@@ -143,7 +143,8 @@ document_type: planning
 | run_phase2a に OFFSET/MODEL | `OFFSET=0 MODEL=gpt2 bash experiments/run_phase2a_mrmp_tau.sh`（既定は従来どおり gpt2） |
 | 注意 run の revision 固定 | `python experiments/v7_phase2a_empirical_run.py --model rinna/japanese-gpt2-medium --revision <SHA> …` |
 | 審判プロンプト正本 | `experiments/prompts/v7_llm_judge_prompt_v1.json` |
-| SLM 同士の審判一致（探索） | `python experiments/v7_llm_judge_slm_pair_agreement.py --jsonl-a <A> --jsonl-b <B> --out-json <out.json>` または `bash experiments/run_local_slm_judge_pair_agreement.sh`（`JSONL_A` / `JSONL_B` / `OUT_JSON`） |
+| SLM 同士の審判一致（探索） | `python experiments/v7_llm_judge_slm_pair_agreement.py`（`--out-json` / `--out-md`）または `bash experiments/run_local_slm_judge_pair_agreement.sh`（任意 `OUT_MD`） |
+| Phase 4 審判 A/B + 一致（探索・重い） | `bash experiments/run_local_slm_phase4_judge_pair.sh`（`HF_MODEL_A` / `HF_MODEL_B`・`MAX_ROWS` 等） |
 
 *改訂時は採用モデルの revision と本書の版日を更新すること。*
 
@@ -165,11 +166,12 @@ document_type: planning
 1. 対象スライスを決める（例: `SRC` の `--offset` / `--max-rows` を A・B で同一にする）。
 2. `HF_MODEL=model_a` … で `--out-jsonl judge_a.jsonl` を生成。
 3. `HF_MODEL=model_b` … で同じ `SRC`・同じオフセットで `judge_b.jsonl` を生成。
-4. `python experiments/v7_llm_judge_slm_pair_agreement.py --jsonl-a judge_a.jsonl --jsonl-b judge_b.jsonl --out-json agreement.json`
+4. `python experiments/v7_llm_judge_slm_pair_agreement.py --jsonl-a judge_a.jsonl --jsonl-b judge_b.jsonl --out-json agreement.json --out-md agreement.md`（MD は任意）
 5. 補遺に `llm_judge_meta_sample_*`・`prompt_fingerprint_sha256_expected`・両モデル revision を転記。
 
 ### 実装
 
 - 集計 CLI: [`experiments/v7_llm_judge_slm_pair_agreement.py`](../../experiments/v7_llm_judge_slm_pair_agreement.py)（`schema_version: v7_llm_judge_slm_pair_agreement.v1`）。
-- 薄いラッパ: [`experiments/run_local_slm_judge_pair_agreement.sh`](../../experiments/run_local_slm_judge_pair_agreement.sh)（環境変数で 3 パスを渡すだけ）。
+- 薄いラッパ: [`experiments/run_local_slm_judge_pair_agreement.sh`](../../experiments/run_local_slm_judge_pair_agreement.sh)（`JSONL_A` / `JSONL_B` / `OUT_JSON`、任意 `OUT_MD`）。
+- Phase 4 一括（重い）: [`experiments/run_local_slm_phase4_judge_pair.sh`](../../experiments/run_local_slm_phase4_judge_pair.sh)。
 - 審判 JSONL の生成自体の一括シェルは必須としない（モデル 2 回ロードは環境依存が大きい）。必要なら `HF_MODEL` を切り替えて `run_mrmp_llm_judge_chunks_hf_local.sh` を 2 回、同一 `SRC`・同一オフセットで別 `OUT` に出力する。

@@ -10,7 +10,8 @@
     python experiments/v7_llm_judge_slm_pair_agreement.py \\
       --jsonl-a experiments/logs/judge_swallow.jsonl \\
       --jsonl-b experiments/logs/judge_qwen.jsonl \\
-      --out-json experiments/logs/judge_slm_pair_agreement.json
+      --out-json experiments/logs/judge_slm_pair_agreement.json \\
+      --out-md experiments/logs/judge_slm_pair_agreement.md
 """
 
 from __future__ import annotations
@@ -27,6 +28,7 @@ _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+from experiments.v7_experiment_meta import collect_runtime_meta  # noqa: E402
 from experiments.v7_phase1a_llm_judge_six_axes import (  # noqa: E402
     judge_prompt_fingerprint_sha256,
 )
@@ -76,6 +78,38 @@ def _meta_sample(rows: dict[str, dict[str, Any]]) -> dict[str, Any] | None:
                 "hf_revision": m.get("hf_revision"),
             }
     return None
+
+
+def pair_agreement_markdown(data: dict[str, Any]) -> str:
+    """補遺・ノート用の簡易表（主結果の統計検定ではない）。"""
+    lines = [
+        "### SLM 同士の審判一致（探索）",
+        "",
+        f"- 使用ペア数: **{data.get('n_rows_used', 0)}**（id 交差内で 12 軸そろった行）",
+        f"- id 交差: {data.get('n_ids_intersection', 0)}",
+        "",
+        "| 軸 | n | Pearson r | 平均絶対差 |",
+        "| --- | --- | --- | --- |",
+    ]
+    by_axis = data.get("by_axis") or {}
+    for k in PILOT_KEYS:
+        row = by_axis.get(k) or {}
+        n = int(row.get("n") or 0)
+        pr = row.get("pearson_r")
+        if pr is None or (isinstance(pr, float) and pr != pr):
+            pr_s = ""
+        else:
+            pr_s = f"{float(pr):.4f}"
+        mad = row.get("mean_abs_diff")
+        mad_s = "" if mad is None else f"{float(mad):.4f}"
+        lines.append(f"| {k} | {n} | {pr_s} | {mad_s} |")
+    lines.extend(
+        [
+            "",
+            f"prompt_fingerprint_sha256: `{data.get('prompt_fingerprint_sha256_expected', '')}`",
+        ]
+    )
+    return "\n".join(lines) + "\n"
 
 
 def run_pair_agreement(
@@ -139,6 +173,7 @@ def run_pair_agreement(
         "llm_judge_meta_sample_a": _meta_sample(rows_a),
         "llm_judge_meta_sample_b": _meta_sample(rows_b),
         "by_axis": by_axis,
+        "runtime_meta": collect_runtime_meta(),
     }
 
 
@@ -146,8 +181,12 @@ def main() -> None:
     p = argparse.ArgumentParser(description="2 本の審判 JSONL の軸別一致（SLM 同士・探索）")
     p.add_argument("--jsonl-a", type=Path, required=True)
     p.add_argument("--jsonl-b", type=Path, required=True)
-    p.add_argument("--out-json", type=Path, required=True)
+    p.add_argument("--out-json", type=Path, default=None)
+    p.add_argument("--out-md", type=Path, default=None)
     args = p.parse_args()
+
+    if args.out_json is None and args.out_md is None:
+        p.error("--out-json と --out-md のいずれか一方以上が必要です")
 
     pa, pb = args.jsonl_a.resolve(), args.jsonl_b.resolve()
     if not pa.is_file() or not pb.is_file():
@@ -158,11 +197,15 @@ def main() -> None:
     for w in out.get("load_warnings") or []:
         print(f"v7_llm_judge_slm_pair_agreement_warn {w}", file=sys.stderr)
 
-    args.out_json.parent.mkdir(parents=True, exist_ok=True)
-    args.out_json.write_text(
-        json.dumps(out, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
+    if args.out_json is not None:
+        args.out_json.parent.mkdir(parents=True, exist_ok=True)
+        args.out_json.write_text(
+            json.dumps(out, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+    if args.out_md is not None:
+        args.out_md.parent.mkdir(parents=True, exist_ok=True)
+        args.out_md.write_text(pair_agreement_markdown(out), encoding="utf-8")
     print(
         "v7_llm_judge_slm_pair_agreement_ok",
         json.dumps(

@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 _ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -80,6 +82,62 @@ def test_v7_llm_judge_slm_pair_agreement(tmp_path):
     pb2.write_text("\n".join(lines_b2) + "\n", encoding="utf-8")
     out2 = run_pair_agreement(pa, pb2)
     assert abs(out2["by_axis"]["trust_ab"]["pearson_r"] - 1.0) < 1e-9
+    assert "runtime_meta" in out2
+    assert "python" in out2["runtime_meta"]
+
+
+def test_pair_agreement_markdown():
+    from experiments.v7_llm_judge_slm_pair_agreement import (
+        pair_agreement_markdown,
+        run_pair_agreement,
+    )
+
+    # 最小ペイロード（run_pair_agreement 経由で fingerprint 等を含める）
+    pa = Path(__file__).resolve().parents[1] / "experiments" / "data" / "v7_mrmp_sample.jsonl"
+    if not pa.is_file():
+        pytest.skip("sample jsonl missing")
+    # 同一ファイルを A=B にして r=1
+    out = run_pair_agreement(pa, pa)
+    md = pair_agreement_markdown(out)
+    assert "Pearson r" in md
+    assert "trust_ab" in md
+
+
+def test_v7_llm_judge_slm_pair_agreement_cli_out_md_only(tmp_path):
+    def full_row(rid: str):
+        return {
+            "id": rid,
+            "text": "t",
+            **{k: 0.5 for k in (
+                "trust_ab", "trust_ba", "authority_ab", "authority_ba",
+                "proximity_ab", "proximity_ba", "intent_ab", "intent_ba",
+                "affect_ab", "affect_ba", "history_ab", "history_ba",
+            )},
+        }
+
+    pa = tmp_path / "x.jsonl"
+    line = json.dumps(full_row("z1"))
+    pa.write_text(line + "\n", encoding="utf-8")
+    out_md = tmp_path / "o.md"
+    r = subprocess.run(
+        [
+            sys.executable,
+            str(Path(__file__).resolve().parents[1] / "experiments" / "v7_llm_judge_slm_pair_agreement.py"),
+            "--jsonl-a",
+            str(pa),
+            "--jsonl-b",
+            str(pa),
+            "--out-md",
+            str(out_md),
+        ],
+        cwd=str(Path(__file__).resolve().parents[1]),
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert r.returncode == 0, r.stderr
+    assert out_md.is_file()
+    assert "trust_ab" in out_md.read_text(encoding="utf-8")
 
 
 def test_v7_llm_judge_prompt_fingerprint_stable():

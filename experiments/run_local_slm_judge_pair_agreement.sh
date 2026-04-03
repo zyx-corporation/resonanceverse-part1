@@ -6,6 +6,7 @@
 #   JSONL_A  既定: experiments/logs/judge_slm_a.jsonl
 #   JSONL_B  既定: experiments/logs/judge_slm_b.jsonl
 #   OUT_JSON 既定: experiments/logs/judge_slm_pair_agreement.json
+#   OUT_MD   省略可: 指定時は --out-md も渡す
 #
 # 例:
 #   JSONL_A=logs/swallow.jsonl JSONL_B=logs/qwen.jsonl OUT_JSON=logs/agree.json \\
@@ -19,10 +20,18 @@ cd "$REPO_ROOT"
 JSONL_A="${JSONL_A:-experiments/logs/judge_slm_a.jsonl}"
 JSONL_B="${JSONL_B:-experiments/logs/judge_slm_b.jsonl}"
 OUT_JSON="${OUT_JSON:-experiments/logs/judge_slm_pair_agreement.json}"
+OUT_MD_ARG=()
+if [[ -n "${OUT_MD:-}" ]]; then
+  OUT_MD_ARG=(--out-md "$OUT_MD")
+fi
 
 mkdir -p "$(dirname "$OUT_JSON")"
+if [[ -n "${OUT_MD:-}" ]]; then
+  mkdir -p "$(dirname "$OUT_MD")"
+fi
 
 python3 experiments/v7_llm_judge_slm_pair_agreement.py \
   --jsonl-a "$JSONL_A" \
   --jsonl-b "$JSONL_B" \
-  --out-json "$OUT_JSON"
+  --out-json "$OUT_JSON" \
+  "${OUT_MD_ARG[@]}"

@@ -58,6 +58,7 @@ _PINNED_CODE_RELPATHS = (
     "experiments/run_local_slm_phase1_compare_en_ja.sh",
     "experiments/run_mrmp_llm_judge_chunks_hf_local.sh",
     "experiments/run_local_slm_judge_pair_agreement.sh",
+    "experiments/run_local_slm_phase4_judge_pair.sh",
     "experiments/prompts/v7_llm_judge_prompt_v1.json",
 )
 

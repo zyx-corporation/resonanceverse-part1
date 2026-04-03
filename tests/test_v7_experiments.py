@@ -534,6 +534,7 @@ def test_v7_phase2a_repro_manifest_pin_code_cli(tmp_path):
     assert "experiments/prompts/v7_llm_judge_prompt_v1.json" in data["files"]
     assert "experiments/v7_llm_judge_slm_pair_agreement.py" in data["files"]
     assert "experiments/run_local_slm_judge_pair_agreement.sh" in data["files"]
+    assert "experiments/run_local_slm_phase4_judge_pair.sh" in data["files"]
 
 
 def test_v7_local_slm_phase1_smoke_bundle_baseline():

@@ -83,7 +83,7 @@ python experiments/v7_phase1a_autoproxy.py --cpu --model gpt2 --seed 0 --out exp
 | **Phase II-A 実データ（感度）** | 複数 run 比較・主–補助 τ 系列 | [`v7_phase2a_compare_runs.py`](../../experiments/v7_phase2a_compare_runs.py)、[`v7_phase2a_primary_aux_tau_association.py`](../../experiments/v7_phase2a_primary_aux_tau_association.py) |
 | **Phase II-A 合成（μ 感度）** | alpha スイープ | [`v7_phase2a_delay_sweep.py`](../../experiments/v7_phase2a_delay_sweep.py) `--alpha-list`（[数値 τ 説明](v7_phase2a_numeric_tau_exp.md)） |
 | **Phase I-A（MRMP 6 軸）** | 審判 JSONL × Frobenius | [`run_phase1a_mrmp_v7_axes.sh`](../../experiments/run_phase1a_mrmp_v7_axes.sh)、バンドル [`v7_phase1a_mrmp_judge_v7_axes_bundle_v1.json`](../../experiments/baselines/v7_phase1a_mrmp_judge_v7_axes_bundle_v1.json) |
-| **ローカル SLM（日本語）** | M3 想定の注意・審判・チャンク・SLM 同士一致 | [v7_local_slm_m3_japanese_plan.md](v7_local_slm_m3_japanese_plan.md)、[`v7_llm_judge_slm_pair_agreement.py`](../../experiments/v7_llm_judge_slm_pair_agreement.py) |
+| **ローカル SLM（日本語）** | M3 想定の注意・審判・チャンク・SLM 同士一致 | [v7_local_slm_m3_japanese_plan.md](v7_local_slm_m3_japanese_plan.md)、[`v7_llm_judge_slm_pair_agreement.py`](../../experiments/v7_llm_judge_slm_pair_agreement.py)、[`run_local_slm_phase4_judge_pair.sh`](../../experiments/run_local_slm_phase4_judge_pair.sh) |
 
 ## レガシー実証との関係
 
