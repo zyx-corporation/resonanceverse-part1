@@ -43,4 +43,6 @@ python experiments/v7_phase2a_tau_exp_lyapunov_stub.py --demo --seed 0 \
   --out experiments/logs/phase2a_tau_exp_lyapunov_stub_demo.json
 ```
 
+論文用の**比較表**（合成指標＋理論 τ* 注入＋乖離％・`figure_role`）: [`v7_phase2a_paper_tau_comparison.py`](../../experiments/v7_phase2a_paper_tau_comparison.py)。手順の文脈は [`v7_phase2a_paper_figures.md`](v7_phase2a_paper_figures.md) の「表（合成 τ 指標と理論参照・乖離）」。
+
 MRMP 実データの R(τ) との併記は [`v7_phase2a_theory_bridge.md`](v7_phase2a_theory_bridge.md) を参照する。

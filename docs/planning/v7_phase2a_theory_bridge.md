@@ -34,6 +34,8 @@
 4. **報告の厳格化**: 主対比は事前登録どおり（例: 事前指定のペア差・CI）。τ 軸全体の峰は**多重比較未調整**である旨を本文で固定する。
 5. **方式 B 周辺の最小再現**（Phase IV 全景の代替ではない）: [`v7_phase4_minimal_repro.py`](../../experiments/v7_phase4_minimal_repro.py)・[v7_phase4_integration_repro.md](v7_phase4_integration_repro.md)。
 
+6. **論文向け比較表（合成指標・理論注入・乖離％）**: [`v7_phase2a_paper_tau_comparison.py`](../../experiments/v7_phase2a_paper_tau_comparison.py)・[v7_phase2a_paper_figures.md](v7_phase2a_paper_figures.md) の表節。
+
 ## 5. 記述・ラベル規約（推奨）
 
 - **tau_star_corpus_proxy** 等: コーパス上で機械的に取った τ の候補（探索的）。

@@ -55,6 +55,13 @@ jobs:
           python experiments/v7_phase2a_tau_exp_lyapunov_stub.py --demo --seed 0 \
             --out experiments/logs/ci_v7_tau_exp_lyapunov_stub.json
 
+      - name: v7 Phase II-A paper τ comparison table (demo)
+        run: |
+          python experiments/v7_phase2a_paper_tau_comparison.py --demo \
+            --theoretical-tau-star 2.5 \
+            --out experiments/logs/ci_v7_paper_tau_comparison.json \
+            --out-md experiments/logs/ci_v7_paper_tau_comparison.md
+
       - name: v7 local SLM env check (torch / transformers meta)
         run: python experiments/v7_local_env_check.py
 

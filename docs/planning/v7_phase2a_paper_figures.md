@@ -13,6 +13,20 @@ python experiments/v7_phase2a_tau_plots.py path/to/*_with_contrib.json --paper
 
 画面プレビュー用は `--paper` を外す。タイトル行を図内に付けたい場合は `--show-suptitle`。
 
+## 表（合成 τ 指標と理論参照・乖離）
+
+MRMP 図とは別に、**合成テンソル**上の振動代理・Lyapunov スタブと、論文側で与える**理論 τ* 参照値**を 1 表に並べ、設計書 §3.1 の**相対乖離（20% / 50%）**用の列を JSON に出す:
+
+```bash
+python experiments/v7_phase2a_paper_tau_comparison.py --demo \
+  --theoretical-tau-star 3.0 \
+  --theoretical-provenance-ja "付録A 数値根" \
+  --out experiments/logs/paper_tau_comparison_demo.json \
+  --out-md experiments/logs/paper_tau_comparison_demo.md
+```
+
+`paper_table_rows[].figure_role` はキャプションで「合成」「理論」「コーパス（別実行）」を書き分ける目印。MRMP の τ 候補はプレースホルダ行のみ（実数値は `v7_phase2a_empirical_run` の JSON を別途併記）。
+
 ## 図 1（主解析）— `*_tau_primary`
 
 **内容（パネル A–C）**

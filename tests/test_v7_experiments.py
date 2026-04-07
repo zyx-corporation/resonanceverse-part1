@@ -619,6 +619,49 @@ def test_v7_phase2a_simulate_tau_v_k_series_matches_energy_squared():
     assert np.allclose(v, 0.5 * (tr * tr))
 
 
+def test_v7_phase2a_relative_error_and_design_verdict():
+    from experiments.v7_phase2a_paper_tau_comparison import (
+        design_criterion_verdict_ja,
+        relative_error_percent_versus_theory,
+    )
+
+    assert relative_error_percent_versus_theory(4, 5.0) == 20.0
+    assert relative_error_percent_versus_theory(None, 5.0) is None
+    assert design_criterion_verdict_ja(10.0) is not None
+    assert "20%以内" in design_criterion_verdict_ja(10.0)
+    assert "50%超" in (design_criterion_verdict_ja(55.0) or "")
+
+
+def test_v7_phase2a_paper_tau_comparison_bundle():
+    from experiments.v7_phase2a_paper_tau_comparison import (
+        build_paper_tau_comparison_bundle,
+    )
+
+    b = build_paper_tau_comparison_bundle(
+        tau_max=3,
+        steps=100,
+        seed=1,
+        N=5,
+        d=4,
+        dt=0.05,
+        alpha=0.2,
+        beta=0.55,
+        noise=0.01,
+        theoretical_tau_star=2.0,
+        theoretical_provenance_ja="単体テスト用の仮参照値",
+        lyapunov_burn_frac=0.5,
+        lyapunov_mean_dv_threshold=-1e9,
+        lyapunov_frac_positive_threshold=0.0,
+    )
+    assert b["schema_version"] == "v7_phase2a_paper_tau_comparison.v1"
+    assert len(b["paper_table_rows"]) == 5
+    osc_row = next(
+        x for x in b["paper_table_rows"] if x["row_id"] == "tau_exp_proxy_oscillation_jump"
+    )
+    assert osc_row["tau"] is not None
+    assert osc_row["discrepancy_vs_theory_percent"] is not None
+
+
 def test_v7_phase2a_lyapunov_tau_exp_stub_sweep():
     from experiments.v7_phase2a_tau_exp_lyapunov_stub import (
         run_lyapunov_tau_exp_stub_sweep,
@@ -710,6 +753,32 @@ def test_v7_phase2a_theory_bridge_bundle_reuses_single_sweep():
     )
     assert b["single_tau_sweep"] is sw
     assert len(b["alpha_sensitivity"]["by_alpha"]) == 2
+
+
+def test_v7_phase2a_paper_tau_comparison_cli(tmp_path):
+    out_j = tmp_path / "pc.json"
+    out_m = tmp_path / "pc.md"
+    r = subprocess.run(
+        [
+            sys.executable,
+            str(_ROOT / "experiments" / "v7_phase2a_paper_tau_comparison.py"),
+            "--demo",
+            "--theoretical-tau-star",
+            "2.5",
+            "--out",
+            str(out_j),
+            "--out-md",
+            str(out_m),
+        ],
+        cwd=str(_ROOT),
+        capture_output=True,
+        text=True,
+    )
+    assert r.returncode == 0, r.stderr
+    assert "v7_phase2a_paper_tau_comparison_ok" in r.stdout
+    data = json.loads(out_j.read_text(encoding="utf-8"))
+    assert data["schema_version"] == "v7_phase2a_paper_tau_comparison.v1"
+    assert "| row_id |" in out_m.read_text(encoding="utf-8")
 
 
 def test_v7_phase2a_lyapunov_stub_cli(tmp_path):
