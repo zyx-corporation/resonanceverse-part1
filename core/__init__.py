@@ -13,6 +13,22 @@ from .reproducibility import set_experiment_seed
 from .resonance import ResonanceEngine
 from .resonant_core import AwaiIntegratedSLM, ResonantCore
 from .roi_selector import DynamicROISelector
+from .v7_awai_metrics import (
+    backward_diff_torch,
+    delay_series_torch,
+    omega_awai_numpy,
+    omega_awai_series_from_w,
+    omega_awai_torch,
+    run_synthetic_demo,
+)
+from .v7_pair_w_trajectory import (
+    PairRelationLinear,
+    batch_series_from_dialogues,
+    concat_truncate_pair_vector,
+    directed_pair_w_ij_w_ji,
+    pool_hidden_mean,
+    series_from_turn_hiddens,
+)
 
 __all__ = [
     "AutopoieticInference",
@@ -28,4 +44,16 @@ __all__ = [
     "autopoietic_kwargs",
     "load_yaml_config",
     "resonant_core_kwargs",
+    "omega_awai_numpy",
+    "omega_awai_torch",
+    "omega_awai_series_from_w",
+    "delay_series_torch",
+    "backward_diff_torch",
+    "run_synthetic_demo",
+    "pool_hidden_mean",
+    "concat_truncate_pair_vector",
+    "directed_pair_w_ij_w_ji",
+    "series_from_turn_hiddens",
+    "batch_series_from_dialogues",
+    "PairRelationLinear",
 ]

@@ -2,6 +2,7 @@
 Phase II-A ベースライン JSON（bundle pointer）の artifacts を検証する。
 
 - 各パスが存在するか（--strict なら欠落で非ゼロ終了）
+- bundle に ``figures`` / ``figures_paper`` があれば **PNG/PDF も**存在検査（``--out-prefix`` でパス置換）
 - 主要 JSON の schema_version と最小キー
 
 例::
@@ -51,6 +52,26 @@ def remap_artifact_paths(
         return dict(artifacts)
     out: dict[str, str] = {}
     for k, rel in artifacts.items():
+        if not isinstance(rel, str):
+            out[k] = rel
+            continue
+        if rel == bd or rel.startswith(bd + "_"):
+            out[k] = op + rel[len(bd) :]
+        else:
+            out[k] = rel
+    return out
+
+
+def _remap_path_dict(
+    d: dict[str, Any], *, bundle_default_prefix: str, out_prefix: str
+) -> dict[str, Any]:
+    """figures / figures_paper を artifacts と同じ規則で out_prefix に合わせる。"""
+    bd = bundle_default_prefix.strip().rstrip("/")
+    op = out_prefix.strip().rstrip("/")
+    if not bd or not op or bd == op:
+        return dict(d)
+    out: dict[str, Any] = {}
+    for k, rel in d.items():
         if not isinstance(rel, str):
             out[k] = rel
             continue
@@ -186,8 +207,21 @@ def main() -> None:
     if out_prefix and bd:
         artifacts = remap_artifact_paths(artifacts, bundle_default_prefix=bd, out_prefix=out_prefix)
 
+    combined: dict[str, str] = dict(artifacts)
+    fig = bundle.get("figures") if isinstance(bundle.get("figures"), dict) else {}
+    figp = bundle.get("figures_paper") if isinstance(bundle.get("figures_paper"), dict) else {}
+    if out_prefix and bd:
+        fig = _remap_path_dict(fig, bundle_default_prefix=bd, out_prefix=out_prefix)
+        figp = _remap_path_dict(figp, bundle_default_prefix=bd, out_prefix=out_prefix)
+    for fk, rel in fig.items():
+        if isinstance(rel, str) and rel.strip():
+            combined[f"figures:{fk}"] = rel.strip()
+    for fk, rel in figp.items():
+        if isinstance(rel, str) and rel.strip():
+            combined[f"figures_paper:{fk}"] = rel.strip()
+
     repo = args.repo_root.resolve()
-    errors, warnings = validate_artifacts(repo, artifacts, strict=args.strict)
+    errors, warnings = validate_artifacts(repo, combined, strict=args.strict)
 
     for w in warnings:
         print(f"v7_phase2a_bundle_validate_warn {w}", file=sys.stderr)

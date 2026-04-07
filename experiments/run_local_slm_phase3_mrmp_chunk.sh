@@ -8,6 +8,7 @@
 #   OFFSET    既定: 0
 #   MAX_ROWS  既定: 500
 #   OUT_PREFIX 既定: experiments/logs/v7_local_slm_chunk_o${OFFSET}_n${MAX_ROWS}
+#   DAY0_CHECK  既定は親シェルと同じ（未設定＝オフ）。MRMP の WINDOWS なら 1 推奨。
 #
 # 例:
 #   bash experiments/run_local_slm_phase3_mrmp_chunk.sh

@@ -21,6 +21,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -59,9 +60,68 @@ PROMPT_TEMPLATE_ID, SYSTEM_PROMPT_JA, _USER_PROMPT_TEMPLATE_STR = _load_llm_judg
 DEFAULT_HF_JUDGE_MODEL = "tokyotech-llm/Swallow-7b-instruct-hf"
 
 
+def _strip_markdown_json_fence(text: str) -> str:
+    m = re.search(
+        r"```(?:json)?\s*\r?\n(.*?)```",
+        text,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+    if m:
+        return m.group(1).strip()
+    return text.strip()
+
+
+def _balanced_json_object_slice(s: str, start: int) -> str | None:
+    """``start`` は ``{`` の位置。ダブルクォート文字列内の ``{`` ``}`` を無視して外側のオブジェクトを切り出す。"""
+    depth = 0
+    i = start
+    in_string = False
+    escape = False
+    n = len(s)
+    while i < n:
+        c = s[i]
+        if escape:
+            escape = False
+            i += 1
+            continue
+        if in_string:
+            if c == "\\":
+                escape = True
+            elif c == '"':
+                in_string = False
+            i += 1
+            continue
+        if c == '"':
+            in_string = True
+            i += 1
+            continue
+        if c == "{":
+            depth += 1
+        elif c == "}":
+            depth -= 1
+            if depth == 0:
+                return s[start : i + 1]
+        i += 1
+    return None
+
+
+def _parse_judge_scores_regex(s: str) -> dict[str, Any] | None:
+    """モデルが JSON 外にゴミを付けた場合の最終手段（12 キーを個別に探索）。"""
+    out: dict[str, Any] = {}
+    num = r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?"
+    for k in PILOT_KEYS:
+        pat = rf'"{re.escape(k)}"\s*:\s*({num})\b'
+        m = re.search(pat, s)
+        if not m:
+            return None
+        out[k] = float(m.group(1))
+    return out
+
+
 def parse_llm_judge_json_response(text: str) -> dict[str, Any]:
-    """生成文から JSON オブジェクトを抽出（前後の説明文が付く場合に対応）。"""
-    s = text.strip()
+    """生成文から JSON オブジェクトを抽出（前後の説明文・フェンス・文字列内 ``}`` に対応）。"""
+    raw = text
+    s = _strip_markdown_json_fence(text)
     try:
         obj = json.loads(s)
         if isinstance(obj, dict):
@@ -70,19 +130,22 @@ def parse_llm_judge_json_response(text: str) -> dict[str, Any]:
         pass
     i = s.find("{")
     if i < 0:
+        blob = _parse_judge_scores_regex(raw)
+        if blob is not None:
+            return blob
         raise ValueError("no_json_object_in_model_output")
-    depth = 0
-    for j in range(i, len(s)):
-        if s[j] == "{":
-            depth += 1
-        elif s[j] == "}":
-            depth -= 1
-            if depth == 0:
-                obj = json.loads(s[i : j + 1])
-                if not isinstance(obj, dict):
-                    raise ValueError("json_root_not_object")
+    slice_s = _balanced_json_object_slice(s, i)
+    if slice_s is not None:
+        try:
+            obj = json.loads(slice_s)
+            if isinstance(obj, dict):
                 return obj
-    raise ValueError("unclosed_json_in_model_output")
+        except json.JSONDecodeError:
+            pass
+    blob = _parse_judge_scores_regex(raw)
+    if blob is not None:
+        return blob
+    raise ValueError("unparseable_json_in_model_output")
 
 
 def _load_hf_judge(
@@ -153,19 +216,48 @@ def hf_local_scores_for_row(
         input_ids = enc["input_ids"]
     input_ids = input_ids.to(device)
     pad_id = tokenizer.pad_token_id or tokenizer.eos_token_id
-    gen_kw: dict[str, Any] = {
-        "max_new_tokens": max(32, int(max_new_tokens)),
-        "pad_token_id": pad_id,
-    }
-    if tokenizer.eos_token_id is not None:
-        gen_kw["eos_token_id"] = tokenizer.eos_token_id
-    if temperature <= 1e-6:
-        gen_kw["do_sample"] = False
+    eos_id = tokenizer.eos_token_id
+    try:
+        from transformers import GenerationConfig
+    except ImportError:
+        GenerationConfig = None  # type: ignore[misc,assignment]
+    mnt = max(32, int(max_new_tokens))
+    if GenerationConfig is not None:
+        if temperature <= 1e-6:
+            gen_cfg = GenerationConfig(
+                max_new_tokens=mnt,
+                do_sample=False,
+                num_beams=1,
+                pad_token_id=pad_id,
+                eos_token_id=eos_id,
+            )
+        else:
+            gen_cfg = GenerationConfig(
+                max_new_tokens=mnt,
+                do_sample=True,
+                temperature=float(temperature),
+                pad_token_id=pad_id,
+                eos_token_id=eos_id,
+            )
+        with torch.no_grad():
+            out_ids = model.generate(
+                input_ids,
+                generation_config=gen_cfg,
+            )
     else:
-        gen_kw["do_sample"] = True
-        gen_kw["temperature"] = float(temperature)
-    with torch.no_grad():
-        out_ids = model.generate(input_ids, **gen_kw)
+        gen_kw: dict[str, Any] = {
+            "max_new_tokens": mnt,
+            "pad_token_id": pad_id,
+        }
+        if eos_id is not None:
+            gen_kw["eos_token_id"] = eos_id
+        if temperature <= 1e-6:
+            gen_kw["do_sample"] = False
+        else:
+            gen_kw["do_sample"] = True
+            gen_kw["temperature"] = float(temperature)
+        with torch.no_grad():
+            out_ids = model.generate(input_ids, **gen_kw)
     new_tokens = out_ids[0, input_ids.shape[1] :]
     raw = tokenizer.decode(new_tokens, skip_special_tokens=True)
     parsed = parse_llm_judge_json_response(raw)

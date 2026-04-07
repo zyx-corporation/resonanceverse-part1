@@ -12,5 +12,5 @@
     "bootstrap_md": "experiments/logs/v7_phase2a_mrmp_tau_n3146_bootstrap.md",
     "pipeline_log": "experiments/logs/run_phase2a_mrmp_tau_gpu.log"
   },
-  "note_ja": "experiments/logs/ は多くが .gitignore のため、再現時は run_phase2a_mrmp_tau.sh を実行して生成する。with_contrib の JSON に inference_device が含まれる。6 軸数値付き JSONL を WINDOWS で渡すと auxiliary が同梱される。理論境界: docs/planning/v7_phase2a_theory_bridge.md。再現マニフェスト・手順: experiments/README（Phase II-A：理論との橋・再現）。検証: v7_phase2a_bundle_validate.py --strict [--verify-manifest …_repro_manifest.json]"
+  "note_ja": "experiments/logs/ は多くが .gitignore のため、再現時は run_phase2a_mrmp_tau.sh を実行して生成する。run_phase2a_mrmp_tau.sh は既定 PIPELINE_LOG=experiments/logs/run_phase2a_mrmp_tau_gpu.log に全出力を tee（VALIDATE_STRICT=1 用）。with_contrib の JSON に inference_device が含まれる。6 軸数値付き JSONL を WINDOWS で渡すと auxiliary が同梱される。理論境界: docs/planning/v7_phase2a_theory_bridge.md。再現マニフェスト・手順: experiments/README（Phase II-A：理論との橋・再現）。検証: v7_phase2a_bundle_validate.py --strict [--verify-manifest …_repro_manifest.json]"
 }

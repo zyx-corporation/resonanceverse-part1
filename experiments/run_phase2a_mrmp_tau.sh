@@ -16,13 +16,20 @@
 #   WINDOWS=experiments/logs/v7_judge_10k.jsonl bash experiments/run_phase2a_mrmp_tau.sh
 #     （6 軸 LLM 審判済み JSONL なら with_contrib に auxiliary が載り、サマリ MD/JSON に反映）
 #   VALIDATE_STRICT=1 bash experiments/run_phase2a_mrmp_tau.sh
-#     （終了時に v7_phase2a_bundle_validate.py --strict を実行）
+#     （終了時に v7_phase2a_bundle_validate.py --strict。要 pipeline_log → 下記 PIPELINE_LOG）
+#   PIPELINE_LOG  既定: experiments/logs/run_phase2a_mrmp_tau_gpu.log（全ステップを tee 上書き）
 #   GENERATE_PLOTS=1 bash experiments/run_phase2a_mrmp_tau.sh
 #     （終了時に v7_phase2a_tau_plots.py で PNG を出力）
 #   GENERATE_PAPER_PLOTS=1 … 同上で --paper（PNG 300dpi + PDF）
 #   WRITE_REPRO_MANIFEST=1 BUNDLE_JSON=experiments/baselines/…_bundle_v1.json …
 #     （v7_phase2a_repro_manifest.py で ${OUT_PREFIX}_repro_manifest.json）
 #   REPRO_MANIFEST_STRICT=1 … マニフェスト時に成果物・図の欠落でも失敗
+#   DAY0_CHECK=1 … empirical_run の前に RVT Day 0（必須キー・同階 manifest 件数一致）。
+#     **v7_mrmp_prepare 出力の WINDOWS** を使うとき推奨。審判のみ JSONL 等で manifest が無いときは **付けない**。
+#   DAY0_MIN_ROWS=N … 上記実行時に --min-rows N を付与（任意）
+#   RVT_EXPLORE=1 … ブートストラップ完了後に run_rvt_explore.sh（同一 WINDOWS、小バッチ）。
+#     RVT_EXPLORE_SKIP_DAY0 既定 1（本シェルで Day0 済なら二重実行を避ける）。0 で explore 内 Day0 も実行。
+#     RVT_EXPLORE_MAX_ROWS / RVT_EXPLORE_LINE / RVT_EXPLORE_CPU（未設定時は CPU と同じ）
 
 set -euo pipefail
 
@@ -46,6 +53,29 @@ if [[ -n "${REVISION:-}" ]]; then
 fi
 
 mkdir -p "$(dirname "$OUT_PREFIX")"
+
+# 終了時に tee を閉じてから再現マニフェストを走らせるため、元の端末を FD 3/4 に保存する。
+exec 3>&1 4>&2
+
+# bundle（v7_phase2a_mrmp_tau_n3146_bundle_v1 等）の pipeline_log と整合。VALIDATE_STRICT=1 に必須。
+PIPELINE_LOG="${PIPELINE_LOG:-experiments/logs/run_phase2a_mrmp_tau_gpu.log}"
+mkdir -p "$(dirname "$PIPELINE_LOG")"
+exec > >(tee "$PIPELINE_LOG") 2>&1
+
+echo "=== run_phase2a_mrmp_tau: start $(date -Iseconds) ==="
+echo "  PIPELINE_LOG=$PIPELINE_LOG OUT_PREFIX=$OUT_PREFIX WINDOWS=$WINDOWS MODEL=$MODEL MAX_ROWS=$MAX_ROWS"
+
+if [[ "${DAY0_CHECK:-0}" == "1" ]]; then
+  echo "=== run_phase2a_mrmp_tau: RVT Day 0 (schema + manifest) ==="
+  DAY0_EXTRA=()
+  if [[ -n "${DAY0_MIN_ROWS:-}" ]]; then
+    DAY0_EXTRA=(--min-rows "$DAY0_MIN_ROWS")
+  fi
+  python3 experiments/rvt_exp_2026_008_day0_checks.py \
+    --windows "$WINDOWS" \
+    --strict-manifest \
+    "${DAY0_EXTRA[@]}"
+fi
 
 echo "=== run_phase2a_mrmp_tau: empirical_run (export contributions) ==="
 PYTHONUNBUFFERED=1 python3 experiments/v7_phase2a_empirical_run.py \
@@ -80,9 +110,15 @@ echo "  ${OUT_PREFIX}_summary.json"
 echo "  ${OUT_PREFIX}_bootstrap.json"
 echo "  ${OUT_PREFIX}_bootstrap.md"
 
-if [[ "${VALIDATE_STRICT:-0}" == "1" ]]; then
-  echo "=== run_phase2a_mrmp_tau: bundle_validate --strict (OUT_PREFIX=$OUT_PREFIX) ==="
-  python3 experiments/v7_phase2a_bundle_validate.py --strict --out-prefix "$OUT_PREFIX"
+if [[ "${RVT_EXPLORE:-0}" == "1" ]]; then
+  echo "=== run_phase2a_mrmp_tau: RVT explore (optional, WINDOWS=$WINDOWS) ==="
+  EXPL_CPU="${RVT_EXPLORE_CPU:-${CPU:-0}}"
+  JSONL="$WINDOWS" \
+    SKIP_DAY0="${RVT_EXPLORE_SKIP_DAY0:-1}" \
+    MAX_ROWS="${RVT_EXPLORE_MAX_ROWS:-5}" \
+    LINE="${RVT_EXPLORE_LINE:-0}" \
+    CPU="$EXPL_CPU" \
+    bash experiments/run_rvt_explore.sh
 fi
 
 if [[ "${GENERATE_PLOTS:-0}" == "1" ]]; then
@@ -94,6 +130,20 @@ if [[ "${GENERATE_PAPER_PLOTS:-0}" == "1" ]]; then
   echo "=== run_phase2a_mrmp_tau: tau_plots --paper (PNG+PDF) ==="
   python3 experiments/v7_phase2a_tau_plots.py "${OUT_PREFIX}_with_contrib.json" --paper
 fi
+
+# strict 検証のあと tee を閉じ、終了行だけログに追記し、再現マニフェストは端末へ（stdout が pipeline_log を汚さない）
+if [[ "${VALIDATE_STRICT:-0}" == "1" ]]; then
+  echo "=== run_phase2a_mrmp_tau: bundle_validate --strict (OUT_PREFIX=$OUT_PREFIX) ==="
+  if [[ -n "${BUNDLE_JSON:-}" ]]; then
+    python3 experiments/v7_phase2a_bundle_validate.py --strict --bundle "$BUNDLE_JSON" --out-prefix "$OUT_PREFIX"
+  else
+    python3 experiments/v7_phase2a_bundle_validate.py --strict --out-prefix "$OUT_PREFIX"
+  fi
+fi
+
+exec 1>&3 2>&4
+wait || true
+echo "=== run_phase2a_mrmp_tau: end $(date -Iseconds) ===" | tee -a "$PIPELINE_LOG"
 
 if [[ "${WRITE_REPRO_MANIFEST:-0}" == "1" ]]; then
   if [[ -n "${BUNDLE_JSON:-}" ]]; then

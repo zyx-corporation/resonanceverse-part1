@@ -20,6 +20,8 @@ matplotlib>=3.7.0       # Phase II-A 等の実験グラフ（tau 掃引）
 pyyaml                  # configs/ フォルダの設定ファイル読み込み用
 tqdm                    # 学習進捗の可視化
 einops                  # 多次元テンソル（共鳴場）の柔軟な変形用
+streamlit>=1.28.0       # tools/v7_pair_chat_app.py（v7 話者ペア・Ω チャット UI）
+pandas>=2.0.0           # チャット UI の表・グラフ用
 
 # --- Experiment Tracking (Optional) ---
 # tensorboard           # 学習曲線のモニタリング

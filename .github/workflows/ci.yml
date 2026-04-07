@@ -47,6 +47,14 @@ jobs:
       - name: v7 local SLM env check (torch / transformers meta)
         run: python experiments/v7_local_env_check.py
 
+      - name: RVT ablation plan + local optional checklist (no MRMP/HF 本番)
+        run: |
+          mkdir -p experiments/logs
+          python experiments/rvt_exp_2026_008_ablation_runner.py --preset observe \
+            > experiments/logs/ci_rvt_ablation_plan.json
+          python experiments/v7_local_optional_checklist.py \
+            --cwd . > experiments/logs/ci_v7_local_optional.json
+
       - name: Phase 3 decode benchmark + two_tier sweep (demo, CPU)
         run: |
           python experiments/decode_benchmark.py --demo --cpu \

@@ -150,12 +150,55 @@ def test_v7_llm_judge_prompt_fingerprint_stable():
 
 
 def test_parse_llm_judge_json_response():
-    from experiments.v7_phase1a_llm_judge_six_axes import parse_llm_judge_json_response
+    from experiments.v7_phase1a_llm_judge_six_axes import (
+        parse_llm_judge_json_response,
+    )
 
-    raw = '説明\n{"trust_ab": 0.1, "trust_ba": 0.2, "authority_ab": 0.3, "authority_ba": 0.4, "proximity_ab": 0.5, "proximity_ba": 0.6, "intent_ab": 0.7, "intent_ba": 0.8, "affect_ab": 0.9, "affect_ba": 0.1, "history_ab": 0.2, "history_ba": 0.3}\n末尾'
+    obj = (
+        '{"trust_ab": 0.1, "trust_ba": 0.2, "authority_ab": 0.3, '
+        '"authority_ba": 0.4, "proximity_ab": 0.5, "proximity_ba": 0.6, '
+        '"intent_ab": 0.7, "intent_ba": 0.8, "affect_ab": 0.9, '
+        '"affect_ba": 0.1, "history_ab": 0.2, "history_ba": 0.3}'
+    )
+    raw = f"説明\n{obj}\n末尾"
     d = parse_llm_judge_json_response(raw)
     assert d["trust_ab"] == 0.1
     assert d["history_ba"] == 0.3
+
+
+def test_parse_llm_judge_json_brace_inside_string():
+    """文字列値に ``}`` があっても外側オブジェクトを正しく切り出す。"""
+    from experiments.v7_phase1a_llm_judge_six_axes import (
+        parse_llm_judge_json_response,
+    )
+
+    inner = (
+        '{"trust_ab": 0.1, "trust_ba": 0.2, "authority_ab": 0.3, '
+        '"authority_ba": 0.4, "proximity_ab": 0.5, "proximity_ba": 0.6, '
+        '"intent_ab": 0.7, "intent_ba": 0.8, "affect_ab": 0.9, '
+        '"affect_ba": 0.1, "history_ab": 0.2, "history_ba": 0.3, '
+        '"note": "x}y"}'
+    )
+    raw = "前置き\n" + inner + "\n続き { broken"
+    d = parse_llm_judge_json_response(raw)
+    assert d["trust_ab"] == 0.1
+    assert d["history_ba"] == 0.3
+
+
+def test_parse_llm_judge_json_markdown_fence():
+    from experiments.v7_phase1a_llm_judge_six_axes import (
+        parse_llm_judge_json_response,
+    )
+
+    body = (
+        '{"trust_ab": 0.1, "trust_ba": 0.2, "authority_ab": 0.3, '
+        '"authority_ba": 0.4, "proximity_ab": 0.5, "proximity_ba": 0.6, '
+        '"intent_ab": 0.7, "intent_ba": 0.8, "affect_ab": 0.9, '
+        '"affect_ba": 0.1, "history_ab": 0.2, "history_ba": 0.3}'
+    )
+    raw = f"以下です\n```json\n{body}\n```\n"
+    d = parse_llm_judge_json_response(raw)
+    assert d["trust_ab"] == 0.1
 
 
 def test_v7_llm_judge_cli_demo(tmp_path):

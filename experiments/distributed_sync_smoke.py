@@ -56,6 +56,7 @@ def _run_tensor_ping_pong(
     parent_conn, child_conn = mp.Pipe()
     proc = mp.Process(target=_tensor_echo_worker, args=(child_conn,))
     proc.start()
+    child_conn.close()
     times_s: list[float] = []
     try:
         for _ in range(warmup):
@@ -69,10 +70,15 @@ def _run_tensor_ping_pong(
             parent_conn.recv()
             times_s.append(time.perf_counter() - t0)
     finally:
-        parent_conn.send(None)
+        try:
+            parent_conn.send(None)
+        except (BrokenPipeError, OSError, ValueError):
+            pass
         proc.join(timeout=10.0)
         if proc.is_alive():
             proc.terminate()
+            proc.join(timeout=5.0)
+        parent_conn.close()
 
     ms = np.array(times_s, dtype=np.float64) * 1000.0
     return {
@@ -99,6 +105,7 @@ def _run_ping_pong(
     parent_conn, child_conn = mp.Pipe()
     proc = mp.Process(target=_echo_worker, args=(child_conn,))
     proc.start()
+    child_conn.close()
     times_s: list[float] = []
     try:
         for _ in range(warmup):
@@ -110,10 +117,15 @@ def _run_ping_pong(
             parent_conn.recv()
             times_s.append(time.perf_counter() - t0)
     finally:
-        parent_conn.send(None)
+        try:
+            parent_conn.send(None)
+        except (BrokenPipeError, OSError, ValueError):
+            pass
         proc.join(timeout=5.0)
         if proc.is_alive():
             proc.terminate()
+            proc.join(timeout=5.0)
+        parent_conn.close()
 
     ms = np.array(times_s, dtype=np.float64) * 1000.0
     return {

@@ -118,6 +118,7 @@ python experiments/efficiency_benchmark.py --cpu --seq-lens 64 128 256 512
 
 - **[Resonanceverse 理論 v7.0（正本）](docs/v7/Resonanceverse_Theory_v7.0.md)**
 - [実証実験設計 v7.0](docs/v7/Resonanceverse_v7.0_Experimental_Design.md) · [EXPERIMENT_ROADMAP_v7](docs/planning/EXPERIMENT_ROADMAP_v7.md)
+- [RVT-EXP-2026-008 と本リポの対応（L1–L3）](docs/planning/rvt_exp_2026_008_architecture_bridge.md) · Day0: `python experiments/rvt_exp_2026_008_day0_checks.py --strict-manifest` · 探索: `bash experiments/run_rvt_explore.sh`（MRMP 窓がある場合）
 - [理論索引（実装対応・旧版へのリンク）](docs/theory/resonanceverse_theory.md)
 - [数学的基礎（先行版・証明スケッチ）](docs/theory/mathematical_foundation.md)
 - [アーキテクチャ設計（モジュール構造とクラス設計）](docs/implementation/architecture_overview.md)

@@ -658,9 +658,56 @@ def test_v7_phase4_minimal_bundle_build():
         warmup=1,
         repeats=1,
         with_squad_span=False,
+        with_phase3a_synthetic=False,
+        with_rvt_pointers=False,
     )
     assert b["schema_version"] == "v7_phase4_minimal_repro.v1"
     assert b["two_tier_sweep"]["schema_version"] == "two_tier_sweep.v1"
+
+
+def test_v7_phase4_minimal_bundle_rvt_pointers():
+    from experiments.v7_phase4_minimal_repro import build_bundle
+
+    b = build_bundle(
+        demo=True,
+        cpu=True,
+        seed=0,
+        max_new_tokens=2,
+        warmup=1,
+        repeats=1,
+        with_squad_span=False,
+        with_phase3a_synthetic=False,
+        with_rvt_pointers=True,
+    )
+    assert "rvt_pointers" in b
+    rp = b["rvt_pointers"]
+    assert rp["schema_version"] == "v7_phase4_rvt_pointers.v1"
+    assert "scripts" in rp
+    assert rp["scripts"]["mrmp_row"] == (
+        "experiments/rvt_exp_2026_008_mrmp_row.py"
+    )
+    assert "cli_examples_ja" in rp
+
+
+def test_v7_phase4_minimal_bundle_oboro_standalone_demo():
+    from experiments.v7_phase4_minimal_repro import build_bundle
+
+    b = build_bundle(
+        demo=True,
+        cpu=True,
+        seed=0,
+        max_new_tokens=2,
+        warmup=1,
+        repeats=1,
+        with_squad_span=False,
+        with_phase3a_synthetic=False,
+        with_rvt_pointers=False,
+        with_oboro_standalone_demo=True,
+    )
+    assert "oboro_standalone_demo" in b
+    pack = b["oboro_standalone_demo"]
+    assert pack["lite"]["schema_version"] == "rvt_exp_008_oboro_lite.v1"
+    assert pack["full"]["schema_version"] == "rvt_exp_008_oboro.v2"
 
 
 def test_v7_phase2a_repro_manifest_verify_detects_tamper(tmp_path):

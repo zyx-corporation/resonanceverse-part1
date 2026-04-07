@@ -146,6 +146,33 @@ def extract_hf_attention_layer_stats(
     return layer_stats, None, int(ids.shape[1])
 
 
+def hf_forward_hidden_last_layer(
+    *,
+    model: Any,
+    tokenizer: Any,
+    device: Any,
+    text: str,
+    layer_index: int = -1,
+) -> tuple[Any | None, dict[str, Any] | None, int]:
+    """1 回前向きし、指定層の隠れ状態 ``(S, H)`` を返す（話者プール・w_ij 系列用）。"""
+    import torch
+
+    batch = tokenizer(text, return_tensors="pt", add_special_tokens=False)
+    ids = batch["input_ids"].to(device)
+    with torch.no_grad():
+        out = model(ids, output_hidden_states=True)
+    hs = out.hidden_states
+    ntok = int(ids.shape[1])
+    if not hs:
+        err = {"schema_version": "v7_phase1a.v1", "error": "no_hidden_states"}
+        return None, err, ntok
+    n_layers = len(hs)
+    li = layer_index if layer_index >= 0 else n_layers - 1
+    li = max(0, min(int(li), n_layers - 1))
+    h = hs[li][0]
+    return h, None, ntok
+
+
 def hf_forward_attention_layer_matrix(
     *,
     model: Any,

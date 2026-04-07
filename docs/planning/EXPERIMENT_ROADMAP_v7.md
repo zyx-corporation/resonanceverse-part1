@@ -19,6 +19,10 @@ python experiments/v7_empirical_run.py --cpu --model gpt2 --seed 0 --out experim
 
 **整形**: `python experiments/v7_mrmp_prepare.py` → `experiments/logs/mrmp_prepared/windows.jsonl` 等。サンプル行: [`experiments/data/v7_mrmp_sample.jsonl`](../../experiments/data/v7_mrmp_sample.jsonl)。相関は `v7_phase1a_pilot_jsonl.py --mrmp-labels`。
 
+**整形後の健全性（Day 0）**: `python experiments/rvt_exp_2026_008_day0_checks.py --strict-manifest`（必須キー・行数・`manifest.json` の `n_utterance_rows` 一致）。外部計画 RVT-EXP-2026-008 と本リポ実装の対応は [rvt_exp_2026_008_architecture_bridge.md](rvt_exp_2026_008_architecture_bridge.md)。
+
+**RVT L1 拡張（MRMP 複数行・任意 Awai 蓄積）**: `python experiments/rvt_exp_2026_008_mrmp_row.py --jsonl … --line N --max-rows K` または [`run_rvt_mrmp_batch.sh`](../../experiments/run_rvt_mrmp_batch.sh) / ワンショット [`run_rvt_explore.sh`](../../experiments/run_rvt_explore.sh)（`JSONL` / `LINE` / `MAX_ROWS` / `MODEL` / `ACCUMULATE_AWAI`・[架け橋 §5](rvt_exp_2026_008_architecture_bridge.md)）。
+
 **6 軸を LLM で付ける場合**: 事前登録フィールド [`v7_phase1a_empirical_prereg_v1.json`](v7_phase1a_empirical_prereg_v1.json) の `llm_judge_six_axes`、手順は [Phase_IA_IIIA_本番手順設計_v7](Phase_IA_IIIA_本番手順設計_v7.md)「A.3′」。実行: [`../../experiments/v7_phase1a_llm_judge_six_axes.py`](../../experiments/v7_phase1a_llm_judge_six_axes.py)（`--demo` または `OPENAI_API_KEY`）。
 
 ## 実行コマンド（一括）
@@ -84,6 +88,7 @@ python experiments/v7_phase1a_autoproxy.py --cpu --model gpt2 --seed 0 --out exp
 | **Phase II-A 合成（μ 感度）** | alpha スイープ | [`v7_phase2a_delay_sweep.py`](../../experiments/v7_phase2a_delay_sweep.py) `--alpha-list`（[数値 τ 説明](v7_phase2a_numeric_tau_exp.md)） |
 | **Phase I-A（MRMP 6 軸）** | 審判 JSONL × Frobenius | [`run_phase1a_mrmp_v7_axes.sh`](../../experiments/run_phase1a_mrmp_v7_axes.sh)、バンドル [`v7_phase1a_mrmp_judge_v7_axes_bundle_v1.json`](../../experiments/baselines/v7_phase1a_mrmp_judge_v7_axes_bundle_v1.json) |
 | **ローカル SLM（日本語）** | M3 想定の注意・審判・チャンク・SLM 同士一致・再現マニフェスト §11 | [v7_local_slm_m3_japanese_plan.md](v7_local_slm_m3_japanese_plan.md)、[`v7_llm_judge_slm_pair_agreement.py`](../../experiments/v7_llm_judge_slm_pair_agreement.py)、[`run_local_slm_phase4_judge_pair.sh`](../../experiments/run_local_slm_phase4_judge_pair.sh)、[`run_local_slm_phase4_swallow_7b_13b.sh`](../../experiments/run_local_slm_phase4_swallow_7b_13b.sh) |
+| **コーパス Day 0（MRMP 窓）** | `windows.jsonl` スキーマ・件数 | [`experiments/rvt_exp_2026_008_day0_checks.py`](../../experiments/rvt_exp_2026_008_day0_checks.py)；計画書対応表 [rvt_exp_2026_008_architecture_bridge.md](rvt_exp_2026_008_architecture_bridge.md) |
 
 ## レガシー実証との関係
 
@@ -95,7 +100,7 @@ python experiments/v7_phase1a_autoproxy.py --cpu --model gpt2 --seed 0 --out exp
 
 ## テスト
 
-`tests/test_v7_experiments.py` が `--demo` 相当の関数をオフライン検証する。
+`tests/test_v7_experiments.py` が `--demo` 相当の関数をオフライン検証する。MRMP Day 0 検証ロジックは `tests/test_rvt_exp_2026_008_day0_checks.py`。
 
 ---
 

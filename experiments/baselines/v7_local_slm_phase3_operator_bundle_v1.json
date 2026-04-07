@@ -8,5 +8,5 @@
     "tau_summary_json": "experiments/logs/v7_local_slm_chunk_o0_n500_summary.json",
     "bootstrap_json": "experiments/logs/v7_local_slm_chunk_o0_n500_bootstrap.json"
   },
-  "note_ja": "パスは例。実チャンクごとに OUT_PREFIX を変え、成果物凍結時は run_phase2a_mrmp_tau.sh 終了後に WRITE_REPRO_MANIFEST=1 BUNDLE_JSON=experiments/baselines/v7_phase2a_mrmp_tau_n3146_bundle_v1.json（成果物が揃う bundle）で ${OUT_PREFIX}_repro_manifest.json を生成。図・PNG までハッシュ必須なら REPRO_MANIFEST_STRICT=1。検証: python experiments/v7_phase2a_repro_manifest.py --verify <manifest>。審判チャンクは run_mrmp_llm_judge_chunks_hf_local.sh。"
+  "note_ja": "パスは例。実チャンクごとに OUT_PREFIX を変え、成果物凍結時は run_phase2a_mrmp_tau.sh 終了後に WRITE_REPRO_MANIFEST=1 BUNDLE_JSON=experiments/baselines/v7_phase2a_mrmp_tau_n3146_bundle_v1.json（注意のみ）または v7_phase2a_mrmp_tau_n3146_judge10k_bundle_v1.json（審判補助同梱）で ${OUT_PREFIX}_repro_manifest.json を生成。図・PNG までハッシュ必須なら REPRO_MANIFEST_STRICT=1。検証: python experiments/v7_phase2a_repro_manifest.py --verify <manifest>。審判本番: run_mrmp_llm_judge_chunks_hf_local.sh（SRC=windows.jsonl, OUT, CHUNK, N_CHUNKS, HF_MODEL, HF_REVISION, CPU）。完了後 WINDOWS=$OUT で run_phase2a または run_local_slm_phase3。手順の全文: docs/planning/v7_local_slm_m3_japanese_plan.md §4 Phase 3 本番・補足。"
 }
