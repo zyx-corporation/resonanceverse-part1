@@ -581,6 +581,53 @@ def test_v7_phase2a_delay_alpha_sweep():
     assert "tau_exp_proxy_oscillation_jump" in out["by_alpha"][0]
 
 
+def test_v7_phase2a_theory_bridge_synth_bundle_demo():
+    from experiments.v7_phase2a_theory_bridge_synth import (
+        build_theory_bridge_bundle,
+    )
+
+    b = build_theory_bridge_bundle(demo=True, seed=7)
+    assert b["schema_version"] == "v7_phase2a_theory_bridge_synth.v1"
+    assert b["demo"] is True
+    assert "single_tau_sweep" in b and "alpha_sensitivity" in b
+    st = b["single_tau_sweep"]
+    assert st["schema_version"] == "v7_phase2a.v1"
+    tm = b["hyperparams"]["tau_max"]
+    assert len(st["by_tau"]) == tm + 1
+    assert st["by_tau"][0]["tau"] == 0 and st["by_tau"][-1]["tau"] == tm
+    au = b["alpha_sensitivity"]
+    assert au["schema_version"] == "v7_phase2a_alpha_sweep.v1"
+    assert len(au["by_alpha"]) >= 2
+    assert isinstance(b.get("labeling_conventions_ja"), dict)
+    assert "reproduce_commands" in b
+    refs = b.get("references") or {}
+    assert "experimental_design_md" in refs
+    assert isinstance(b.get("comparison_protocol_note_ja"), str)
+
+
+def test_v7_phase2a_theory_bridge_synth_cli(tmp_path):
+    out = tmp_path / "bridge.json"
+    r = subprocess.run(
+        [
+            sys.executable,
+            str(_ROOT / "experiments" / "v7_phase2a_theory_bridge_synth.py"),
+            "--demo",
+            "--seed",
+            "2",
+            "--out",
+            str(out),
+        ],
+        cwd=str(_ROOT),
+        capture_output=True,
+        text=True,
+    )
+    assert r.returncode == 0, r.stderr
+    assert "v7_phase2a_theory_bridge_ok" in r.stdout
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert data["schema_version"] == "v7_phase2a_theory_bridge_synth.v1"
+    assert data["demo"] is True
+
+
 def test_v7_phase2a_compare_runs_cli(tmp_path):
     a = {
         "schema_version": "v7_phase2a_empirical.v1",

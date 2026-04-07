@@ -20,7 +20,8 @@ class LightweightResonanceFacade(nn.Module):
     トークン列を固定ノード数 N の共鳴場に写像し、ROI 階層計算と
     ResonanceEngine による部分ノードのスコア化を返す。
 
-    Returns の dict に roi_output, resonance_scores, resonance_tensor, context_vector を含む。
+    Returns の dict に roi_output, resonance_scores,
+    resonance_tensor, context_vector を含む。
     """
 
     def __init__(
@@ -52,8 +53,10 @@ class LightweightResonanceFacade(nn.Module):
         """
         Args:
             token_ids: (B, S)
-            top_k_engine: ResonanceEngine に渡すノードインデックス数（メモリ節約）。None なら min(64, N)。
-            instrument: 与えた場合、各区間の経過時間（および CUDA 時は割り当て差分）を `instrument.records` に蓄積。
+            top_k_engine: ResonanceEngine に渡すノードインデックス数（メモリ節約）。
+            None なら min(64, N)。
+            instrument: 与えた場合、`instrument.records` に区間ごとの経過時間を蓄積。
+            CUDA 時は割当差分と区間内ピークも含む。
             cultural_scale: 任意。(B,1,1) またはブロードキャスト可能。共鳴特徴 r に乗算（Phase 1B）。
 
         Returns:
@@ -78,11 +81,21 @@ class LightweightResonanceFacade(nn.Module):
             current_state = r.mean(dim=(0, 1)).unsqueeze(0)
 
         with st("roi_select"):
-            roi_out = self.roi.select_and_compute(current_state, resonance_tensor)
+            roi_out = self.roi.select_and_compute(
+                current_state,
+                resonance_tensor,
+            )
 
-        k = top_k_engine if top_k_engine is not None else min(64, self.num_nodes)
+        k = (
+            top_k_engine
+            if top_k_engine is not None
+            else min(64, self.num_nodes)
+        )
         with st("engine_topk"):
-            importance = torch.matmul(resonance_tensor, current_state.t()).squeeze()
+            importance = torch.matmul(
+                resonance_tensor,
+                current_state.t(),
+            ).squeeze()
             top_idx = torch.argsort(importance, descending=True)[:k]
             context_vector = current_state.squeeze(0)
             resonance_scores = self.engine(top_idx, context_vector)

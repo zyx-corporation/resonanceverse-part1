@@ -21,7 +21,7 @@
 ### 2.2 CUDA `memory_allocated` 差分（区間ごと）
 
 - **利点**: どの演算ブロックが**追加割り当て**を誘発したかの手掛かり。
-- **限界**: `synchronize` 前後の差なので、プール再利用で 0 に見えることがある。ピークは `max_memory_allocated` で別途取る必要がある（未実装）。
+- **限界**: `synchronize` 前後の差なので、プール再利用で 0 に見えることがある。区間内のピークは `StageTimer` が CUDA 時に区間開始で `reset_peak_memory_stats` したうえで `max_memory_allocated` を `cuda_peak_allocated_bytes` として記録する（連続区間前提・ネスト時は解釈に注意）。
 - **Phase C** では二階建て計画の **`HBM_bytes/token`** など、よりレイヤ寄りの設計指標が主役になる。
 
 ### 2.3 再現性

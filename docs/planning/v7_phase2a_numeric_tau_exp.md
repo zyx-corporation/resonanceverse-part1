@@ -27,4 +27,11 @@ python experiments/v7_phase2a_delay_sweep.py --tau-max 8 --steps 1500 \
   --alpha-list 0.1,0.15,0.2,0.25,0.3 --out experiments/logs/phase2a_synth_alpha_sweep.json
 ```
 
+理論橋ドキュメント向けに **上記 2 本を 1 JSON にまとめる**（ラベル規約・参照パス・再現コマンド同梱）:
+
+```bash
+python experiments/v7_phase2a_theory_bridge_synth.py --demo \
+  --out experiments/logs/v7_phase2a_theory_bridge_synth_demo.json
+```
+
 MRMP 実データの R(τ) との併記は [`v7_phase2a_theory_bridge.md`](v7_phase2a_theory_bridge.md) を参照する。
