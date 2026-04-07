@@ -70,4 +70,25 @@ document_type: planning
 
 ---
 
+## 7. スカラー線形サロゲート（教材用・理論 τ* ではない）
+
+**目的**: 「数値を 1 つ持って感度を見る」ための**最小離散モデル**。`theoretical_tau_star` の**代替にはならない**。
+
+モデル（離散）:  
+`x_{t+1} = a·x_t + b·x_{t-τ}`、`a = 1 - dt·α`、`b = dt·β / N`。
+
+各整数 τ ≥ 0 について同伴行列の固有値の**最大絶対値**（スペクトル半径）を計算し、**最初に 1 を超える τ** を `tau_first_unstable_lag` として報告する（τ=0 は `|a+b|`）。
+
+**スクリプト**: [`experiments/v7_phase2a_scalar_delay_tau_suggest.py`](../../experiments/v7_phase2a_scalar_delay_tau_suggest.py)
+
+```bash
+python experiments/v7_phase2a_scalar_delay_tau_suggest.py --N 10 --dt 0.05 --alpha 0.15 --beta 0.85 --tau-max 200
+```
+
+`paper_tau_comparison` 既定に近い (N, dt, α, β) では、しばしば **探索範囲内で不安定化しない**（`tau_first_unstable_lag`: null）。β を大きくすると τ=0 で既に |a+b|>1 となる例がある。**tensor delay_sweep の分岐と一致する保証はない**。
+
+再生成したブロックは [`v7_phase2a_theoretical_tau_reference_v1.json`](v7_phase2a_theoretical_tau_reference_v1.json) の `scalar_linear_surrogate` に**手動マージ**するか、`--out` で断片 JSON を出して差分レビューする。
+
+---
+
 *本付録の改訂は `v7_phase2a_theoretical_tau_reference_v1.json` の `theoretical_tau_derivation_appendix_md` と整合させる。*

@@ -1,6 +1,6 @@
 {
   "schema_version": "v7_phase2a_theoretical_tau_reference.v1",
-  "revision": "v1.1",
+  "revision": "v1.2",
   "title_ja": "Phase II-A 合成系: 理論 τ* の参照値（チェックイン用・未確定時は null）",
   "applies_to_ja": "delay_sweep / Lyapunov スタブ / paper_tau_comparison と**同一の離散ラグ解釈**で比較するときの参照。コーパス MRMP の tau_star_corpus_proxy とは別レール。",
   "theoretical_tau_star": null,
@@ -11,5 +11,31 @@
   "paper_tau_comparison_alignment_note_ja": "乖離％を本番主張とするには theoretical_tau_star を埋めたうえで、paper_tau_comparison の N,d,dt,alpha,beta,noise,seed を導出に用いたパラメタと一致させる。設計書 §3.1 の N・μ スイープ例と既定 CLI は一致しない場合がある。",
   "ci_demo_note_ja": "CI は示教用に --theoretical-tau-star を CLI で上書きする。本ファイルの null は本番理論値未チェックインを示し、デモ数値と矛盾しない。",
   "theoretical_provenance_ja": "数値未注入。導出後は式番号・付録・再現スクリプトをここに書き、revision を上げること。読み込み: `python experiments/v7_phase2a_paper_tau_comparison.py --theoretical-reference-json docs/planning/v7_phase2a_theoretical_tau_reference_v1.json`。CLI の --theoretical-tau-star は指定時に本ファイルの数値より優先。",
+  "scalar_linear_surrogate": {
+    "model_id": "scalar_linear_delay_recurrence_v1",
+    "warning_ja": "DDRF の理論 τ* ではない。論文比較表の theoretical_tau_star 行や乖離％の本番主張に使わないこと。教材・感度・付録§7参照。",
+    "recurrence_ja": "x_{t+1} = a·x_t + b·x_{t-τ}、a=1-dt·α、b=dt·β/N",
+    "hyperparams": {
+      "N": 10,
+      "dt": 0.05,
+      "alpha": 0.15,
+      "beta": 0.85
+    },
+    "derived_ab": {
+      "a": 0.9925,
+      "b": 0.00425
+    },
+    "tau_max_searched": 200,
+    "tau_first_unstable_lag": null,
+    "spectral_radius_tau_0_to_5": [
+      0.99675,
+      0.99676379851109,
+      0.9967775240175096,
+      0.996791176472937,
+      0.9968047558464456,
+      0.9968182621221501
+    ],
+    "regenerate_command": "python experiments/v7_phase2a_scalar_delay_tau_suggest.py --N 10 --dt 0.05 --alpha 0.15 --beta 0.85 --tau-max 200"
+  },
   "implementation_master_plan_md": "docs/planning/v7_phase2a_implementation_master_plan.md"
 }

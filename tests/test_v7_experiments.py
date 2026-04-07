@@ -596,12 +596,37 @@ def test_v7_phase2a_theoretical_tau_reference_json_schema():
     data = json.loads(p.read_text(encoding="utf-8"))
     assert data.get("schema_version") == "v7_phase2a_theoretical_tau_reference.v1"
     assert str(data.get("revision") or "").startswith("v1.")
-    assert data.get("theoretical_tau_star") is None
+    ts = data.get("theoretical_tau_star")
+    assert ts is None or isinstance(ts, (int, float))
     assert isinstance(data.get("derivation_status_ja"), str) and data["derivation_status_ja"]
     imp = data.get("implementation_master_plan_md")
     assert isinstance(imp, str) and (_ROOT / imp).is_file()
     apx = data.get("theoretical_tau_derivation_appendix_md")
     assert isinstance(apx, str) and (_ROOT / apx).is_file()
+    ss = data.get("scalar_linear_surrogate")
+    assert isinstance(ss, dict)
+    assert ss.get("model_id") == "scalar_linear_delay_recurrence_v1"
+    assert "tau_first_unstable_lag" in ss
+
+
+def test_v7_phase2a_scalar_delay_tau_suggest():
+    from experiments.v7_phase2a_scalar_delay_tau_suggest import (
+        build_surrogate_block,
+        companion_spectral_radius,
+        smallest_tau_unstable,
+    )
+
+    assert companion_spectral_radius(0, a=0.5, b=0.6) > 1.0
+    assert smallest_tau_unstable(tau_max=5, a=0.5, b=0.6) == 0
+    b = build_surrogate_block(
+        N=10,
+        dt=0.05,
+        alpha=0.15,
+        beta=0.85,
+        tau_max=30,
+    )
+    assert b["model_id"] == "scalar_linear_delay_recurrence_v1"
+    assert b["derived_ab"]["a"] == 0.9925
 
 
 def test_v7_phase2a_paper_tau_comparison_respects_reference_json():

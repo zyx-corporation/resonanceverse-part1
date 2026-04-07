@@ -41,6 +41,7 @@ Phase IV 周辺（最小再現バンドル・demo）: [`baselines/v7_phase4_mini
 | `v7_phase2a_tau_exp_lyapunov_stub.py` | 設計書 §3.1 参照の V 代理・ΔV 尾統計で `tau_exp_numeric_stub_*`。`--krasovskii-gamma` で離散遅延和項（操作定義は `docs/planning/v7_phase2a_numeric_tau_exp.md`） |
 | `v7_phase2a_paper_tau_comparison.py` | 論文向け比較表。`--theoretical-reference-json`（`v7_phase2a_theoretical_tau_reference_v1.json`）・`--lyapunov-krasovskii-gamma`・従来の `--theoretical-tau-star`。理論 τ* 注入前ゲート: `docs/planning/v7_phase2a_theoretical_tau_bridge_appendix_ja.md` |
 | `v7_phase2a_rail_metadata.py` | 目的階層（レール A–E）の `rail_id` / `rail_ids` と `implementation_master_plan_md` の共通定数（各 JSON 成果物へ付与） |
+| `v7_phase2a_scalar_delay_tau_suggest.py` | 1 次元線形遅差分のスペクトル半径で「最初の不安定 τ」を探索（**理論 τ* ではない**・`scalar_linear_surrogate` 再生成用） |
 | `v7_phase2a_compare_runs.py` | 複数 `*_with_contrib.json` / tau_summary の比較表（JSON・MD） |
 | `v7_phase2a_primary_aux_tau_association.py` | 主 R_mean(τ) vs 補助各軸 R_mean(τ) の Pearson / 簡易部分相関（探索的） |
 | `v7_phase4_minimal_repro.py` | Phase IV 全景ではない。`--demo --cpu` で `two_tier_sweep`（＋任意 `squad_span` デモ）を 1 JSON に |

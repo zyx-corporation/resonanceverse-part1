@@ -62,4 +62,4 @@ MRMP 実データの R(τ) との併記は [`v7_phase2a_theory_bridge.md`](v7_ph
 | `tau_exp_numeric_stub_frac_positive` | 同上で、尾において ΔV>0 の**割合**が `frac_positive_threshold` を上回った最初の τ |
 | ラベル | 図表では `tau_exp_numeric_stub_*` と明記し、理論 τ*・`tau_star_corpus_proxy` と混線しない |
 
-理論 τ* の**数値参照**はリポジトリが自動計算しない。[`v7_phase2a_theoretical_tau_reference_v1.json`](v7_phase2a_theoretical_tau_reference_v1.json) にチェックインし、`v7_phase2a_paper_tau_comparison.py --theoretical-reference-json …` で読み込む（CLI の `--theoretical-tau-star` が優先）。**注入前の同一視条件**は [理論 τ* 付録（ゲート）](v7_phase2a_theoretical_tau_bridge_appendix_ja.md)。
+理論 τ* の**数値参照**はリポジトリが自動計算しない。[`v7_phase2a_theoretical_tau_reference_v1.json`](v7_phase2a_theoretical_tau_reference_v1.json) にチェックインし、`v7_phase2a_paper_tau_comparison.py --theoretical-reference-json …` で読み込む（CLI の `--theoretical-tau-star` が優先）。**注入前の同一視条件**は [理論 τ* 付録（ゲート）](v7_phase2a_theoretical_tau_bridge_appendix_ja.md)。**教材用スカラー線形サロゲート**（理論 τ* ではない）の再生成: [`v7_phase2a_scalar_delay_tau_suggest.py`](../../experiments/v7_phase2a_scalar_delay_tau_suggest.py)・付録 §7。
