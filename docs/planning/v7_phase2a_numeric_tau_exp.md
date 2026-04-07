@@ -46,3 +46,20 @@ python experiments/v7_phase2a_tau_exp_lyapunov_stub.py --demo --seed 0 \
 論文用の**比較表**（合成指標＋理論 τ* 注入＋乖離％・`figure_role`）: [`v7_phase2a_paper_tau_comparison.py`](../../experiments/v7_phase2a_paper_tau_comparison.py)。手順の文脈は [`v7_phase2a_paper_figures.md`](v7_phase2a_paper_figures.md) の「表（合成 τ 指標と理論参照・乖離）」。
 
 MRMP 実データの R(τ) との併記は [`v7_phase2a_theory_bridge.md`](v7_phase2a_theory_bridge.md) を参照する。
+
+---
+
+## τ*_exp の操作定義（リポジトリ固定・スタブ）
+
+設計書 §3.1 の **τ*_exp** は Lyapunov–Krasovskii 手続きに沿った**別物**である。本リポジトリがログに出す **`tau_exp_numeric_stub_*`** は、次の**操作定義**に従う**数値スタブ**であり、設計書の完成実装の置き換えではない。
+
+| 項目 | 固定内容 |
+|------|-----------|
+| ダイナミクス | `v7_phase2a_delay_sweep` と同一の反対称テンソル＋整数ラグ τ |
+| 汎関数 V | **段階 0**: `V(t)=½‖W(t)‖²_F`（W\*=0 仮定）。**段階 2**: `--krasovskii-gamma γ>0` で `V += γ·Σ_{k=1}^{τ} ½‖W(t−k)‖²_F`（離散遅延和・連続 Krasovskii の厳密形ではない） |
+| ΔV | **連続時間の dV/dt ではない**。`burn_frac` 以降の `V_{t+1}-V_t` の列から尾統計を取る |
+| `tau_exp_numeric_stub_mean_dV` | 掃引 τ=0,1,… のうち、尾平均 ΔV が `mean_dv_threshold` を**上回った最初の τ** |
+| `tau_exp_numeric_stub_frac_positive` | 同上で、尾において ΔV>0 の**割合**が `frac_positive_threshold` を上回った最初の τ |
+| ラベル | 図表では `tau_exp_numeric_stub_*` と明記し、理論 τ*・`tau_star_corpus_proxy` と混線しない |
+
+理論 τ* の**数値参照**はリポジトリが自動計算しない。[`v7_phase2a_theoretical_tau_reference_v1.json`](v7_phase2a_theoretical_tau_reference_v1.json) にチェックインし、`v7_phase2a_paper_tau_comparison.py --theoretical-reference-json …` で読み込む（CLI の `--theoretical-tau-star` が優先）。

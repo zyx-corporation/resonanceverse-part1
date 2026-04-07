@@ -1,0 +1,9 @@
+{
+  "schema_version": "v7_phase2a_theoretical_tau_reference.v1",
+  "revision": "v1.0",
+  "title_ja": "Phase II-A 合成系: 理論 τ* の参照値（チェックイン用・未確定時は null）",
+  "applies_to_ja": "delay_sweep / Lyapunov スタブ / paper_tau_comparison と**同一の離散ラグ解釈**で比較するときの参照。コーパス MRMP の tau_star_corpus_proxy とは別レール。",
+  "theoretical_tau_star": null,
+  "theoretical_provenance_ja": "未固定。定理条件・パラメタ記法に沿った閉形式または数値根を付録で与えたら、本フィールドに数値を書き、provenance を更新すること。`python experiments/v7_phase2a_paper_tau_comparison.py --theoretical-reference-json docs/planning/v7_phase2a_theoretical_tau_reference_v1.json` で読み込める。CLI の `--theoretical-tau-star` は指定時に本ファイルの数値より優先する。",
+  "implementation_master_plan_md": "docs/planning/v7_phase2a_implementation_master_plan.md"
+}

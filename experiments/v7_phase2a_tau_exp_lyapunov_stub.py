@@ -67,7 +67,12 @@ def run_lyapunov_tau_exp_stub_sweep(
     burn_frac: float,
     mean_dv_threshold: float,
     frac_positive_threshold: float,
+    krasovskii_gamma: float = 0.0,
 ) -> dict[str, Any]:
+    g = float(krasovskii_gamma)
+    v_k_profile = (
+        "w_squared_only" if g == 0.0 else "krs_discrete_delay_integral"
+    )
     rows: list[dict[str, Any]] = []
     for tau in range(0, tau_max + 1):
         v = simulate_tau_v_k_series(
@@ -80,6 +85,7 @@ def run_lyapunov_tau_exp_stub_sweep(
             beta=beta,
             noise=noise,
             seed=seed + tau * 17,
+            krasovskii_gamma=g,
         )
         m = metrics_from_v_series(v, burn_frac=burn_frac)
         rows.append({"tau": tau, **m})
@@ -102,6 +108,11 @@ def run_lyapunov_tau_exp_stub_sweep(
         "design_doc_pointer": (
             "docs/v7/Resonanceverse_v7.0_Experimental_Design.md §3.1"
         ),
+        "tau_exp_operational_spec_md": (
+            "docs/planning/v7_phase2a_numeric_tau_exp.md"
+        ),
+        "v_k_profile": v_k_profile,
+        "krasovskii_gamma": g,
         "theory_pointer": (
             "docs/v7/Resonanceverse_Theory_v7.0.md（定理 3.3 系・V_K）"
         ),
@@ -165,6 +176,15 @@ def main() -> None:
         default=0.52,
         help="尾で ΔV>0 の割合がこの値を超えた最小 τ（>0.5 でやや頑健）",
     )
+    p.add_argument(
+        "--krasovskii-gamma",
+        type=float,
+        default=0.0,
+        help=(
+            "V に離散遅延和項 γ·Σ½‖W(t−k)‖² を足す（0 で従来の ½‖W‖² のみ）。"
+            "docs/planning/v7_phase2a_numeric_tau_exp.md 参照。"
+        ),
+    )
     p.add_argument("--out", type=Path, default=None)
     args = p.parse_args()
 
@@ -190,6 +210,7 @@ def main() -> None:
         burn_frac=args.burn_frac,
         mean_dv_threshold=args.mean_dv_threshold,
         frac_positive_threshold=args.frac_positive_threshold,
+        krasovskii_gamma=args.krasovskii_gamma,
     )
     js = json.dumps(payload, indent=2, ensure_ascii=False)
     if args.out:

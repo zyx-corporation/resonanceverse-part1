@@ -58,6 +58,7 @@ jobs:
       - name: v7 Phase II-A paper τ comparison table (demo)
         run: |
           python experiments/v7_phase2a_paper_tau_comparison.py --demo \
+            --theoretical-reference-json docs/planning/v7_phase2a_theoretical_tau_reference_v1.json \
             --theoretical-tau-star 2.5 \
             --out experiments/logs/ci_v7_paper_tau_comparison.json \
             --out-md experiments/logs/ci_v7_paper_tau_comparison.md

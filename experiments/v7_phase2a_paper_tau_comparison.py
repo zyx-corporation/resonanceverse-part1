@@ -28,6 +28,18 @@ from experiments.v7_phase2a_tau_exp_lyapunov_stub import (  # noqa: E402
 )
 
 
+def load_theoretical_tau_reference_json(path: Path) -> dict[str, Any]:
+    """チェックインの理論 τ* 参照 JSON（未確定時は star が null）。"""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    sv = data.get("schema_version")
+    if sv != "v7_phase2a_theoretical_tau_reference.v1":
+        raise ValueError(
+            f"unexpected theoretical reference schema_version: {sv!r} "
+            f"(expected v7_phase2a_theoretical_tau_reference.v1)"
+        )
+    return data
+
+
 def relative_error_percent_versus_theory(
     empirical: int | float | None,
     theory: float | None,
@@ -68,6 +80,8 @@ def build_paper_tau_comparison_bundle(
     lyapunov_burn_frac: float,
     lyapunov_mean_dv_threshold: float,
     lyapunov_frac_positive_threshold: float,
+    lyapunov_krasovskii_gamma: float = 0.0,
+    theoretical_reference_json: str | None = None,
 ) -> dict[str, Any]:
     sweep = run_sweep(
         tau_max=tau_max,
@@ -93,6 +107,7 @@ def build_paper_tau_comparison_bundle(
         burn_frac=lyapunov_burn_frac,
         mean_dv_threshold=lyapunov_mean_dv_threshold,
         frac_positive_threshold=lyapunov_frac_positive_threshold,
+        krasovskii_gamma=lyapunov_krasovskii_gamma,
     )
 
     tau_osc = int(sweep["tau_exp_proxy_oscillation_jump"])
@@ -183,6 +198,7 @@ def build_paper_tau_comparison_bundle(
         ),
         "theoretical_tau_star_injected": theory,
         "theoretical_provenance_ja": theoretical_provenance_ja,
+        "theoretical_reference_json": theoretical_reference_json,
         "hyperparams": {
             "tau_max": tau_max,
             "steps": steps,
@@ -193,6 +209,7 @@ def build_paper_tau_comparison_bundle(
             "alpha": alpha,
             "beta": beta,
             "noise": noise,
+            "lyapunov_krasovskii_gamma": float(lyapunov_krasovskii_gamma),
         },
         "sources": {
             "delay_sweep": sweep,
@@ -245,6 +262,22 @@ def main() -> None:
         default="",
         help="理論値の出所（論文・別導出ノート等）。未指定時は定型文",
     )
+    p.add_argument(
+        "--theoretical-reference-json",
+        type=Path,
+        default=None,
+        help=(
+            "理論 τ*・provenance のチェックイン JSON "
+            "（v7_phase2a_theoretical_tau_reference.v1）。"
+            "--theoretical-tau-star が優先。"
+        ),
+    )
+    p.add_argument(
+        "--lyapunov-krasovskii-gamma",
+        type=float,
+        default=0.0,
+        help="Lyapunov スタブの V に離散遅延和項を足す係数 γ（既定 0）",
+    )
     p.add_argument("--mean-dv-threshold", type=float, default=1e-5)
     p.add_argument("--frac-positive-threshold", type=float, default=0.52)
     p.add_argument("--burn-frac", type=float, default=0.5)
@@ -266,11 +299,29 @@ def main() -> None:
         N = min(N, 8)
         d = min(d, 4)
 
+    ref_path: Path | None = args.theoretical_reference_json
+    ref_data: dict[str, Any] | None = None
+    ref_rel: str | None = None
+    if ref_path is not None:
+        ref_data = load_theoretical_tau_reference_json(ref_path)
+        try:
+            ref_rel = str(ref_path.resolve().relative_to(_ROOT))
+        except ValueError:
+            ref_rel = str(ref_path)
+
+    theory_star: float | None = args.theoretical_tau_star
+    if theory_star is None and ref_data is not None:
+        raw = ref_data.get("theoretical_tau_star")
+        if raw is not None:
+            theory_star = float(raw)
+
     prov = (args.theoretical_provenance_ja or "").strip()
+    if not prov and ref_data is not None:
+        prov = (ref_data.get("theoretical_provenance_ja") or "").strip()
     if not prov:
         prov = (
             "未記載。論文・別稿の閉形式・数値導出から "
-            "`--theoretical-tau-star` で注入した値。"
+            "`--theoretical-tau-star` または `--theoretical-reference-json` で注入した値。"
         )
 
     bundle = build_paper_tau_comparison_bundle(
@@ -283,11 +334,13 @@ def main() -> None:
         alpha=args.alpha,
         beta=args.beta,
         noise=args.noise,
-        theoretical_tau_star=args.theoretical_tau_star,
+        theoretical_tau_star=theory_star,
         theoretical_provenance_ja=prov,
         lyapunov_burn_frac=args.burn_frac,
         lyapunov_mean_dv_threshold=args.mean_dv_threshold,
         lyapunov_frac_positive_threshold=args.frac_positive_threshold,
+        lyapunov_krasovskii_gamma=args.lyapunov_krasovskii_gamma,
+        theoretical_reference_json=ref_rel,
     )
 
     js = json.dumps(bundle, indent=2, ensure_ascii=False)

@@ -285,6 +285,11 @@ def main() -> None:
     payload: dict[str, Any] = {
         "schema_version": "v7_phase2a_empirical.v1",
         "mode": "mrmp_tau_sweep",
+        "rail_id": "B_empirical_MRMP",
+        "tau_star_claim_label": "tau_star_corpus_proxy",
+        "implementation_master_plan_md": (
+            "docs/planning/v7_phase2a_implementation_master_plan.md"
+        ),
         "prereg_span_spec": PREREG_SPAN_SPEC,
         "model": args.model,
         "hf_revision": args.revision,

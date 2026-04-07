@@ -1,10 +1,12 @@
 {
   "schema_version": "v7_phase2a_prereg.v1",
-  "revision": "v1.3",
+  "revision": "v1.4",
   "title_ja": "Phase II-A（MRMP 実データ）τ 掃引・R(τ) 事前登録",
   "registered_at": null,
   "design_reference": "docs/v7/Resonanceverse_v7.0_Experimental_Design.md §3.1",
   "implementation_master_plan_md": "docs/planning/v7_phase2a_implementation_master_plan.md",
+  "theoretical_tau_reference_json": "docs/planning/v7_phase2a_theoretical_tau_reference_v1.json",
+  "tau_exp_operational_spec_md": "docs/planning/v7_phase2a_numeric_tau_exp.md",
   "theory_note_ja": "本事前登録の τ* 候補は、定理3.3の Lyapunov–Krasovskii 経路の τ*_exp とは別物の**コーパス代理**である。主張ラベルは tau_star_corpus_proxy 等で区別する。全体のレール分離・理論↔数値対応・実装順は implementation_master_plan_md を正本とする。",
   "simulation_script_reference": "experiments/v7_phase2a_delay_sweep.py",
   "empirical_module_reference": "experiments/v7_phase2a_empirical.py",

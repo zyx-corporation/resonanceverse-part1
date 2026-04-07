@@ -64,6 +64,53 @@ def _simulate_tau_frobenius_norm_trace(
     return trace, hist[0].copy()
 
 
+def _simulate_tau_v_k_discrete_series(
+    *,
+    N: int,
+    d: int,
+    tau: int,
+    steps: int,
+    dt: float,
+    alpha: float,
+    beta: float,
+    noise: float,
+    seed: int,
+    krasovskii_gamma: float,
+) -> np.ndarray:
+    """
+    各ステップの離散 V: ½‖W(t)‖²_F + γ·Σ_{k=1}^{τ} ½‖W(t−k)‖²_F。
+
+    理論の Krasovskii 第 2 項の**離散ラグ和の代理**（連続積分の厳密対応ではない）。
+    """
+    rng = np.random.default_rng(seed)
+    w0 = rng.standard_normal((N, N, d)) * 0.08
+    w0 = 0.5 * (w0 - np.transpose(w0, (1, 0, 2)))
+    hist: list[np.ndarray] = [w0.copy() for _ in range(tau + 1)]
+    v_out = np.empty(steps, dtype=np.float64)
+    g = float(krasovskii_gamma)
+    for ti in range(steps):
+        w = hist[0]
+        w_tau = hist[tau] if tau > 0 else w
+        d_w = np.zeros_like(w)
+        for i in range(N):
+            for j in range(N):
+                acc = np.zeros(d, dtype=np.float64)
+                for k in range(N):
+                    acc += w[i, k] * w_tau[k, j]
+                d_w[i, j] = -alpha * w[i, j] + beta * acc / max(N, 1)
+        w_new = w + dt * d_w + noise * rng.standard_normal((N, N, d))
+        w_new = 0.5 * (w_new - np.transpose(w_new, (1, 0, 2)))
+        _ring_shift(hist, w_new)
+        fro0 = float(np.linalg.norm(hist[0]))
+        vk = 0.5 * (fro0 * fro0)
+        if g != 0.0 and tau > 0:
+            for j in range(1, tau + 1):
+                froj = float(np.linalg.norm(hist[j]))
+                vk += g * 0.5 * (froj * froj)
+        v_out[ti] = vk
+    return v_out
+
+
 def simulate_tau_v_k_series(
     *,
     N: int,
@@ -75,13 +122,28 @@ def simulate_tau_v_k_series(
     beta: float,
     noise: float,
     seed: int,
+    krasovskii_gamma: float = 0.0,
 ) -> np.ndarray:
     """
-    各ステップの V_K 代理: ½||W(t)||²_F（平衡 W*=0 の合成仮定）。
+    各ステップの V_K 代理（平衡 W*=0 の合成仮定）。
 
-    理論の一般の W_D* や Krasovskii 汎関数の第 2 項は含めない。
+    krasovskii_gamma=0（既定）: V=½‖W(t)‖²_F のみ。
+    krasovskii_gamma>0: 上式に離散遅延和項 γ·Σ ½‖W(t−k)‖²_F を加える（段階 2）。
     """
-    tr, _w = _simulate_tau_frobenius_norm_trace(
+    if float(krasovskii_gamma) == 0.0:
+        tr, _w = _simulate_tau_frobenius_norm_trace(
+            N=N,
+            d=d,
+            tau=tau,
+            steps=steps,
+            dt=dt,
+            alpha=alpha,
+            beta=beta,
+            noise=noise,
+            seed=seed,
+        )
+        return 0.5 * (tr * tr)
+    return _simulate_tau_v_k_discrete_series(
         N=N,
         d=d,
         tau=tau,
@@ -91,8 +153,8 @@ def simulate_tau_v_k_series(
         beta=beta,
         noise=noise,
         seed=seed,
+        krasovskii_gamma=krasovskii_gamma,
     )
-    return 0.5 * (tr * tr)
 
 
 def simulate_tau(

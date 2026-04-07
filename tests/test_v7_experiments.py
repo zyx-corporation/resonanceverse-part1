@@ -579,6 +579,70 @@ def test_v7_phase2a_prereg_links_implementation_master_plan():
     plan = (_ROOT / rel).resolve()
     assert plan.is_file()
     assert plan.name == "v7_phase2a_implementation_master_plan.md"
+    for key in (
+        "theoretical_tau_reference_json",
+        "tau_exp_operational_spec_md",
+    ):
+        r2 = data.get(key)
+        assert isinstance(r2, str) and r2
+        assert (_ROOT / r2).is_file()
+
+
+def test_v7_phase2a_theoretical_tau_reference_json_schema():
+    p = _ROOT / "docs" / "planning" / "v7_phase2a_theoretical_tau_reference_v1.json"
+    data = json.loads(p.read_text(encoding="utf-8"))
+    assert data.get("schema_version") == "v7_phase2a_theoretical_tau_reference.v1"
+    imp = data.get("implementation_master_plan_md")
+    assert isinstance(imp, str) and (_ROOT / imp).is_file()
+
+
+def test_v7_phase2a_paper_tau_comparison_respects_reference_json():
+    from experiments.v7_phase2a_paper_tau_comparison import (
+        build_paper_tau_comparison_bundle,
+        load_theoretical_tau_reference_json,
+    )
+
+    ref = _ROOT / "docs" / "planning" / "v7_phase2a_theoretical_tau_reference_v1.json"
+    load_theoretical_tau_reference_json(ref)
+    b = build_paper_tau_comparison_bundle(
+        tau_max=2,
+        steps=80,
+        seed=2,
+        N=5,
+        d=4,
+        dt=0.05,
+        alpha=0.2,
+        beta=0.55,
+        noise=0.01,
+        theoretical_tau_star=3.0,
+        theoretical_provenance_ja="CLI が優先",
+        lyapunov_burn_frac=0.5,
+        lyapunov_mean_dv_threshold=-1e9,
+        lyapunov_frac_positive_threshold=0.0,
+        theoretical_reference_json="docs/planning/v7_phase2a_theoretical_tau_reference_v1.json",
+    )
+    assert b["theoretical_tau_star_injected"] == 3.0
+    assert b["theoretical_provenance_ja"] == "CLI が優先"
+
+
+def test_v7_phase2a_krasovskii_gamma_changes_v_series():
+    from experiments.v7_phase2a_delay_sweep import simulate_tau_v_k_series
+
+    kw = dict(
+        N=5,
+        d=3,
+        tau=2,
+        steps=40,
+        dt=0.05,
+        alpha=0.2,
+        beta=0.55,
+        noise=0.01,
+        seed=11,
+    )
+    v0 = simulate_tau_v_k_series(**kw, krasovskii_gamma=0.0)
+    v1 = simulate_tau_v_k_series(**kw, krasovskii_gamma=0.25)
+    assert v0.shape == v1.shape == (40,)
+    assert not np.allclose(v0, v1)
 
 
 def test_v7_local_slm_phase1_smoke_bundle_baseline():
@@ -695,6 +759,8 @@ def test_v7_phase2a_lyapunov_tau_exp_stub_sweep():
     assert len(p["by_tau"]) == 5
     assert p["tau_exp_numeric_stub_mean_dV"] == 0
     assert p["tau_exp_numeric_stub_frac_positive"] == 0
+    assert p.get("v_k_profile") == "w_squared_only"
+    assert p.get("krasovskii_gamma") == 0.0
 
 
 def test_v7_phase2a_delay_alpha_sweep():
