@@ -5,6 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 _ROOT = Path(__file__).resolve().parents[1]
@@ -586,6 +587,63 @@ def test_v7_local_slm_phase3_operator_bundle_baseline():
     assert "run_local_slm_phase3_mrmp_chunk.sh" in str(data.get("reproduce_shell", ""))
 
 
+def test_v7_phase2a_simulate_tau_v_k_series_matches_energy_squared():
+    from experiments.v7_phase2a_delay_sweep import (
+        _simulate_tau_frobenius_norm_trace,
+        simulate_tau_v_k_series,
+    )
+
+    tr, _ = _simulate_tau_frobenius_norm_trace(
+        N=5,
+        d=3,
+        tau=1,
+        steps=30,
+        dt=0.05,
+        alpha=0.2,
+        beta=0.5,
+        noise=0.01,
+        seed=3,
+    )
+    v = simulate_tau_v_k_series(
+        N=5,
+        d=3,
+        tau=1,
+        steps=30,
+        dt=0.05,
+        alpha=0.2,
+        beta=0.5,
+        noise=0.01,
+        seed=3,
+    )
+    assert v.shape == (30,)
+    assert np.allclose(v, 0.5 * (tr * tr))
+
+
+def test_v7_phase2a_lyapunov_tau_exp_stub_sweep():
+    from experiments.v7_phase2a_tau_exp_lyapunov_stub import (
+        run_lyapunov_tau_exp_stub_sweep,
+    )
+
+    p = run_lyapunov_tau_exp_stub_sweep(
+        tau_max=4,
+        steps=120,
+        seed=0,
+        N=6,
+        d=4,
+        dt=0.05,
+        alpha=0.2,
+        beta=0.55,
+        noise=0.01,
+        burn_frac=0.5,
+        mean_dv_threshold=-1e9,
+        frac_positive_threshold=0.0,
+    )
+    assert p["schema_version"] == "v7_phase2a_tau_exp_lyapunov_stub.v1"
+    assert len(p["by_tau"]) == 5
+    assert p["tau_exp_numeric_stub_mean_dV"] == 0
+    assert p["tau_exp_numeric_stub_frac_positive"] == 0
+
+
 def test_v7_phase2a_delay_alpha_sweep():
     from experiments.v7_phase2a_delay_sweep import run_alpha_sweep
 
@@ -652,6 +710,28 @@ def test_v7_phase2a_theory_bridge_bundle_reuses_single_sweep():
     )
     assert b["single_tau_sweep"] is sw
     assert len(b["alpha_sensitivity"]["by_alpha"]) == 2
+
+
+def test_v7_phase2a_lyapunov_stub_cli(tmp_path):
+    out = tmp_path / "ly.json"
+    r = subprocess.run(
+        [
+            sys.executable,
+            str(_ROOT / "experiments" / "v7_phase2a_tau_exp_lyapunov_stub.py"),
+            "--demo",
+            "--seed",
+            "1",
+            "--out",
+            str(out),
+        ],
+        cwd=str(_ROOT),
+        capture_output=True,
+        text=True,
+    )
+    assert r.returncode == 0, r.stderr
+    assert "v7_phase2a_tau_exp_lyapunov_stub_ok" in r.stdout
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert data["schema_version"] == "v7_phase2a_tau_exp_lyapunov_stub.v1"
 
 
 def test_v7_phase2a_theory_bridge_synth_cli(tmp_path):

@@ -38,6 +38,7 @@ Phase IV 周辺（最小再現バンドル・demo）: [`baselines/v7_phase4_mini
 | `v7_phase1b_directed_tensor.py` | Phase I-B: 有向テンソル非対称性 |
 | `v7_phase2a_delay_sweep.py` | Phase II-A: τ 掃引（合成テンソル）。`--alpha-list` で強凸性代理の感度表（`v7_phase2a_alpha_sweep.v1`） |
 | `v7_phase2a_theory_bridge_synth.py` | 理論橋用: τ 掃引＋α 感度を 1 JSON（ラベル規約・再現コマンド同梱）。`--demo` で軽量 |
+| `v7_phase2a_tau_exp_lyapunov_stub.py` | 設計書 §3.1 参照の V 代理・ΔV 尾統計で `tau_exp_numeric_stub_*`（完全な τ*_exp ではない） |
 | `v7_phase2a_compare_runs.py` | 複数 `*_with_contrib.json` / tau_summary の比較表（JSON・MD） |
 | `v7_phase2a_primary_aux_tau_association.py` | 主 R_mean(τ) vs 補助各軸 R_mean(τ) の Pearson / 簡易部分相関（探索的） |
 | `v7_phase4_minimal_repro.py` | Phase IV 全景ではない。`--demo --cpu` で `two_tier_sweep`（＋任意 `squad_span` デモ）を 1 JSON に |

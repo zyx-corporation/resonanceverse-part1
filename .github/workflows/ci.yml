@@ -50,6 +50,11 @@ jobs:
           python experiments/v7_run_suite.py --demo --with-theory-bridge --seed 0 \
             --out experiments/logs/ci_v7_suite_with_theory_bridge.json
 
+      - name: v7 Phase II-A Lyapunov τ*_exp numeric stub (demo)
+        run: |
+          python experiments/v7_phase2a_tau_exp_lyapunov_stub.py --demo --seed 0 \
+            --out experiments/logs/ci_v7_tau_exp_lyapunov_stub.json
+
       - name: v7 local SLM env check (torch / transformers meta)
         run: python experiments/v7_local_env_check.py
 

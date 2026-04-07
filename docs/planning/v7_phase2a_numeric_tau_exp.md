@@ -4,6 +4,8 @@
 
 [`experiments/v7_phase2a_delay_sweep.py`](../../experiments/v7_phase2a_delay_sweep.py) は、小規模の**反対称テンソル**に遅延結合を入れた離散時間シミュレーションで、各 τ におけるエネルギー（||W||_F）尾部の **oscillation_score**（変動係数）を記録する。
 
+[`experiments/v7_phase2a_tau_exp_lyapunov_stub.py`](../../experiments/v7_phase2a_tau_exp_lyapunov_stub.py) は、**同一ダイナミクス**上で V(t)=½||W||²_F（W*=0 の合成仮定）と尾区間の **離散 ΔV** から、設計書 §3.1 を**参照した**数値スタブ `tau_exp_numeric_stub_*` を返す（完全な τ*_exp 手続き・理論 V_K ではない—スクリプト先頭の注意書きどおり）。
+
 - 単発掃引の JSON に **`tau_exp_proxy_oscillation_jump`**（従来 `tau_largest_jump` と同値）と **`design_bridge_ja`** を含む。
 - **`--alpha-list a,b,c,...`**: `alpha` を**強凸性代理**（減衰項の係数）としてスイープし、各 alpha で得た **`tau_exp_proxy_oscillation_jump`** を `by_alpha` に並べる（`schema_version`: `v7_phase2a_alpha_sweep.v1`）。
 
@@ -32,6 +34,13 @@ python experiments/v7_phase2a_delay_sweep.py --tau-max 8 --steps 1500 \
 ```bash
 python experiments/v7_phase2a_theory_bridge_synth.py --demo \
   --out experiments/logs/v7_phase2a_theory_bridge_synth_demo.json
+```
+
+Lyapunov V 代理スタブ（`tau_exp_numeric_stub_*`）の軽量例:
+
+```bash
+python experiments/v7_phase2a_tau_exp_lyapunov_stub.py --demo --seed 0 \
+  --out experiments/logs/phase2a_tau_exp_lyapunov_stub_demo.json
 ```
 
 MRMP 実データの R(τ) との併記は [`v7_phase2a_theory_bridge.md`](v7_phase2a_theory_bridge.md) を参照する。
