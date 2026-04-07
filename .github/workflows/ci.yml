@@ -44,6 +44,12 @@ jobs:
           python experiments/v7_phase4_minimal_repro.py --demo --cpu \
             --out experiments/logs/ci_v7_phase4_minimal.json
 
+      - name: v7 Phase II-A theory bridge synth bundle (demo)
+        run: |
+          mkdir -p experiments/logs
+          python experiments/v7_phase2a_theory_bridge_synth.py --demo --seed 0 \
+            --out experiments/logs/ci_v7_theory_bridge_synth.json
+
       - name: v7 local SLM env check (torch / transformers meta)
         run: python experiments/v7_local_env_check.py
 

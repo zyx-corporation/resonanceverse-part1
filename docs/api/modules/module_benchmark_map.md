@@ -12,7 +12,7 @@
 | `roi_selector.DynamicROISelector` | 階層 ROI＋朧度カーネル | `efficiency_benchmark`、`evel_benchmarks` | ベースラインは全対全 matmul |
 | `lightweight_resonance.LightweightResonanceFacade` | 埋め込み→場→ROI＋Engine | `emergence_metrics`, `evel_benchmarks` | `instrument=StageTimer` 可 |
 | `cultural_modulation` | 埋め込み→調製スカラー（スタブ） | `tests/test_phase1b.py` | `CulturalModulationAdapter` |
-| `instrumentation.StageTimer` | 前向き各区間の時間・CUDA 差分 | `instrument_smoke`, `tests/test_instrumentation.py` | Phase A′ 計測フック |
+| `instrumentation.StageTimer` | 前向き各区間の時間・CUDA 差分・区間ピーク | `instrument_smoke`, `tests/test_instrumentation.py` | `cuda_peak_allocated_bytes`（CUDA のみ） |
 | `resonant_core.ResonantCore` | 6 次元射影・場 W 更新・朧度 | `evel_benchmarks`, `tests/test_smoke.py` | `instrument=StageTimer` 可 |
 | `autopoiesis.AutopoieticInference` | 場の離散更新ループ | `evel_benchmarks` | `ToySeqModel` スタブ |
 | `config_utils` | `configs/default_config.yaml` から kwargs | 各スクリプト（ResonantCore／Autopoiesis 初期化） | |
@@ -30,7 +30,7 @@
 | Phase 2（速度・メモリ比較） | `slm_perf_compare.py` | `slm_perf_compare_ok` + JSON | baseline／Awai を連続実行 |
 | Phase 2（下流・分類／QA 二値入口） | `slm_downstream.py` | `slm_downstream_ok` + JSON | `--task sst2`／`boolq` または `--demo`；`--awai-readout`（narrow／projected／dual）（[phase_c_quality_tau_prereg.md](phase_c_quality_tau_prereg.md) T3″）；[phase_b_downstream_protocol.md](phase_b_downstream_protocol.md) |
 | Phase B プロトコル | [phase_b_data_protocol.md](phase_b_data_protocol.md) | 手順・指標定義 | Wikitext-2-raw、eval 分割、perplexity |
-| 計測フック（区間時間） | `instrument_smoke.py` | JSON（`--out`）、ベースライン | 区間 `elapsed_s` の悪化検出 |
+| 計測フック（区間時間） | `instrument_smoke.py` | JSON（`--out`）、ベースライン | 区間 `elapsed_s` の悪化検出；CUDA 時はピークバイトも JSON に出る |
 | 効率（短系列・回帰） | `efficiency_benchmark.py` + `regression_check.py` | JSON | ベースライン、`--max-slowdown` で悪化検出 |
 | Phase 3 M1（デコード計測） | `decode_benchmark.py` | `decode_benchmark_ok` + JSON | [phase_c_decode_metrics.md](phase_c_decode_metrics.md)、`--demo` |
 | Phase 3 M3（baseline／two_tier スイープ） | `two_tier_sweep.py` | `two_tier_sweep_ok` + JSON | [phase_c_two_tier_sweep.md](phase_c_two_tier_sweep.md) |
