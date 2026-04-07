@@ -37,9 +37,10 @@
 | dV_K/dt の符号 | **現状**: 離散 **ΔV** の尾平均・正比率（`tau_exp_lyapunov_stub`） | 連続時間の符号ではないと**常に明記** |
 | τ*_exp（設計書手続き） | **予定**: V・符号・（任意）スペクトルに沿った**操作定義**と JSON スキーマ | スタブの `tau_exp_numeric_stub_*` は**別ラベル**のまま |
 | 理論 τ* | **リポジトリは自動算出しない**；`paper_tau_comparison --theoretical-tau-star` で注入 | 出所は provenance 文字列で固定 |
+| DDRF の理論 τ*（定理3.3・系3.3.1） | **連続時間**のホプフ閾値；μ, η, N 等に依存。理論・設計書は閉形式をリポに同梱しない | `delay_sweep` の離散反対称簡約と**自動同値ではない**。[付録](v7_phase2a_theoretical_tau_bridge_appendix_ja.md)のゲート（簡約宣言・スケール・数値導出）を満たすまで [`theoretical_tau_reference_v1.json`](v7_phase2a_theoretical_tau_reference_v1.json) の `theoretical_tau_star` は null。 |
 | MRMP の τ 候補 | `tau_star_corpus_proxy`・事前登録の Var 規則 | レール B のみ |
 
-**拡張**: 上表をスクリプト・JSON フィールドまで伸ばした版、**アーキテクチャ接続点**（MRMP→実証→後処理、合成、RVT、Phase IV）、**MRMP・審判・ローカル SLM**の前提整理は [v7_phase2a_theory_numeric_architecture_data_ja.md](v7_phase2a_theory_numeric_architecture_data_ja.md) を参照（本 §2 の PR と同期して更新する）。
+**拡張**: 上表をスクリプト・JSON フィールドまで伸ばした版、**アーキテクチャ接続点**（MRMP→実証→後処理、合成、RVT、Phase IV）、**MRMP・審判・ローカル SLM**の前提整理は [v7_phase2a_theory_numeric_architecture_data_ja.md](v7_phase2a_theory_numeric_architecture_data_ja.md) を参照（本 §2 の PR と同期して更新する）。**理論 τ* の数値注入手順**は [v7_phase2a_theoretical_tau_bridge_appendix_ja.md](v7_phase2a_theoretical_tau_bridge_appendix_ja.md)。
 
 ---
 
@@ -59,7 +60,7 @@
 ## 4. 推奨実装順序（チェックリスト）
 
 1. **対応表の更新**（上表に新行・パラメータ対応を追記）— 本ファイルの PR。
-2. **理論 τ* の数値参照**の固定（論文・付録・別スクリプト）→ 比較表に注入。
+2. **理論 τ* の数値参照**: [付録](v7_phase2a_theoretical_tau_bridge_appendix_ja.md)のゲート（簡約・スケール・導出）を満たしてから [`theoretical_tau_reference_v1.json`](v7_phase2a_theoretical_tau_reference_v1.json) に注入 → 比較表は同一ハイパラで再現。
 3. **V_K 段階導入**（項の追加順・W\* の定義）: 段階 2 として `simulate_tau_v_k_series` の離散遅延和項（`krasovskii_gamma`）を導入済み。W_D\* 一般・連続 Krasovskii 厳密形は未 → テストと JSON スキーマ `v7_phase2a_*.v1` を分離しつつ拡張。
 4. **τ*_exp 操作定義**: リポジトリ側の**スタブ**は [`v7_phase2a_numeric_tau_exp.md`](v7_phase2a_numeric_tau_exp.md) と Lyapunov JSON の `tau_exp_operational_spec_md` で固定。設計書 §3.1 の完成手続きへの追従は別 PR。
 5. **MRMP** はレール B のまま拡張（審判・マニフェスト・再現）；レール A と**混線しない**。

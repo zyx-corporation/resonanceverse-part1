@@ -1,9 +1,15 @@
 {
   "schema_version": "v7_phase2a_theoretical_tau_reference.v1",
-  "revision": "v1.0",
+  "revision": "v1.1",
   "title_ja": "Phase II-A 合成系: 理論 τ* の参照値（チェックイン用・未確定時は null）",
   "applies_to_ja": "delay_sweep / Lyapunov スタブ / paper_tau_comparison と**同一の離散ラグ解釈**で比較するときの参照。コーパス MRMP の tau_star_corpus_proxy とは別レール。",
   "theoretical_tau_star": null,
-  "theoretical_provenance_ja": "未固定。定理条件・パラメタ記法に沿った閉形式または数値根を付録で与えたら、本フィールドに数値を書き、provenance を更新すること。`python experiments/v7_phase2a_paper_tau_comparison.py --theoretical-reference-json docs/planning/v7_phase2a_theoretical_tau_reference_v1.json` で読み込める。CLI の `--theoretical-tau-star` は指定時に本ファイルの数値より優先する。",
+  "derivation_status_ja": "リポ内に閉形式なし。DDRF 連続系と delay_sweep 離散簡約の同型宣言・スケール対応・数値導出（付録）が揃うまで null のまま。",
+  "theoretical_tau_derivation_appendix_md": "docs/planning/v7_phase2a_theoretical_tau_bridge_appendix_ja.md",
+  "design_doc_experiment_IIA_pointer": "docs/v7/Resonanceverse_v7.0_Experimental_Design.md §3.1",
+  "theory_tau_star_definition_pointer": "docs/v7/Resonanceverse_Theory_v7.0.md（系3.3.1・付録A τ*）",
+  "paper_tau_comparison_alignment_note_ja": "乖離％を本番主張とするには theoretical_tau_star を埋めたうえで、paper_tau_comparison の N,d,dt,alpha,beta,noise,seed を導出に用いたパラメタと一致させる。設計書 §3.1 の N・μ スイープ例と既定 CLI は一致しない場合がある。",
+  "ci_demo_note_ja": "CI は示教用に --theoretical-tau-star を CLI で上書きする。本ファイルの null は本番理論値未チェックインを示し、デモ数値と矛盾しない。",
+  "theoretical_provenance_ja": "数値未注入。導出後は式番号・付録・再現スクリプトをここに書き、revision を上げること。読み込み: `python experiments/v7_phase2a_paper_tau_comparison.py --theoretical-reference-json docs/planning/v7_phase2a_theoretical_tau_reference_v1.json`。CLI の --theoretical-tau-star は指定時に本ファイルの数値より優先。",
   "implementation_master_plan_md": "docs/planning/v7_phase2a_implementation_master_plan.md"
 }

@@ -17,6 +17,7 @@ document_type: planning
 | [v7_local_slm_m3_japanese_plan.md](v7_local_slm_m3_japanese_plan.md) | ローカル SLM・審判役割分離 |
 | [rvt_exp_2026_008_architecture_bridge.md](rvt_exp_2026_008_architecture_bridge.md) | RVT-008 と本リポ（L1–L3） |
 | [experiments/README.md](../../experiments/README.md) | スクリプト索引 |
+| [v7_phase2a_theoretical_tau_bridge_appendix_ja.md](v7_phase2a_theoretical_tau_bridge_appendix_ja.md) | 理論 τ* と delay_sweep の**同一視ゲート**・チェックイン手順 |
 
 ---
 
@@ -32,6 +33,7 @@ document_type: planning
 | dV_K/dt の符号 | `v7_phase2a_tau_exp_lyapunov_stub.py` の尾区間 ΔV 統計 | **連続時間の符号ではない**。`tau_exp_numeric_stub_*` は別ラベル。 |
 | τ*_exp（設計書 §3.1 手続き） | 完成実装は**未**。スタブのみログ化 | [v7_phase2a_numeric_tau_exp.md](v7_phase2a_numeric_tau_exp.md) の操作定義に従う。 |
 | 理論 τ* | `v7_phase2a_paper_tau_comparison.py` ＋ [`v7_phase2a_theoretical_tau_reference_v1.json`](v7_phase2a_theoretical_tau_reference_v1.json) | リポジトリは自動算出しない。provenance 必須。 |
+| DDRF 連続 τ*（定理3.3・ホプフ） | 上記 JSON の `theoretical_tau_star`（未確定時 null）＋ [付録・導入手順](v7_phase2a_theoretical_tau_bridge_appendix_ja.md) | `delay_sweep` と**同型宣言＋数値導出**が揃うまで注入しない。乖離％の本番主張はゲート後。 |
 | MRMP 上の注意統計・R(τ) | `v7_phase2a_empirical_run.py` → `by_tau`（`R_mean`・`R_var`・`n`） | 凍結 LM・話者ブロック Frobenius。レール **B**。定理 τ* と**非同一視**。 |
 | コーパス上 τ 候補 | 事前登録 `span_spec`・Var 規則・`tau_star_corpus_proxy` | [v7_phase2a_prereg_v1.json](v7_phase2a_prereg_v1.json)。主解析の機械候補は探索的。 |
 | 6 軸（信頼・権威 等）と遅延一貫性 | `auxiliary_label_delay_coherence`（任意で empirical JSON に同梱） | 審判スコアが入力に**あるときのみ**。主 R(τ) とはスケール非互換→補助レール。 |

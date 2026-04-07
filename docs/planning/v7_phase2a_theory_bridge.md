@@ -1,6 +1,6 @@
 # Phase II-A 実データ解析と理論 v7.0 の「橋」
 
-**実装・レール分離の正本**: [v7_phase2a_implementation_master_plan.md](v7_phase2a_implementation_master_plan.md)（目的階層・理論↔数値対応表・実装順・ラベル規約）。**対応表の拡張・接続点・インフラ前提**は [v7_phase2a_theory_numeric_architecture_data_ja.md](v7_phase2a_theory_numeric_architecture_data_ja.md)。
+**実装・レール分離の正本**: [v7_phase2a_implementation_master_plan.md](v7_phase2a_implementation_master_plan.md)（目的階層・理論↔数値対応表・実装順・ラベル規約）。**対応表の拡張・接続点・インフラ前提**は [v7_phase2a_theory_numeric_architecture_data_ja.md](v7_phase2a_theory_numeric_architecture_data_ja.md)。**理論 τ* を数値チェックインするまでのゲート**は [v7_phase2a_theoretical_tau_bridge_appendix_ja.md](v7_phase2a_theoretical_tau_bridge_appendix_ja.md)。
 
 本稿は、**現行リポジトリの Phase II-A（MRMP 窓・凍結 LM・注意ベース R(τ)）**が何を示しうるかと、[Resonanceverse 理論 v7.0](../v7/Resonanceverse_Theory_v7.0.md)・[実証実験設計 v7.0](../v7/Resonanceverse_v7.0_Experimental_Design.md)が定める **τ*（ホプフ分岐閾値）** などが**どこまで同一視できないか**を整理する。論文・対外向けの主張の境界を明確にするのが目的である。
 

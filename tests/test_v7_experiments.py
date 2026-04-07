@@ -583,6 +583,7 @@ def test_v7_phase2a_prereg_links_implementation_master_plan():
     assert plan.name == "v7_phase2a_implementation_master_plan.md"
     for key in (
         "theoretical_tau_reference_json",
+        "theoretical_tau_derivation_appendix_md",
         "tau_exp_operational_spec_md",
     ):
         r2 = data.get(key)
@@ -594,8 +595,13 @@ def test_v7_phase2a_theoretical_tau_reference_json_schema():
     p = _ROOT / "docs" / "planning" / "v7_phase2a_theoretical_tau_reference_v1.json"
     data = json.loads(p.read_text(encoding="utf-8"))
     assert data.get("schema_version") == "v7_phase2a_theoretical_tau_reference.v1"
+    assert str(data.get("revision") or "").startswith("v1.")
+    assert data.get("theoretical_tau_star") is None
+    assert isinstance(data.get("derivation_status_ja"), str) and data["derivation_status_ja"]
     imp = data.get("implementation_master_plan_md")
     assert isinstance(imp, str) and (_ROOT / imp).is_file()
+    apx = data.get("theoretical_tau_derivation_appendix_md")
+    assert isinstance(apx, str) and (_ROOT / apx).is_file()
 
 
 def test_v7_phase2a_paper_tau_comparison_respects_reference_json():
