@@ -21,6 +21,8 @@
 
 **禁止**: レール B の峰を「定理の τ* 実証」として書く。レール A のスタブだけで「τ*_exp 完成」と書く。
 
+**JSON メタ**: 主要スクリプトの成果物に `rail_id`（単一）または `rail_ids`（複合バンドル）と `implementation_master_plan_md` を付与する。定数は `experiments/v7_phase2a_rail_metadata.py`。
+
 ---
 
 ## 2. 理論 ↔ 数値 対応表（実装の設計図）

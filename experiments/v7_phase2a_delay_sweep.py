@@ -21,6 +21,12 @@ _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+from experiments.v7_phase2a_rail_metadata import (  # noqa: E402
+    A_IIA_NUMERIC_SYNTHETIC,
+    C_SYNTHETIC_SENSITIVITY_MU_PROXY,
+    with_rail,
+)
+
 
 def _ring_shift(hist: list[np.ndarray], w_new: np.ndarray) -> None:
     for i in range(len(hist) - 1, 0, -1):
@@ -234,6 +240,7 @@ def run_sweep(
     k = int(np.argmax(jumps))
     return {
         "schema_version": "v7_phase2a.v1",
+        **with_rail(A_IIA_NUMERIC_SYNTHETIC),
         "N": N,
         "d": d,
         "steps": steps,
@@ -291,6 +298,7 @@ def run_alpha_sweep(
         )
     return {
         "schema_version": "v7_phase2a_alpha_sweep.v1",
+        **with_rail(C_SYNTHETIC_SENSITIVITY_MU_PROXY),
         "note_ja": "各要素は v7_phase2a.v1 の単発掃引と同型。alpha を μ の離散代理として見た感度表。",
         "N": N,
         "d": d,

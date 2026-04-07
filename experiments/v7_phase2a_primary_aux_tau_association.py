@@ -21,6 +21,11 @@ _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+from experiments.v7_phase2a_rail_metadata import (  # noqa: E402
+    B_EMPIRICAL_MRMP,
+    with_rail,
+)
+
 
 def _pearson(a: np.ndarray, b: np.ndarray) -> float | None:
     if a.size < 3 or b.size < 3:
@@ -142,6 +147,7 @@ def main() -> None:
     path = args.with_contrib_json.resolve()
     data = json.loads(path.read_text(encoding="utf-8"))
     out = analyze(data, min_n=max(1, args.min_n))
+    out = {**out, **with_rail(str(data.get("rail_id") or B_EMPIRICAL_MRMP))}
     js = json.dumps(out, indent=2, ensure_ascii=False) + "\n"
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)

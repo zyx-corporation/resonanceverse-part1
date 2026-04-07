@@ -17,6 +17,15 @@ import sys
 from pathlib import Path
 from typing import Any
 
+_ROOT = Path(__file__).resolve().parents[1]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+from experiments.v7_phase2a_rail_metadata import (  # noqa: E402
+    B_EMPIRICAL_MRMP_COMPARE_RUNS,
+    with_rail,
+)
+
 
 def _r_at(by_tau: list[dict[str, Any]], tau: int) -> dict[str, Any] | None:
     for r in by_tau:
@@ -160,6 +169,7 @@ def main() -> None:
     rows = [load_row(path.resolve(), lab) for path, lab in zip(args.inputs, labels)]
     payload = {
         "schema_version": "v7_phase2a_compare_runs.v1",
+        **with_rail(B_EMPIRICAL_MRMP_COMPARE_RUNS),
         "note_ja": "横並びは感度・スイープ用。理論 τ* やコーパス代理 τ の主張は各 run のキャプション規約に従う。",
         "runs": rows,
     }

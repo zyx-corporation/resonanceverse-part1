@@ -24,9 +24,11 @@ def test_v7_phase1a_synthetic_correlation_strong():
 
 def test_v7_phase2a_sweep_runs():
     from experiments.v7_phase2a_delay_sweep import run_sweep
+    from experiments.v7_phase2a_rail_metadata import A_IIA_NUMERIC_SYNTHETIC
 
     out = run_sweep(tau_max=4, seed=0, N=6, d=4, steps=200, dt=0.05, alpha=0.2, beta=0.5, noise=0.01)
     assert out["schema_version"] == "v7_phase2a.v1"
+    assert out["rail_id"] == A_IIA_NUMERIC_SYNTHETIC
     assert len(out["by_tau"]) == 5
 
 
@@ -728,6 +730,7 @@ def test_v7_phase2a_paper_tau_comparison_bundle():
         lyapunov_frac_positive_threshold=0.0,
     )
     assert b["schema_version"] == "v7_phase2a_paper_tau_comparison.v1"
+    assert isinstance(b.get("rail_ids"), list) and len(b["rail_ids"]) == 3
     assert len(b["paper_table_rows"]) == 5
     osc_row = next(
         x for x in b["paper_table_rows"] if x["row_id"] == "tau_exp_proxy_oscillation_jump"
@@ -761,10 +764,14 @@ def test_v7_phase2a_lyapunov_tau_exp_stub_sweep():
     assert p["tau_exp_numeric_stub_frac_positive"] == 0
     assert p.get("v_k_profile") == "w_squared_only"
     assert p.get("krasovskii_gamma") == 0.0
+    from experiments.v7_phase2a_rail_metadata import A_IIA_NUMERIC_SYNTHETIC
+
+    assert p["rail_id"] == A_IIA_NUMERIC_SYNTHETIC
 
 
 def test_v7_phase2a_delay_alpha_sweep():
     from experiments.v7_phase2a_delay_sweep import run_alpha_sweep
+    from experiments.v7_phase2a_rail_metadata import C_SYNTHETIC_SENSITIVITY_MU_PROXY
 
     out = run_alpha_sweep(
         alphas=[0.12, 0.18],
@@ -778,6 +785,7 @@ def test_v7_phase2a_delay_alpha_sweep():
         noise=0.01,
     )
     assert out["schema_version"] == "v7_phase2a_alpha_sweep.v1"
+    assert out["rail_id"] == C_SYNTHETIC_SENSITIVITY_MU_PROXY
     assert len(out["by_alpha"]) == 2
     assert "tau_exp_proxy_oscillation_jump" in out["by_alpha"][0]
 
@@ -789,6 +797,7 @@ def test_v7_phase2a_theory_bridge_synth_bundle_demo():
 
     b = build_theory_bridge_bundle(demo=True, seed=7)
     assert b["schema_version"] == "v7_phase2a_theory_bridge_synth.v1"
+    assert isinstance(b.get("rail_ids"), list) and len(b["rail_ids"]) == 2
     assert b["demo"] is True
     assert "single_tau_sweep" in b and "alpha_sensitivity" in b
     st = b["single_tau_sweep"]
@@ -854,6 +863,7 @@ def test_v7_phase2a_paper_tau_comparison_cli(tmp_path):
     assert "v7_phase2a_paper_tau_comparison_ok" in r.stdout
     data = json.loads(out_j.read_text(encoding="utf-8"))
     assert data["schema_version"] == "v7_phase2a_paper_tau_comparison.v1"
+    assert isinstance(data.get("rail_ids"), list)
     assert "| row_id |" in out_m.read_text(encoding="utf-8")
 
 
@@ -944,6 +954,9 @@ def test_v7_phase2a_compare_runs_cli(tmp_path):
     assert r.returncode == 0, r.stderr
     data = json.loads(out_j.read_text(encoding="utf-8"))
     assert data["schema_version"] == "v7_phase2a_compare_runs.v1"
+    from experiments.v7_phase2a_rail_metadata import B_EMPIRICAL_MRMP_COMPARE_RUNS
+
+    assert data["rail_id"] == B_EMPIRICAL_MRMP_COMPARE_RUNS
     assert len(data["runs"]) == 2
     assert "gpt2" in out_m.read_text(encoding="utf-8")
 
@@ -983,6 +996,9 @@ def test_v7_phase4_minimal_bundle_build():
         with_rvt_pointers=False,
     )
     assert b["schema_version"] == "v7_phase4_minimal_repro.v1"
+    from experiments.v7_phase2a_rail_metadata import D_PHASE_IV_MINIMAL_REPRO
+
+    assert b["rail_id"] == D_PHASE_IV_MINIMAL_REPRO
     assert b["two_tier_sweep"]["schema_version"] == "two_tier_sweep.v1"
 
 

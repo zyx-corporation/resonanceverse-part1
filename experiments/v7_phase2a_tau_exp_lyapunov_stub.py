@@ -28,6 +28,10 @@ if str(_ROOT) not in sys.path:
 from experiments.v7_phase2a_delay_sweep import (  # noqa: E402
     simulate_tau_v_k_series,
 )
+from experiments.v7_phase2a_rail_metadata import (  # noqa: E402
+    A_IIA_NUMERIC_SYNTHETIC,
+    with_rail,
+)
 
 
 def metrics_from_v_series(
@@ -104,6 +108,7 @@ def run_lyapunov_tau_exp_stub_sweep(
 
     return {
         "schema_version": "v7_phase2a_tau_exp_lyapunov_stub.v1",
+        **with_rail(A_IIA_NUMERIC_SYNTHETIC),
         "mode": "lyapunov_V_mean_dV_numeric_stub",
         "design_doc_pointer": (
             "docs/v7/Resonanceverse_v7.0_Experimental_Design.md §3.1"

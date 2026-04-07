@@ -19,6 +19,11 @@ _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+from experiments.v7_phase2a_rail_metadata import (  # noqa: E402
+    B_EMPIRICAL_MRMP,
+    with_rail,
+)
+
 
 def rolling_mean(x: np.ndarray, window: int) -> np.ndarray:
     if window <= 1:
@@ -217,6 +222,7 @@ def main() -> None:
     n_tau = summarize_n_per_tau(rows)
     payload: dict[str, Any] = {
         "schema_version": "v7_phase2a_tau_summary.v1",
+        **with_rail(str(data.get("rail_id") or B_EMPIRICAL_MRMP)),
         "source": str(args.json_path),
         "input_schema": data.get("schema_version"),
         "n_dialogues_in_run": data.get("n_dialogues"),

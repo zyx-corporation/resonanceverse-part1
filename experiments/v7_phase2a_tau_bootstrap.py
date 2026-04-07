@@ -19,6 +19,11 @@ _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+from experiments.v7_phase2a_rail_metadata import (  # noqa: E402
+    B_EMPIRICAL_MRMP,
+    with_rail,
+)
+
 
 def bootstrap_mean_ci(
     values: list[float],
@@ -174,6 +179,7 @@ def main() -> None:
 
     payload = {
         "schema_version": "v7_phase2a_bootstrap.v1",
+        **with_rail(str(data.get("rail_id") or B_EMPIRICAL_MRMP)),
         "source": str(args.json_path),
         "n_boot": max(100, args.boot),
         "alpha": args.alpha,

@@ -28,6 +28,10 @@ from experiments.rvt_exp_2026_008_attn_inject import (  # noqa: E402
     resolved_attn_implementation,
 )
 from experiments.v7_phase1a_pilot_jsonl import PILOT_KEYS  # noqa: E402
+from experiments.v7_phase2a_rail_metadata import (  # noqa: E402
+    B_EMPIRICAL_MRMP,
+    IMPLEMENTATION_MASTER_PLAN_MD,
+)
 from experiments.v7_phase2a_empirical import (  # noqa: E402
     PREREG_SPAN_SPEC,
     R_tau_equal_weight_per_dialogue,
@@ -285,11 +289,9 @@ def main() -> None:
     payload: dict[str, Any] = {
         "schema_version": "v7_phase2a_empirical.v1",
         "mode": "mrmp_tau_sweep",
-        "rail_id": "B_empirical_MRMP",
+        "rail_id": B_EMPIRICAL_MRMP,
         "tau_star_claim_label": "tau_star_corpus_proxy",
-        "implementation_master_plan_md": (
-            "docs/planning/v7_phase2a_implementation_master_plan.md"
-        ),
+        "implementation_master_plan_md": IMPLEMENTATION_MASTER_PLAN_MD,
         "prereg_span_spec": PREREG_SPAN_SPEC,
         "model": args.model,
         "hf_revision": args.revision,

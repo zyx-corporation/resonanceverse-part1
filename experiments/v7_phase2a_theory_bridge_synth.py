@@ -25,6 +25,11 @@ from experiments.v7_phase2a_delay_sweep import (  # noqa: E402
     run_alpha_sweep,
     run_sweep,
 )
+from experiments.v7_phase2a_rail_metadata import (  # noqa: E402
+    A_IIA_NUMERIC_SYNTHETIC,
+    C_SYNTHETIC_SENSITIVITY_MU_PROXY,
+    with_rails,
+)
 
 
 def build_theory_bridge_bundle(
@@ -119,6 +124,9 @@ def build_theory_bridge_bundle(
 
     return {
         "schema_version": "v7_phase2a_theory_bridge_synth.v1",
+        **with_rails(
+            [A_IIA_NUMERIC_SYNTHETIC, C_SYNTHETIC_SENSITIVITY_MU_PROXY],
+        ),
         "mode": "theory_bridge_synthetic_bundle",
         "demo": bool(demo),
         "purpose_ja": (

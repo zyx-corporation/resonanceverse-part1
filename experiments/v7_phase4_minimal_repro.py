@@ -24,6 +24,11 @@ _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+from experiments.v7_phase2a_rail_metadata import (  # noqa: E402
+    D_PHASE_IV_MINIMAL_REPRO,
+    with_rail,
+)
+
 
 def _load_squad_span():
     path = _ROOT / "experiments" / "squad_span.py"
@@ -51,6 +56,7 @@ def build_bundle(
 
     out: dict[str, Any] = {
         "schema_version": "v7_phase4_minimal_repro.v1",
+        **with_rail(D_PHASE_IV_MINIMAL_REPRO),
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "note_ja": (
             "Phase IV（方式 B 統合・下流タスク）の代替ではない。"

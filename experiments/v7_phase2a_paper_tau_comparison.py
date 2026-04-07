@@ -26,6 +26,9 @@ from experiments.v7_phase2a_delay_sweep import run_sweep  # noqa: E402
 from experiments.v7_phase2a_tau_exp_lyapunov_stub import (  # noqa: E402
     run_lyapunov_tau_exp_stub_sweep,
 )
+from experiments.v7_phase2a_rail_metadata import (  # noqa: E402
+    paper_tau_comparison_rail_metadata,
+)
 
 
 def load_theoretical_tau_reference_json(path: Path) -> dict[str, Any]:
@@ -187,6 +190,7 @@ def build_paper_tau_comparison_bundle(
 
     return {
         "schema_version": "v7_phase2a_paper_tau_comparison.v1",
+        **paper_tau_comparison_rail_metadata(),
         "mode": "paper_comparison_table",
         "design_doc_pointer": (
             "docs/v7/Resonanceverse_v7.0_Experimental_Design.md §3.1"

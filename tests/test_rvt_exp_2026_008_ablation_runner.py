@@ -20,9 +20,12 @@ def test_build_plan_explore_prepends_shell():
 
 
 def test_build_plan_observe_has_mrmp_step():
+    from experiments.v7_phase2a_rail_metadata import E_RVT_008_ABLATION_PLAN
+
     f = RvtExp008ConditionFlags(base_observe_only=True, w_asym_extract=True)
     p = build_plan(f)
     assert p["schema_version"] == "rvt_exp_008_ablation_plan.v1"
+    assert p["rail_id"] == E_RVT_008_ABLATION_PLAN
     row_step = next(s for s in p["steps"] if s["id"] == "rvt_mrmp_row_batch")
     assert "run_rvt_mrmp_batch.sh" in row_step["shell_example"]
     assert "rvt_l2_mode" not in row_step["args_hint"]

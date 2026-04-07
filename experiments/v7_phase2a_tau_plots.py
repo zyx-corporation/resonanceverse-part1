@@ -48,6 +48,8 @@ _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+from experiments.v7_phase2a_rail_metadata import B_EMPIRICAL_MRMP  # noqa: E402
+
 from experiments.v7_phase2a_tau_summary import rolling_mean  # noqa: E402
 
 
@@ -184,6 +186,7 @@ def plot_primary(
     paper: bool = False,
     show_suptitle: bool = False,
     meta: dict[str, Any] | None = None,
+    rail_caption: str | None = None,
 ) -> list[str]:
     import matplotlib.pyplot as plt
 
@@ -198,6 +201,9 @@ def plot_primary(
         ylab_n = "Count"
         xlab = r"Lag $\tau$" if paper else "τ"
         leg_smooth = f"Moving avg. (window {smooth_window})"
+
+    if rail_caption:
+        st = f"{st}  [{rail_caption}]"
 
     r_var_s = rolling_mean(r_var, max(1, smooth_window))
     if paper:
@@ -288,6 +294,7 @@ def plot_auxiliary_r_var(
     japanese_ui: bool = True,
     paper: bool = False,
     show_suptitle: bool = False,
+    rail_caption: str | None = None,
 ) -> list[str]:
     import matplotlib.pyplot as plt
 
@@ -325,6 +332,9 @@ def plot_auxiliary_r_var(
         st = f"Phase II-A auxiliary R_var (six axes){title_suffix}"
         leg_smooth = "Moving avg."
         xlab = r"Lag $\tau$" if paper else "τ"
+
+    if rail_caption:
+        st = f"{st}  [{rail_caption}]"
 
     if show_suptitle or not paper:
         fig.suptitle(st, fontsize=11 if paper else 12)
@@ -439,6 +449,8 @@ def main() -> None:
         "n_dialogues": data.get("n_dialogues"),
     }
 
+    rail_caption = str(data.get("rail_id") or B_EMPIRICAL_MRMP)
+
     primary_stem = out_dir / (f"{stem}_tau_paper_primary" if paper else f"{stem}_tau_primary")
     primary_paths = plot_primary(
         tau,
@@ -454,6 +466,7 @@ def main() -> None:
         paper=paper,
         show_suptitle=args.show_suptitle,
         meta=meta,
+        rail_caption=rail_caption,
     )
 
     aux = data.get("auxiliary_label_delay_coherence")
@@ -470,6 +483,7 @@ def main() -> None:
             japanese_ui=japanese_ui,
             paper=paper,
             show_suptitle=args.show_suptitle,
+            rail_caption=rail_caption,
         )
 
     print(

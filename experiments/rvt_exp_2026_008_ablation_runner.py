@@ -20,6 +20,10 @@ if str(_ROOT) not in sys.path:
 from experiments.rvt_exp_2026_008_ablation_flags import (  # noqa: E402
     RvtExp008ConditionFlags,
 )
+from experiments.v7_phase2a_rail_metadata import (  # noqa: E402
+    E_RVT_008_ABLATION_PLAN,
+    with_rail,
+)
 
 
 def build_plan(
@@ -133,6 +137,7 @@ def build_plan(
 
     return {
         "schema_version": "rvt_exp_008_ablation_plan.v1",
+        **with_rail(E_RVT_008_ABLATION_PLAN),
         "flags": flags.to_json(),
         "steps": steps,
         "note_ja": (
