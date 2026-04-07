@@ -54,6 +54,7 @@
 | [Resonanceverse 主張表（論文・対外向け）](planning/Resonanceverse_主張表_論文用_ja.md) | 主張一覧 |
 | [Phase II-A と理論の「橋」](planning/v7_phase2a_theory_bridge.md) | コーパス R(τ) と τ*／τ*_exp の区別・追加実験 |
 | [Phase II-A 実装マスタープラン](planning/v7_phase2a_implementation_master_plan.md) | レール分離・理論↔数値対応・ラベル規約・実装順の正本 |
+| [Phase II-A 理論↔数値・接続点・データ前提](planning/v7_phase2a_theory_numeric_architecture_data_ja.md) | 対応表（拡張）・モジュール境界・MRMP・審判・ローカル SLM 索引 |
 | [Phase II-A 数値 τ 掃引（合成）](planning/v7_phase2a_numeric_tau_exp.md) | delay_sweep・alpha スイープと設計書 II-A の位置づけ |
 | [Phase IV 最小再現（方式 B 周辺）](planning/v7_phase4_integration_repro.md) | decode / two-tier スタブと本番 Phase IV の差 |
 | [日本語ローカル SLM 運用プラン（M3 Max / 128GB）](planning/v7_local_slm_m3_japanese_plan.md) | Swallow / rinna・`hf_local`・チャンク・**SLM 同士審判一致**（§10） |

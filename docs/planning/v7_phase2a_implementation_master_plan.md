@@ -3,7 +3,7 @@
 本稿は、v7 の **Phase II-A（τ・安定性・MRMP）** と**理論 3.3 / 設計書 §3.1**をつなぐ実装を、**レールを混線させず**進めるための**正本**である。  
 コーディングの優先度・理論と数値の対応・ラベル規約をここに固定し、個別スクリプトの docstring は本稿を参照する。
 
-**関連**: [Phase II-A と理論の「橋」](v7_phase2a_theory_bridge.md) · [数値 τ 掃引](v7_phase2a_numeric_tau_exp.md) · [図表（論文）](v7_phase2a_paper_figures.md) · 事前登録 [`v7_phase2a_prereg_v1.json`](v7_phase2a_prereg_v1.json)
+**関連**: [Phase II-A と理論の「橋」](v7_phase2a_theory_bridge.md) · [数値 τ 掃引](v7_phase2a_numeric_tau_exp.md) · [図表（論文）](v7_phase2a_paper_figures.md) · [**理論↔数値・接続点・データ前提（索引）**](v7_phase2a_theory_numeric_architecture_data_ja.md) · 事前登録 [`v7_phase2a_prereg_v1.json`](v7_phase2a_prereg_v1.json)
 
 ---
 
@@ -38,6 +38,8 @@
 | τ*_exp（設計書手続き） | **予定**: V・符号・（任意）スペクトルに沿った**操作定義**と JSON スキーマ | スタブの `tau_exp_numeric_stub_*` は**別ラベル**のまま |
 | 理論 τ* | **リポジトリは自動算出しない**；`paper_tau_comparison --theoretical-tau-star` で注入 | 出所は provenance 文字列で固定 |
 | MRMP の τ 候補 | `tau_star_corpus_proxy`・事前登録の Var 規則 | レール B のみ |
+
+**拡張**: 上表をスクリプト・JSON フィールドまで伸ばした版、**アーキテクチャ接続点**（MRMP→実証→後処理、合成、RVT、Phase IV）、**MRMP・審判・ローカル SLM**の前提整理は [v7_phase2a_theory_numeric_architecture_data_ja.md](v7_phase2a_theory_numeric_architecture_data_ja.md) を参照（本 §2 の PR と同期して更新する）。
 
 ---
 
