@@ -2,6 +2,8 @@
 
 本稿は、**現行リポジトリの Phase II-A（MRMP 窓・凍結 LM・注意ベース R(τ)）**が何を示しうるかと、[Resonanceverse 理論 v7.0](../v7/Resonanceverse_Theory_v7.0.md)・[実証実験設計 v7.0](../v7/Resonanceverse_v7.0_Experimental_Design.md)が定める **τ*（ホプフ分岐閾値）** などが**どこまで同一視できないか**を整理する。論文・対外向けの主張の境界を明確にするのが目的である。
 
+**定理支持へ進む推奨・全体実装の必要条件**は [v7_phase2a_theorem_support_path_ja.md](v7_phase2a_theorem_support_path_ja.md) を参照（本稿は「混同防止」、同稿は「優先順位とチェックリスト」）。
+
 ## 1. いまのパイプラインが測っているもの
 
 - **入力**: 対話窓の JSONL（任意で 6 軸 LLM 審判スコア同梱）。**凍結言語モデル**の層出力から、事前登録 [`v7_phase2a_prereg_v1.json`](v7_phase2a_prereg_v1.json) に沿った **注意ベースの遅延積統計**を τ ごとに集約する（`v7_phase2a_empirical_run.py`）。
@@ -46,6 +48,7 @@
 
 ## 関連リンク
 
+- 定理支持の推奨経路・全体実装の考察: [`v7_phase2a_theorem_support_path_ja.md`](v7_phase2a_theorem_support_path_ja.md)
 - 事前登録: [`v7_phase2a_prereg_v1.json`](v7_phase2a_prereg_v1.json)
 - 論文用図・キャプション注意: [`v7_phase2a_paper_figures.md`](v7_phase2a_paper_figures.md)
 - 再現・ハッシュ手順: [`../../experiments/README.md`](../../experiments/README.md)（Phase II-A 再現性・マニフェスト）

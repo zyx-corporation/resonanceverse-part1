@@ -4,6 +4,8 @@
 
 本文書は **Phase I〜IV** と本リポジトリの **スクリプト** の対応を示す。レガシー（Phase A〜C）は [ROADMAP_ja.md](../../ROADMAP_ja.md)。
 
+**Phase II-A・理論支持の推奨と全体実装の考察**: [v7_phase2a_theorem_support_path_ja.md](v7_phase2a_theorem_support_path_ja.md)
+
 ## 実証実験（Phase I-A ベースライン v1）
 
 設計書の本番規模（数千ターン・人手アノテ）に先立ち、**パイロット JSONL × HF** で再現可能な実走ログを 1 JSON にまとめる。事前登録スタブ: [`v7_phase1a_empirical_prereg_v1.json`](v7_phase1a_empirical_prereg_v1.json)。手順の位置づけ: [Phase_IA_IIIA_本番手順設計_v7](Phase_IA_IIIA_本番手順設計_v7.md)「リポジトリ内実証ベースライン」。
