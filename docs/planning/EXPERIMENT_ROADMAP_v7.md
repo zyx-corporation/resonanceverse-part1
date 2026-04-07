@@ -2,9 +2,9 @@
 
 **正本**: [Resonanceverse v7.0 実証実験設計書](../v7/Resonanceverse_v7.0_Experimental_Design.md)
 
-本文書は **Phase I〜IV** と本リポジトリの **スクリプト** の対応を示す。レガシー（Phase A〜C）は [ROADMAP_ja.md](../../ROADMAP_ja.md)。
+**Phase II-A 周辺の実装正本**（レール分離・理論↔数値対応・実装順）: [v7_phase2a_implementation_master_plan.md](v7_phase2a_implementation_master_plan.md)
 
-**Phase II-A・理論支持の推奨と全体実装の考察**: [v7_phase2a_theorem_support_path_ja.md](v7_phase2a_theorem_support_path_ja.md)
+本文書は **Phase I〜IV** と本リポジトリの **スクリプト** の対応を示す。レガシー（Phase A〜C）は [ROADMAP_ja.md](../../ROADMAP_ja.md)。
 
 ## 実証実験（Phase I-A ベースライン v1）
 

@@ -571,6 +571,16 @@ def test_v7_local_slm_prereg_stub_has_revision():
     assert isinstance(rev, int) and rev >= 1
 
 
+def test_v7_phase2a_prereg_links_implementation_master_plan():
+    p = _ROOT / "docs" / "planning" / "v7_phase2a_prereg_v1.json"
+    data = json.loads(p.read_text(encoding="utf-8"))
+    rel = data.get("implementation_master_plan_md")
+    assert isinstance(rel, str) and rel
+    plan = (_ROOT / rel).resolve()
+    assert plan.is_file()
+    assert plan.name == "v7_phase2a_implementation_master_plan.md"
+
+
 def test_v7_local_slm_phase1_smoke_bundle_baseline():
     p = _ROOT / "experiments" / "baselines" / "v7_local_slm_phase1_smoke_bundle_v1.json"
     data = json.loads(p.read_text(encoding="utf-8"))
