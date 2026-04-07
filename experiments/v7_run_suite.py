@@ -2,7 +2,13 @@
 v7 実験スイート一括実行: Phase I-A（demo）, I-B, II-A, III-A（合成）を連続し JSON をまとめる。
 
 例::
-    python experiments/v7_run_suite.py --demo --out experiments/logs/v7_suite/suite.json
+    python experiments/v7_run_suite.py --demo \\
+      --out experiments/logs/v7_suite/suite.json
+
+理論橋（合成 τ 掃引＋α 感度・ラベル同梱）を足す::
+
+    python experiments/v7_run_suite.py --demo \\
+      --with-theory-bridge --out ...
 """
 
 from __future__ import annotations
@@ -31,6 +37,14 @@ def _load_mod(fname: str, as_name: str):
 def main() -> None:
     p = argparse.ArgumentParser(description="v7 suite runner")
     p.add_argument("--demo", action="store_true", help="軽量パラメータ（CI）")
+    p.add_argument(
+        "--with-theory-bridge",
+        action="store_true",
+        help=(
+            "Phase II-A 理論橋バンドル（α 感度＋メタ）を同梱。"
+            "単発 τ 掃引は phase2a と共有し二重計算しない。"
+        ),
+    )
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--out", type=Path, default=None)
     args = p.parse_args()
@@ -40,6 +54,11 @@ def main() -> None:
     p1b = _load_mod("v7_phase1b_directed_tensor.py", "v7_p1b")
     p2a = _load_mod("v7_phase2a_delay_sweep.py", "v7_p2a")
     p3a = _load_mod("v7_phase3a_awai_metrics.py", "v7_p3a")
+    p2a_tb = (
+        _load_mod("v7_phase2a_theory_bridge_synth.py", "v7_p2a_tb")
+        if args.with_theory_bridge
+        else None
+    )
 
     if args.demo:
         n_s, tau_max, steps_2a, N2, d2 = 120, 6, 800, 8, 6
@@ -47,6 +66,18 @@ def main() -> None:
     else:
         n_s, tau_max, steps_2a, N2, d2 = 400, 12, 4000, 12, 6
         steps_1b = 80
+
+    p2a_sw = p2a.run_sweep(
+        tau_max=tau_max,
+        seed=args.seed,
+        N=N2,
+        d=d2,
+        steps=steps_2a,
+        dt=0.05,
+        alpha=0.15,
+        beta=0.85,
+        noise=0.02,
+    )
 
     bundle = {
         "schema_version": "v7_suite_bundle.v1",
@@ -60,26 +91,37 @@ def main() -> None:
             cpu=args.demo,
             seed=args.seed,
         ),
-        "phase1b": p1b.run_demo(seed=args.seed, steps=steps_1b, N=16, d=6, lr=0.05),
-        "phase2a": p2a.run_sweep(
+        "phase1b": p1b.run_demo(
+            seed=args.seed,
+            steps=steps_1b,
+            N=16,
+            d=6,
+            lr=0.05,
+        ),
+        "phase2a": p2a_sw,
+        "phase3a": p3a.run_demo(seed=args.seed, T=200, d=6),
+    }
+    if p2a_tb is not None:
+        bundle["phase2a_theory_bridge"] = p2a_tb.build_theory_bridge_bundle(
+            demo=args.demo,
             tau_max=tau_max,
+            steps=steps_2a,
             seed=args.seed,
             N=N2,
             d=d2,
-            steps=steps_2a,
             dt=0.05,
             alpha=0.15,
             beta=0.85,
             noise=0.02,
-        ),
-        "phase3a": p3a.run_demo(seed=args.seed, T=200, d=6),
-    }
+            single_tau_sweep=p2a_sw,
+        )
 
     js = json.dumps(bundle, indent=2, ensure_ascii=False)
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(js, encoding="utf-8")
-    print("v7_run_suite_ok", json.dumps({"out": str(args.out) if args.out else None}, ensure_ascii=False))
+    meta = {"out": str(args.out) if args.out else None}
+    print("v7_run_suite_ok", json.dumps(meta, ensure_ascii=False))
 
 
 if __name__ == "__main__":

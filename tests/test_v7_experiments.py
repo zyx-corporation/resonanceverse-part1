@@ -494,6 +494,30 @@ def test_v7_cli_smoke(tmp_path):
     assert "v7_suite_bundle" in out.read_text()
 
 
+def test_v7_cli_smoke_with_theory_bridge(tmp_path):
+    out = tmp_path / "suite_tb.json"
+    r = subprocess.run(
+        [
+            sys.executable,
+            str(_ROOT / "experiments" / "v7_run_suite.py"),
+            "--demo",
+            "--with-theory-bridge",
+            "--out",
+            str(out),
+        ],
+        cwd=str(_ROOT),
+        capture_output=True,
+        text=True,
+        timeout=180,
+    )
+    assert r.returncode == 0, r.stderr
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert data.get("phase2a_theory_bridge", {}).get("schema_version") == (
+        "v7_phase2a_theory_bridge_synth.v1"
+    )
+    assert data["phase2a_theory_bridge"]["single_tau_sweep"] == data["phase2a"]
+
+
 def test_v7_phase2a_repro_manifest_pin_code_cli(tmp_path):
     out = tmp_path / "m.json"
     r = subprocess.run(
@@ -603,6 +627,31 @@ def test_v7_phase2a_theory_bridge_synth_bundle_demo():
     refs = b.get("references") or {}
     assert "experimental_design_md" in refs
     assert isinstance(b.get("comparison_protocol_note_ja"), str)
+
+
+def test_v7_phase2a_theory_bridge_bundle_reuses_single_sweep():
+    from experiments.v7_phase2a_delay_sweep import run_sweep
+    from experiments.v7_phase2a_theory_bridge_synth import build_theory_bridge_bundle
+
+    sw = run_sweep(
+        tau_max=3,
+        seed=1,
+        N=5,
+        d=4,
+        steps=90,
+        dt=0.05,
+        alpha=0.2,
+        beta=0.6,
+        noise=0.01,
+    )
+    b = build_theory_bridge_bundle(
+        demo=True,
+        seed=1,
+        single_tau_sweep=sw,
+        alphas=(0.1, 0.12),
+    )
+    assert b["single_tau_sweep"] is sw
+    assert len(b["alpha_sensitivity"]["by_alpha"]) == 2
 
 
 def test_v7_phase2a_theory_bridge_synth_cli(tmp_path):

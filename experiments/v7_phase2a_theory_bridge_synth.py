@@ -40,31 +40,56 @@ def build_theory_bridge_bundle(
     beta: float = 0.85,
     noise: float = 0.02,
     alphas: tuple[float, ...] = (0.1, 0.15, 0.2, 0.25, 0.3),
+    single_tau_sweep: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
     Parameters
     ----------
     demo:
-        True のとき τ 範囲・ステップ・N を抑えて CI 向けに高速化する。
+        True のとき τ 範囲・ステップ・N を抑えて CI 向けに高速化する
+        （`single_tau_sweep` を渡した場合はスキップし、既存結果をそのまま使う）。
+    single_tau_sweep:
+        `run_sweep` の戻り（`v7_phase2a.v1`）を渡すと単発掃引を省略し、
+        `v7_run_suite` 等で二重計算を避ける。
     """
-    if demo:
-        tau_max = min(tau_max, 6)
-        steps = min(steps, 400)
-        N = min(N, 8)
-        d = min(d, 4)
-        alphas = tuple(alphas[:4]) if len(alphas) >= 4 else alphas
+    if single_tau_sweep is None:
+        if demo:
+            tau_max = min(tau_max, 6)
+            steps = min(steps, 800)
+            N = min(N, 8)
+            d = min(d, 6)
+            alphas = tuple(alphas[:4]) if len(alphas) >= 4 else alphas
 
-    single = run_sweep(
-        tau_max=tau_max,
-        seed=seed,
-        N=N,
-        d=d,
-        steps=steps,
-        dt=dt,
-        alpha=alpha,
-        beta=beta,
-        noise=noise,
-    )
+        single = run_sweep(
+            tau_max=tau_max,
+            seed=seed,
+            N=N,
+            d=d,
+            steps=steps,
+            dt=dt,
+            alpha=alpha,
+            beta=beta,
+            noise=noise,
+        )
+    else:
+        single = single_tau_sweep
+        if single.get("schema_version") != "v7_phase2a.v1":
+            raise ValueError(
+                "single_tau_sweep must be v7_phase2a.v1 run_sweep output",
+            )
+        by_tau = single.get("by_tau")
+        if not isinstance(by_tau, list) or not by_tau:
+            raise ValueError("single_tau_sweep.by_tau must be non-empty list")
+        tau_max = len(by_tau) - 1
+        N = int(single["N"])
+        d = int(single["d"])
+        steps = int(single["steps"])
+        dt = float(single["dt"])
+        alpha = float(single["alpha"])
+        beta = float(single["beta"])
+        noise = float(single["noise"])
+        if demo:
+            alphas = tuple(alphas[:4]) if len(alphas) >= 4 else alphas
     sens = run_alpha_sweep(
         alphas=list(alphas),
         tau_max=tau_max,

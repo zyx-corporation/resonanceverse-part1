@@ -33,7 +33,7 @@ Phase IV 周辺（最小再現バンドル・demo）: [`baselines/v7_phase4_mini
 
 | スクリプト | 内容 |
 |------------|------|
-| `v7_run_suite.py` | I-A・I-B・II-A・III-A（合成）を連続実行 |
+| `v7_run_suite.py` | I-A・I-B・II-A・III-A（合成）を連続実行。`--with-theory-bridge` で Phase II-A 理論橋（α 感度、`phase2a` と τ 掃引共有）を同梱 |
 | `v7_phase1a_phi_correlation.py` | Phase I-A: S_asym と相関（`--demo`＝合成） |
 | `v7_phase1b_directed_tensor.py` | Phase I-B: 有向テンソル非対称性 |
 | `v7_phase2a_delay_sweep.py` | Phase II-A: τ 掃引（合成テンソル）。`--alpha-list` で強凸性代理の感度表（`v7_phase2a_alpha_sweep.v1`） |
