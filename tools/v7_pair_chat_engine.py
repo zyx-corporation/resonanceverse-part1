@@ -8,6 +8,9 @@ from typing import Any
 
 import torch
 
+# RVT-IMPL-2026-008-SLM（計画書）: 会話・MRMP 本線の第一候補（128K・均質 GQA・Apache-2.0）
+DEFAULT_RVT_SLM_INSTRUCT = "Qwen/Qwen2.5-3B-Instruct"
+
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
@@ -207,22 +210,52 @@ def analyze_chat_messages_for_omega(
     )
 
 
-def load_causal_lm(model_name: str, *, device: torch.device, cpu: bool) -> tuple[Any, Any]:
-    """HF 因果 LM とトークナイザをロード（評価モード）。"""
+def inference_dtype_for_device(device: torch.device) -> torch.dtype:
+    """チャット用 SLM の weights dtype。CPU / MPS は float32、CUDA は省メモリ優先。
+
+    Apple MPS は float16 の一部 matmul で
+    ``MPSNDArrayMatrixMultiplication`` の dtype 不一致アサートが出る環境があるため、
+    MPS では float32 に固定する。
+    """
+    if device.type == "cpu":
+        return torch.float32
+    if device.type == "cuda":
+        if torch.cuda.is_bf16_supported():
+            return torch.bfloat16
+        return torch.float16
+    if device.type == "mps":
+        return torch.float32
+    return torch.float32
+
+
+def load_causal_lm(
+    model_name: str,
+    *,
+    device: torch.device,
+    cpu: bool,
+    attn_implementation: str | None = None,
+) -> tuple[Any, Any]:
+    """HF 因果 LM とトークナイザをロード（評価モード）。
+
+    ``attn_implementation="eager"`` で ``output_attentions=True`` を安定取得（RVT W_asym / 可視化用）。
+    """
     from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    target = torch.device("cpu") if cpu else device
+    weight_dtype = inference_dtype_for_device(target)
 
     tok = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
     if tok.pad_token_id is None and tok.eos_token_id is not None:
         tok.pad_token = tok.eos_token
-    model = AutoModelForCausalLM.from_pretrained(
-        model_name,
-        trust_remote_code=True,
-    )
+    load_kw: dict[str, Any] = {
+        "trust_remote_code": True,
+        "torch_dtype": weight_dtype,
+    }
+    if attn_implementation is not None:
+        load_kw["attn_implementation"] = attn_implementation
+    model = AutoModelForCausalLM.from_pretrained(model_name, **load_kw)
     model.eval()
-    if cpu:
-        model = model.to(torch.device("cpu"))
-    else:
-        model = model.to(device)
+    model = model.to(target)
     return model, tok
 
 

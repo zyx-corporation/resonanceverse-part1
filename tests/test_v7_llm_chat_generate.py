@@ -12,11 +12,38 @@ if str(_ROOT) not in sys.path:
 from tools.v7_llm_chat_generate import (
     _truncate_simulated_turns,
     build_generation_prompt,
+    inject_system_summary,
 )
 
 
 class _TokPlain:
     chat_template = None
+
+
+def test_inject_system_summary_prepends():
+    m = [{"role": "user", "content": "a"}]
+    out = inject_system_summary(m, "  メモ  ")
+    assert len(out) == 2
+    assert out[0] == {"role": "system", "content": "メモ"}
+    assert out[1] == m[0]
+
+
+def test_inject_system_summary_empty_unchanged():
+    m = [{"role": "user", "content": "x"}]
+    assert inject_system_summary(m, "") == m
+    assert inject_system_summary(m, "  \n  ") == m
+
+
+def test_build_generation_prompt_plain_with_system():
+    tok = _TokPlain()
+    messages = [
+        {"role": "system", "content": "常に日本語で答える。"},
+        {"role": "user", "content": "hello"},
+    ]
+    p = build_generation_prompt(messages, tok)
+    assert "System: 常に日本語で答える。" in p
+    assert "User: hello" in p
+    assert p.rstrip().endswith("Assistant:")
 
 
 def test_build_generation_prompt_plain():

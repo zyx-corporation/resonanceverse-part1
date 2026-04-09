@@ -7,13 +7,24 @@ from typing import Any
 import torch
 
 
+def inject_system_summary(
+    messages: list[dict[str, str]],
+    summary: str | None,
+) -> list[dict[str, str]]:
+    """``summary`` が非空なら先頭に ``{"role": "system", "content": ...}`` を付与したコピーを返す。"""
+    s = (summary or "").strip()
+    if not s:
+        return list(messages)
+    return [{"role": "system", "content": s}, *messages]
+
+
 def build_generation_prompt(
     messages: list[dict[str, str]],
     tokenizer: Any,
 ) -> str:
-    """``messages`` は ``{"role": "user"|"assistant", "content": str}``。
+    """``messages`` は ``{"role": "system"|"user"|"assistant", "content": str}``。
 
-    ``chat_template`` があれば ``apply_chat_template``、なければ User/Assistant 平文連結。
+    ``chat_template`` があれば ``apply_chat_template``、なければ System/User/Assistant 平文連結。
     """
     tmpl = getattr(tokenizer, "chat_template", None)
     if tmpl and hasattr(tokenizer, "apply_chat_template"):
@@ -27,10 +38,12 @@ def build_generation_prompt(
             pass
     lines: list[str] = []
     for m in messages:
-        role = m.get("role", "user")
+        role = (m.get("role") or "user").strip().lower()
         content = (m.get("content") or "").strip()
         if role == "assistant":
             lines.append(f"Assistant: {content}")
+        elif role == "system":
+            lines.append(f"System: {content}")
         else:
             lines.append(f"User: {content}")
     # 末尾は改行＋スペースでトークン境界を切りやすくする（BPE 先頭欠け対策の補助）
