@@ -214,3 +214,7 @@ artifacts/*.pt
 experiments/logs/
 # Hugging Face cache when HF_HOME points into repo (実モデル検証用)
 .hf_cache/
+
+.DS_Store
+
+.streamlit/
